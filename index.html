@@ -3,11 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Optimum Optic — Bientôt à Rabat</title>
-<meta name="description" content="Optimum Optic arrive bientôt dans la région de Rabat. Une nouvelle vision de l'optique.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#6b1f2a">
+<title>Optimum Optic — Opticien à Rabat | Lunettes & Optique</title>
+<meta name="description" content="Optimum Optic, futur opticien à Rabat pour vos lunettes de vue, lunettes solaires et lentilles de contact. Prenez soin de votre vue et de votre vision. Bientôt disponible.">
+<meta name="keywords" content="opticien, opticienne, lunettes, lunettes de vue, lunettes solaires, optique, optic, lentilles, lentilles de contact, vue, vision, Rabat">
+<meta name="geo.placename" content="Rabat, Maroc">
+<meta name="geo.region" content="MA-RAB">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Optimum Optic">
+<meta property="og:locale" content="fr_MA">
+<meta property="og:title" content="Optimum Optic — Opticien à Rabat | Lunettes & Optique">
+<meta property="og:description" content="Futur opticien à Rabat : lunettes de vue, lunettes solaires et lentilles de contact. Bientôt disponible.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Optimum Optic — Opticien à Rabat">
+<meta name="twitter:description" content="Futur opticien à Rabat : lunettes de vue, lunettes solaires et lentilles de contact. Bientôt disponible.">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 140'%3E%3Crect width='200' height='140' fill='%236b1f2a'/%3E%3Cg fill='none' stroke='%23d9c3a6' stroke-width='13'%3E%3Ccircle cx='75' cy='70' r='50'/%3E%3Ccircle cx='122' cy='70' r='50'/%3E%3C/g%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Optician",
+  "name": "Optimum Optic",
+  "description": "Opticien à Rabat pour lunettes de vue, lunettes solaires, lentilles de contact, optique et vision. Ouverture prochaine.",
+  "areaServed": { "@type": "City", "name": "Rabat" },
+  "knowsAbout": ["Opticien", "Opticienne", "Lunettes de vue", "Lunettes solaires", "Lentilles de contact", "Optique", "Vue", "Vision"]
+}
+</script>
+
 <style>
   :root{
     --bg: #6b1f2a;
@@ -15,9 +44,7 @@
     --cream: #d9c3a6;
     --cream-light: #f2e2c6;
     --cream-dim: #c9ae8c;
-    --shadow-tone: #7d2732;
-    --circle: rgba(217,195,166,0.10);
-    --circle-strong: rgba(217,195,166,0.16);
+    --circle: rgba(217,195,166,0.07);
   }
 
   *{ box-sizing: border-box; margin:0; padding:0; }
@@ -36,37 +63,26 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    background:
-      radial-gradient(circle at 50% 30%, var(--bg) 0%, var(--bg-deep) 100%);
+    background: radial-gradient(circle at 50% 30%, var(--bg) 0%, var(--bg-deep) 100%);
+  }
+
+  .sr-only{
+    position:absolute; width:1px; height:1px;
+    padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0,0,0,0); white-space:nowrap; border:0;
   }
 
   /* Repeating interlocked-rings watermark — Optimum Optic identity */
   .watermark{
     position: fixed;
-    inset: 0;
+    inset: -40px;
     z-index: 0;
     pointer-events: none;
+    opacity: 0;
+    animation: fadeIn 2.2s ease-out 0.3s forwards;
+    will-change: transform;
   }
-  .watermark svg{
-    position:absolute;
-    width: 100%;
-    height: 100%;
-  }
-  .watermark.layer-1{ opacity: 1; animation: drift 70s linear infinite; }
-  .watermark.layer-2{
-    opacity: 0.55;
-    transform: scale(1.7);
-    animation: drift-rev 100s linear infinite;
-  }
-
-  @keyframes drift{
-    from{ transform: translate(0,0); }
-    to{ transform: translate(-220px,-160px); }
-  }
-  @keyframes drift-rev{
-    from{ transform: scale(1.7) translate(0,0); }
-    to{ transform: scale(1.7) translate(180px,-200px); }
-  }
+  .watermark svg{ position:absolute; width: 100%; height: 100%; }
 
   .content{
     position: relative;
@@ -79,6 +95,9 @@
   .mark{
     width: 116px;
     margin: 0 auto 1.6rem;
+    opacity: 0;
+    animation: fadeIn 1.1s ease-out 0.15s forwards;
+    will-change: transform;
   }
   .mark svg{ width: 100%; height: auto; display:block; }
 
@@ -89,6 +108,8 @@
     text-transform: uppercase;
     color: var(--cream-light);
     line-height: 1.1;
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 0.35s forwards;
   }
   .brand .sub{
     display:block;
@@ -106,6 +127,8 @@
     letter-spacing: 0.03em;
     color: var(--cream-light);
     font-style: italic;
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 0.5s forwards;
   }
 
   .divider{
@@ -113,7 +136,8 @@
     height: 1px;
     background: var(--cream);
     margin: 2.4rem auto;
-    opacity: 0.6;
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 0.65s forwards, dividerWidth 0.9s ease-out 0.65s forwards;
   }
 
   .teaser{
@@ -122,6 +146,8 @@
     line-height: 1.8;
     letter-spacing: 0.02em;
     font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 0.8s forwards;
   }
 
   .teaser .city{
@@ -141,6 +167,8 @@
     text-transform: uppercase;
     color: var(--cream-light);
     font-weight: 500;
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 0.95s forwards, pulse 3.2s ease-in-out 2.2s infinite;
   }
 
   footer{
@@ -154,7 +182,38 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--cream-dim);
-    opacity: 0.65;
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 1.1s forwards;
+  }
+
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(16px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  @keyframes dividerWidth{
+    from{ width: 0; }
+    to{ width: 56px; }
+  }
+  @keyframes pulse{
+    0%, 100%{ box-shadow: 0 0 0 0 rgba(217,195,166,0.25); }
+    50%{ box-shadow: 0 0 0 8px rgba(217,195,166,0); }
+  }
+
+  /* Touch / pointer ripple */
+  .ripple{
+    position: fixed;
+    width: 14px; height: 14px;
+    margin-left: -7px; margin-top: -7px;
+    border-radius: 50%;
+    border: 1px solid var(--cream-light);
+    pointer-events: none;
+    z-index: 5;
+    animation: rippleOut 900ms ease-out forwards;
+  }
+  @keyframes rippleOut{
+    from{ transform: scale(1); opacity: 0.8; }
+    to{ transform: scale(11); opacity: 0; }
   }
 
   @media (max-width: 480px){
@@ -164,41 +223,32 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .watermark.layer-1, .watermark.layer-2{ animation: none; }
+    .watermark, .mark, .brand, .tagline, .divider, .teaser, .badge, footer{
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 </style>
 </head>
 <body>
 
-  <div class="watermark layer-1">
+  <div class="watermark" id="watermark">
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
       <defs>
-        <pattern id="rings-sm" width="220" height="220" patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="var(--circle)" stroke-width="4">
-            <circle cx="90" cy="110" r="42"/>
-            <circle cx="130" cy="110" r="42"/>
+        <pattern id="rings-sm" width="200" height="200" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="var(--circle)" stroke-width="3">
+            <circle cx="82" cy="100" r="34"/>
+            <circle cx="118" cy="100" r="34"/>
           </g>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#rings-sm)"/>
     </svg>
   </div>
-  <div class="watermark layer-2">
-    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-      <defs>
-        <pattern id="rings-lg" width="340" height="340" patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="var(--circle-strong)" stroke-width="3">
-            <circle cx="140" cy="170" r="58"/>
-            <circle cx="200" cy="170" r="58"/>
-          </g>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#rings-lg)"/>
-    </svg>
-  </div>
 
   <main class="content">
-    <div class="mark" aria-hidden="true">
+    <div class="mark" id="mark" role="img" aria-label="Optimum Optic — opticien à Rabat, lunettes et optique">
       <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -220,14 +270,57 @@
     <div class="divider"></div>
 
     <p class="teaser">
-      Une nouvelle adresse dédiée à votre vue<br>
-      arrive bientôt dans la région de <span class="city">Rabat</span>.
+      Votre futur opticien à Rabat pour lunettes de vue,<br>
+      lunettes solaires et lentilles de contact arrive bientôt<br>
+      dans la région de <span class="city">Rabat</span>.
+    </p>
+
+    <p class="sr-only">
+      Opticien et opticienne à Rabat. Optique, lunettes, lunettes de vue,
+      lunettes solaires, lentilles de contact, vue et vision : Optimum Optic
+      ouvre bientôt une nouvelle adresse dans la région de Rabat.
     </p>
 
     <span class="badge">Bientôt disponible</span>
   </main>
 
-  <footer>Optimum Optic — Rabat</footer>
+  <footer>Optimum Optic — Opticien à Rabat</footer>
+
+  <script>
+  (function(){
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion) return;
+
+    var mark = document.getElementById('mark');
+    var watermark = document.getElementById('watermark');
+    var targetX = 0, targetY = 0, curX = 0, curY = 0;
+
+    function onPointerMove(e){
+      targetX = (e.clientX / window.innerWidth) * 2 - 1;
+      targetY = (e.clientY / window.innerHeight) * 2 - 1;
+    }
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+
+    function loop(){
+      curX += (targetX - curX) * 0.06;
+      curY += (targetY - curY) * 0.06;
+      mark.style.transform = 'translate(' + (curX * 7) + 'px,' + (curY * 7) + 'px) rotate(' + (curX * 4) + 'deg)';
+      watermark.style.transform = 'translate(' + (curX * -16) + 'px,' + (curY * -16) + 'px)';
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    function spawnRipple(x, y){
+      var el = document.createElement('span');
+      el.className = 'ripple';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      document.body.appendChild(el);
+      el.addEventListener('animationend', function(){ el.remove(); });
+    }
+    window.addEventListener('pointerdown', function(e){ spawnRipple(e.clientX, e.clientY); }, { passive: true });
+  })();
+  </script>
 
 </body>
 </html>
