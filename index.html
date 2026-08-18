@@ -5,16 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Optimum Optic — Bientôt à Rabat</title>
 <meta name="description" content="Optimum Optic arrive bientôt dans la région de Rabat. Une nouvelle vision de l'optique.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0b1320;
-    --bg-2: #0f1a2b;
-    --gold: #c9a24d;
-    --gold-soft: #e3c98a;
-    --text: #f3f0e8;
-    --text-dim: #a9b2c3;
-    --circle: rgba(201,162,77,0.08);
-    --circle-strong: rgba(201,162,77,0.14);
+    --bg: #6b1f2a;
+    --bg-deep: #551821;
+    --cream: #d9c3a6;
+    --cream-light: #f2e2c6;
+    --cream-dim: #c9ae8c;
+    --shadow-tone: #7d2732;
+    --circle: rgba(217,195,166,0.10);
+    --circle-strong: rgba(217,195,166,0.16);
   }
 
   *{ box-sizing: border-box; margin:0; padding:0; }
@@ -22,8 +25,8 @@
   html, body{
     height:100%;
     background: var(--bg);
-    color: var(--text);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--cream);
+    font-family: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
     overflow-x: hidden;
   }
 
@@ -34,42 +37,35 @@
     align-items:center;
     justify-content:center;
     background:
-      radial-gradient(circle at 20% 20%, var(--bg-2), transparent 60%),
-      radial-gradient(circle at 80% 85%, var(--bg-2), transparent 55%),
-      var(--bg);
+      radial-gradient(circle at 50% 30%, var(--bg) 0%, var(--bg-deep) 100%);
   }
 
-  /* Repeating circle watermark — optical lens motif */
+  /* Repeating interlocked-rings watermark — Optimum Optic identity */
   .watermark{
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background-image:
-      radial-gradient(circle, transparent 0 38px, var(--circle) 39px, var(--circle) 40px, transparent 41px),
-      radial-gradient(circle, transparent 0 18px, var(--circle-strong) 19px, var(--circle-strong) 20px, transparent 21px);
-    background-size: 160px 160px, 160px 160px;
-    background-position: 0 0, 0 0;
-    opacity: 0.9;
-    animation: drift 60s linear infinite;
   }
-
+  .watermark svg{
+    position:absolute;
+    width: 100%;
+    height: 100%;
+  }
+  .watermark.layer-1{ opacity: 1; animation: drift 70s linear infinite; }
   .watermark.layer-2{
-    background-image:
-      radial-gradient(circle, transparent 0 60px, var(--circle) 61px, var(--circle) 62px, transparent 63px);
-    background-size: 280px 280px;
-    background-position: 90px 60px;
-    opacity: 0.6;
-    animation: drift-rev 90s linear infinite;
+    opacity: 0.55;
+    transform: scale(1.7);
+    animation: drift-rev 100s linear infinite;
   }
 
   @keyframes drift{
-    from{ background-position: 0 0, 0 0; }
-    to{ background-position: 320px 320px, -320px 320px; }
+    from{ transform: translate(0,0); }
+    to{ transform: translate(-220px,-160px); }
   }
   @keyframes drift-rev{
-    from{ background-position: 90px 60px; }
-    to{ background-position: -350px 410px; }
+    from{ transform: scale(1.7) translate(0,0); }
+    to{ transform: scale(1.7) translate(180px,-200px); }
   }
 
   .content{
@@ -81,59 +77,55 @@
   }
 
   .mark{
-    width: 78px;
-    height: 78px;
-    margin: 0 auto 2.2rem;
-    position: relative;
+    width: 116px;
+    margin: 0 auto 1.6rem;
   }
-  .mark span{
-    position: absolute;
-    top:0; left:0; right:0; bottom:0;
-    border: 1.5px solid var(--gold);
-    border-radius: 50%;
-  }
-  .mark span:nth-child(1){ inset: 0; opacity: 0.95; }
-  .mark span:nth-child(2){ inset: 18px; opacity: 0.65; }
-  .mark span:nth-child(3){ inset: 33px; opacity: 1; background: var(--gold); border: none; }
+  .mark svg{ width: 100%; height: auto; display:block; }
 
   .brand{
-    font-size: clamp(2.2rem, 6vw, 3.6rem);
-    letter-spacing: 0.14em;
-    font-weight: 300;
+    font-size: clamp(2.3rem, 6.2vw, 3.7rem);
+    letter-spacing: 0.13em;
+    font-weight: 500;
     text-transform: uppercase;
-    color: var(--text);
+    color: var(--cream-light);
+    line-height: 1.1;
   }
-  .brand strong{
-    font-weight: 600;
-    color: var(--gold-soft);
+  .brand .sub{
+    display:block;
+    font-size: 0.36em;
+    font-weight: 400;
+    letter-spacing: 0.5em;
+    color: var(--cream);
+    margin-top: 0.7rem;
   }
 
   .tagline{
-    margin-top: 1.1rem;
+    margin-top: 1.4rem;
     font-size: clamp(1.05rem, 2.4vw, 1.35rem);
     font-weight: 300;
     letter-spacing: 0.03em;
-    color: var(--text);
+    color: var(--cream-light);
     font-style: italic;
   }
 
   .divider{
     width: 56px;
     height: 1px;
-    background: var(--gold);
+    background: var(--cream);
     margin: 2.4rem auto;
-    opacity: 0.7;
+    opacity: 0.6;
   }
 
   .teaser{
     font-size: clamp(0.95rem, 2vw, 1.05rem);
-    color: var(--text-dim);
+    color: var(--cream-dim);
     line-height: 1.8;
     letter-spacing: 0.02em;
+    font-weight: 300;
   }
 
   .teaser .city{
-    color: var(--gold-soft);
+    color: var(--cream-light);
     font-weight: 600;
     letter-spacing: 0.03em;
   }
@@ -142,12 +134,13 @@
     display: inline-block;
     margin-top: 2.6rem;
     padding: 0.6rem 1.6rem;
-    border: 1px solid var(--gold);
+    border: 1px solid var(--cream);
     border-radius: 999px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--gold-soft);
+    color: var(--cream-light);
+    font-weight: 500;
   }
 
   footer{
@@ -157,32 +150,71 @@
     right: 0;
     z-index: 1;
     text-align: center;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--text-dim);
-    opacity: 0.6;
+    color: var(--cream-dim);
+    opacity: 0.65;
   }
 
   @media (max-width: 480px){
     .content{ padding: 8vh 8vw; }
     .divider{ margin: 1.8rem auto; }
+    .mark{ width: 92px; }
   }
 
   @media (prefers-reduced-motion: reduce){
-    .watermark, .watermark.layer-2{ animation: none; }
+    .watermark.layer-1, .watermark.layer-2{ animation: none; }
   }
 </style>
 </head>
 <body>
 
-  <div class="watermark"></div>
-  <div class="watermark layer-2"></div>
+  <div class="watermark layer-1">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <defs>
+        <pattern id="rings-sm" width="220" height="220" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="var(--circle)" stroke-width="4">
+            <circle cx="90" cy="110" r="42"/>
+            <circle cx="130" cy="110" r="42"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#rings-sm)"/>
+    </svg>
+  </div>
+  <div class="watermark layer-2">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <defs>
+        <pattern id="rings-lg" width="340" height="340" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="var(--circle-strong)" stroke-width="3">
+            <circle cx="140" cy="170" r="58"/>
+            <circle cx="200" cy="170" r="58"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#rings-lg)"/>
+    </svg>
+  </div>
 
   <main class="content">
-    <div class="mark" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f2e2c6"/>
+            <stop offset="55%" stop-color="#d9c3a6"/>
+            <stop offset="100%" stop-color="#b7997a"/>
+          </linearGradient>
+        </defs>
+        <g fill="none" stroke="url(#ringGrad)" stroke-width="11">
+          <circle cx="75" cy="70" r="52"/>
+          <circle cx="122" cy="70" r="52"/>
+        </g>
+      </svg>
+    </div>
 
-    <h1 class="brand">Optimum <strong>Optic</strong></h1>
+    <h1 class="brand">Optimum<span class="sub">Optic</span></h1>
     <p class="tagline">Voir le monde avec plus de clarté.</p>
 
     <div class="divider"></div>
