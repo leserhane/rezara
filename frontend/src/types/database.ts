@@ -16,6 +16,7 @@ export type CashRegisterStatus = 'ouverte' | 'cloturee'
 export type OrderStatus =
   | 'creee' | 'verres_commandes' | 'en_attente' | 'recue' | 'montage'
   | 'controle' | 'prete' | 'client_informe' | 'livree' | 'annulee'
+export type DocumentStatus = 'brouillon' | 'envoye' | 'accepte' | 'refuse' | 'expire' | 'transforme'
 export type NotificationType =
   | 'stock_faible' | 'commande_prete' | 'commande_en_retard' | 'credit_echeance'
   | 'paiement_en_retard' | 'inventaire' | 'nouvelle_vente' | 'remise_validation' | 'autre'
@@ -344,6 +345,16 @@ export type Credit = {
   created_at: string
 }
 
+export type CreditInstallment = {
+  id: string
+  credit_id: string
+  due_date: string
+  amount: number
+  paid_amount: number
+  status: string
+  paid_at: string | null
+}
+
 export type CashRegister = {
   id: string
   store_id: string
@@ -439,6 +450,100 @@ export type CustomerStats = {
   vip_tier: 'bronze' | 'silver' | 'gold' | 'vip'
 }
 
+export type Quote = {
+  id: string
+  store_id: string
+  quote_number: string
+  customer_id: string
+  prescription_id: string | null
+  optician_id: string
+  status: DocumentStatus
+  subtotal_ht: number
+  discount_amount: number
+  tax_amount: number
+  total_ht: number
+  total_ttc: number
+  valid_until: string | null
+  converted_sale_id: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type QuoteItem = {
+  id: string
+  quote_id: string
+  product_id: string | null
+  item_role: string
+  description: string | null
+  quantity: number
+  unit_price_ht: number
+  discount_amount: number
+  tax_rate: number
+  line_total_ht: number
+  line_total_ttc: number
+}
+
+export type Order = {
+  id: string
+  store_id: string
+  order_number: string
+  sale_id: string
+  customer_id: string
+  supplier_id: string | null
+  status: OrderStatus
+  expected_date: string | null
+  notes: string | null
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type OrderItem = {
+  id: string
+  order_id: string
+  sale_item_id: string | null
+  description: string
+  quantity: number
+  status: OrderStatus
+}
+
+export type OrderStatusHistory = {
+  id: string
+  order_id: string
+  from_status: OrderStatus | null
+  to_status: OrderStatus
+  changed_by: string | null
+  changed_at: string
+  notes: string | null
+}
+
+export type Delivery = {
+  id: string
+  order_id: string | null
+  sale_id: string
+  status: 'en_preparation' | 'prete' | 'livree'
+  delivered_at: string | null
+  delivered_by: string | null
+  received_by_name: string | null
+  signature_url: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type Appointment = {
+  id: string
+  store_id: string
+  customer_id: string
+  optician_id: string | null
+  scheduled_at: string
+  reason: string | null
+  status: 'planifie' | 'confirme' | 'realise' | 'annule' | 'absent'
+  notes: string | null
+  created_by: string | null
+  created_at: string
+}
+
 type Relationship = {
   foreignKeyName: string
   columns: string[]
@@ -485,13 +590,21 @@ export type Database = {
       sales: TableDef<Sale, Partial<Sale>>
       sale_items: TableDef<SaleItem, Partial<SaleItem>>
       payments: TableDef<Payment, Partial<Payment>, Partial<Payment>, FkTo<'payment_methods', 'payment_method_id'>>
-      credits: TableDef<Credit, Partial<Credit>>
+      credits: TableDef<Credit, Partial<Credit>, Partial<Credit>, [...FkTo<'sales', 'sale_id'>, ...FkTo<'customers', 'customer_id'>]>
+      credit_installments: TableDef<CreditInstallment, Partial<CreditInstallment>>
       cash_registers: TableDef<CashRegister, Partial<CashRegister>>
       cash_movements: TableDef<CashMovement, Partial<CashMovement>, Partial<CashMovement>, FkTo<'payment_methods', 'payment_method_id'>>
       invoices: TableDef<Invoice, Partial<Invoice>, Partial<Invoice>, FkTo<'customers', 'customer_id'>>
       invoice_items: TableDef<InvoiceItem, Partial<InvoiceItem>>
-      expenses: TableDef<Expense, Partial<Expense> & { store_id: string; category_id: string; amount_ht: number; user_id: string }>
+      expenses: TableDef<Expense, Partial<Expense> & { store_id: string; category_id: string; amount_ht: number; user_id: string }, Partial<Expense>, FkTo<'expense_categories', 'category_id'>>
       notifications: TableDef<Notification, Partial<Notification>>
+      quotes: TableDef<Quote, Partial<Quote> & { store_id: string; customer_id: string; optician_id: string }, Partial<Quote>, FkTo<'customers', 'customer_id'>>
+      quote_items: TableDef<QuoteItem, Partial<QuoteItem> & { quote_id: string }>
+      orders: TableDef<Order, Partial<Order> & { store_id: string; sale_id: string; customer_id: string }, Partial<Order>, [...FkTo<'suppliers', 'supplier_id'>, ...FkTo<'customers', 'customer_id'>]>
+      order_items: TableDef<OrderItem, Partial<OrderItem> & { order_id: string; description: string }>
+      order_status_history: TableDef<OrderStatusHistory, Partial<OrderStatusHistory>>
+      deliveries: TableDef<Delivery, Partial<Delivery> & { sale_id: string }, Partial<Delivery>, FkTo<'sales', 'sale_id'>>
+      appointments: TableDef<Appointment, Partial<Appointment> & { store_id: string; customer_id: string; scheduled_at: string }, Partial<Appointment>, FkTo<'customers', 'customer_id'>>
     }
     Views: {
       v_products: ViewDef<ProductWithVisibility>
@@ -533,8 +646,45 @@ export type Database = {
           p_cash_register_id?: string | null
           p_reference?: string | null
           p_notes?: string | null
+          p_credit_installment_id?: string | null
         }
         Returns: Sale
+      }
+      create_credit: {
+        Args: {
+          p_sale_id: string
+          p_due_date: string
+          p_frequency: string
+          p_installments: { due_date: string; amount: number }[]
+        }
+        Returns: Credit
+      }
+      convert_quote_to_sale: {
+        Args: {
+          p_quote_id: string
+          p_deposit_amount?: number
+          p_payment_method_id?: string | null
+          p_cash_register_id?: string | null
+        }
+        Returns: Sale
+      }
+      update_quote_discount: {
+        Args: { p_quote_id: string; p_discount_amount: number }
+        Returns: Quote
+      }
+      record_expense: {
+        Args: {
+          p_category_id: string
+          p_amount_ht: number
+          p_tax_amount: number
+          p_payment_method_id?: string | null
+          p_cash_register_id?: string | null
+          p_supplier_id?: string | null
+          p_comment?: string | null
+          p_receipt_url?: string | null
+          p_expense_date?: string
+        }
+        Returns: Expense
       }
       open_cash_register: {
         Args: { p_opening_amount: number; p_notes?: string | null }

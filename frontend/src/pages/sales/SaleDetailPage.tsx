@@ -6,14 +6,18 @@ import { formatCurrency, formatDateTime } from '@/lib/format'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useAuth } from '@/contexts/AuthContext'
 import { Modal } from '@/components/ui/Modal'
+import { CreditFormModal } from '@/components/credits/CreditFormModal'
 import type { PaymentMethod } from '@/types/database'
-import { Receipt, Ban } from 'lucide-react'
+import { Receipt, Ban, Wrench, Truck, CreditCard } from 'lucide-react'
 
 export function SaleDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { isAdmin } = useAuth()
+  const { isAdmin, profile } = useAuth()
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
+  const [creditModalOpen, setCreditModalOpen] = useState(false)
+  const [orderBusy, setOrderBusy] = useState(false)
+  const [deliveryBusy, setDeliveryBusy] = useState(false)
 
   const { data: sale, refetch } = useQuery({
     queryKey: ['sale', id],
@@ -48,9 +52,44 @@ export function SaleDetailPage() {
     enabled: !!id,
   })
 
+  const { data: order, refetch: refetchOrder } = useQuery({
+    queryKey: ['sale-order', id],
+    queryFn: async () => (await supabase.from('orders').select('*').eq('sale_id', id!).maybeSingle()).data,
+    enabled: !!id,
+  })
+
+  const { data: delivery, refetch: refetchDelivery } = useQuery({
+    queryKey: ['sale-delivery', id],
+    queryFn: async () => (await supabase.from('deliveries').select('*').eq('sale_id', id!).maybeSingle()).data,
+    enabled: !!id,
+  })
+
+  const { data: credit } = useQuery({
+    queryKey: ['sale-credit', id],
+    queryFn: async () => (await supabase.from('credits').select('*').eq('sale_id', id!).maybeSingle()).data,
+    enabled: !!id,
+  })
+
   if (!sale) return <p className="text-slate-400">Chargement…</p>
 
   const refreshAll = () => { refetch(); refetchPayments() }
+
+  const createOrder = async () => {
+    if (!profile) return
+    setOrderBusy(true)
+    await supabase.from('orders').insert({
+      store_id: profile.store_id, sale_id: sale.id, customer_id: sale.customer_id, created_by: profile.id,
+    })
+    setOrderBusy(false)
+    refetchOrder()
+  }
+
+  const createDelivery = async () => {
+    setDeliveryBusy(true)
+    await supabase.from('deliveries').insert({ sale_id: sale.id, order_id: order?.id ?? null })
+    setDeliveryBusy(false)
+    refetchDelivery()
+  }
 
   return (
     <div className="space-y-5">
@@ -62,8 +101,20 @@ export function SaleDetailPage() {
           </div>
           <p className="text-sm text-slate-400">{formatDateTime(sale.created_at)}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {invoice && <Link to={`/invoices/${invoice.id}`} className="btn-secondary"><Receipt size={15} /> Facture</Link>}
+          {!order && sale.status !== 'annule' && (
+            <button onClick={createOrder} disabled={orderBusy} className="btn-secondary"><Wrench size={15} /> Créer une commande atelier</button>
+          )}
+          {order && <Link to="/orders" className="btn-secondary"><Wrench size={15} /> Suivi atelier</Link>}
+          {!delivery && sale.status !== 'annule' && (
+            <button onClick={createDelivery} disabled={deliveryBusy} className="btn-secondary"><Truck size={15} /> Créer une livraison</button>
+          )}
+          {delivery && <Link to="/deliveries" className="btn-secondary"><Truck size={15} /> Livraison</Link>}
+          {!credit && sale.status !== 'annule' && sale.amount_due > 0 && (
+            <button onClick={() => setCreditModalOpen(true)} className="btn-secondary"><CreditCard size={15} /> Convertir en crédit</button>
+          )}
+          {credit && <Link to="/credits" className="btn-secondary"><CreditCard size={15} /> Voir le crédit</Link>}
           {sale.status !== 'annule' && sale.amount_due > 0 && (
             <button onClick={() => setPaymentModalOpen(true)} className="btn-primary">Encaisser un paiement</button>
           )}
@@ -152,6 +203,13 @@ export function SaleDetailPage() {
         onClose={() => setCancelModalOpen(false)}
         saleId={sale.id}
         onSaved={() => { setCancelModalOpen(false); refreshAll() }}
+      />
+      <CreditFormModal
+        open={creditModalOpen}
+        onClose={() => setCreditModalOpen(false)}
+        saleId={sale.id}
+        amountDue={sale.amount_due}
+        onSaved={() => { setCreditModalOpen(false); refreshAll() }}
       />
     </div>
   )

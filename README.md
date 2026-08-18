@@ -15,43 +15,50 @@ This repo has two parts:
   functions, designed to run on [Supabase](https://supabase.com)
   (Postgres + Auth + Realtime).
 
-## Status: Phase 1 MVP
+## Status: Phase 1 + Phase 2
 
-Per the phased build-out plan, this is Phase 1: authentication & roles,
-dashboard, clients/CRM, prescriptions, product catalog & stock, sales/POS
-with live margin & discount rules, deposits/payments, cash register,
-and invoicing — all backed by real transactional database logic, not mocks.
+Per the phased build-out plan: Phase 1 (auth & roles, dashboard, clients/CRM,
+prescriptions, catalog & stock, sales/POS, deposits/payments, cash register,
+invoicing) and Phase 2 (suppliers, quotes/devis, orders/atelier workflow,
+deliveries, expenses, client credit with installments, statistics/analytics,
+appointments) are both implemented — all backed by real transactional
+database logic, not mocks.
 
 **Fully implemented and tested:**
-- Complete PostgreSQL schema (40+ tables) with row-level security
-- Transactional RPC functions (`create_sale`, `record_payment`,
-  `open_cash_register`, `close_cash_register`, `apply_stock_movement`,
-  `cancel_sale`, `authorize_discount_override`) — see
+- Complete PostgreSQL schema (45+ tables, 22 migrations) with row-level
+  security on every table
+- Transactional RPC functions — `create_sale`, `record_payment` (deposits,
+  balances, and credit installments), `open_cash_register`,
+  `close_cash_register`, `apply_stock_movement`, `cancel_sale`,
+  `authorize_discount_override`, `create_credit`, `convert_quote_to_sale`,
+  `update_quote_discount`, `record_expense` — see
   [database/migrations/016_rpc_functions.sql](database/migrations/016_rpc_functions.sql)
-- The mandatory end-to-end test scenario from the spec (client → prescription
-  → sale with discount & margin → deposit → order workflow → balance payment
-  → cash register closure → audit log), run against a real local Postgres —
-  see [database/local_dev/test_scenario.sql](database/local_dev/test_scenario.sql)
-- Full React frontend for all Phase 1 modules, type-checked and built
-  successfully (`npm run build`)
+  and [019](database/migrations/019_credits_and_quote_conversion.sql)–[022](database/migrations/022_expense_cash_integration.sql)
+- Three test suites run end-to-end against a real local Postgres, all
+  green: the mandatory spec scenario (client → prescription → sale with
+  discount & margin → deposit → atelier workflow → balance payment → cash
+  closure → audit log), credits/quote-conversion, and TVA/multi-step
+  partial payments/stock movements — see
+  [database/local_dev/](database/local_dev/)
+- Full React frontend for every module above, type-checked (`tsc -b`) and
+  built successfully (`npm run build`)
 
-**Not yet built (Phase 2/3, per the original spec's own phasing):**
-- Orders/atelier Kanban UI (the DB schema and status-history tracking exist
-  and were tested; only the dedicated UI is missing)
-- Suppliers UI, quotes UI, credit installment UI, appointments, promotions UI
-- Statistics/analytics dashboards beyond the main KPI dashboard
-- Barcode scanning, CSV/Excel import-export, WhatsApp/SMS/email marketing
+**Not yet built (Phase 3, per the original spec's own phasing):**
+- Barcode scanning, CSV/Excel import/export, WhatsApp/SMS/email marketing
 - Offline mode
+- Promotions UI (the `promotions` table exists but has no dedicated screen)
 - New-user creation from within the app (currently done via the Supabase
   dashboard — see below)
 
 **Important limitation of this session:** there is no live Supabase project
-connected here, so the frontend has been verified with `tsc --noEmit`,
-`vite build`, and a rendered screenshot of the login page — but not against
-a real backend end-to-end in a browser. The database layer *was* fully
-exercised against a real local PostgreSQL instance (see Testing below).
-Before real use, follow the setup steps below and re-verify the golden path
-in a browser against your own Supabase project.
+connected here, so the frontend has been verified with `tsc -b`, `vite
+build`, and rendered/console-checked screenshots of every route — but not
+against a real backend end-to-end in a browser (every protected route
+correctly redirects to `/login` when unauthenticated, which is as far as
+this can be verified without live credentials). The database layer *was*
+fully exercised against a real local PostgreSQL instance (see Testing
+below). Before real use, follow the setup steps below and re-verify the
+golden path in a browser against your own Supabase project.
 
 ---
 
@@ -60,7 +67,7 @@ in a browser against your own Supabase project.
 1. Go to [supabase.com](https://supabase.com) → New Project.
 2. Note your project's **URL** and **anon public key** (Settings → API).
 3. In the SQL Editor, run every file in `database/migrations/` **in order**
-   (001 → 018). Each file is idempotent-safe to inspect but not designed to
+   (001 → 022). Each file is idempotent-safe to inspect but not designed to
    be re-run twice — run once on a fresh project.
 4. Run `database/seed/001_base_seed.sql` to create roles, the default store,
    payment methods, expense categories, and product categories.
@@ -120,13 +127,24 @@ psql -d optimum_optic_test -f local_dev/000_mock_supabase_auth.sql
 for f in migrations/*.sql; do psql -d optimum_optic_test -f "$f"; done
 psql -d optimum_optic_test -f seed/001_base_seed.sql
 psql -d optimum_optic_test -f local_dev/test_scenario.sql
+psql -d optimum_optic_test -f local_dev/test_credits_and_quotes.sql
+psql -d optimum_optic_test -f local_dev/test_tva_payments_stock.sql
 ```
 
-`test_scenario.sql` runs the full mandatory scenario end-to-end (client →
-ordonnance → vente avec remise → acompte → commande → atelier → solde →
-clôture de caisse) plus negative tests for the permission rules (discount
-limit enforcement, stock-adjustment admin-only, oversell prevention) and
-prints `PASS`/`FAIL` for each.
+- `test_scenario.sql` runs the full mandatory scenario end-to-end (client →
+  ordonnance → vente avec remise → acompte → commande → atelier → solde →
+  clôture de caisse) plus negative tests for the permission rules (discount
+  limit enforcement, stock-adjustment admin-only, oversell prevention).
+- `test_credits_and_quotes.sql` covers `create_credit`/installment payments
+  (partial, final, mismatched-total and overpayment rejection) and
+  `convert_quote_to_sale` (including blocking a double conversion).
+- `test_tva_payments_stock.sql` covers non-zero TVA calculation, the exact
+  multi-step partial-payment example from the spec (acompte 2000, then
+  1000 + 2000), and every stock movement type (entrée, sortie via vente,
+  retour fournisseur, ajustement admin-only).
+
+All three print `PASS`/`NOTICE` per assertion and raise/abort on any
+failure — a clean run means every assertion passed.
 
 ## Key design decisions
 
@@ -156,6 +174,26 @@ prints `PASS`/`FAIL` for each.
 - **Document numbers** (`CL-000001`, `VTE-2026-000001`, ...) are always
   server-assigned via `next_document_number()`, either inside the RPC
   functions or via `BEFORE INSERT` triggers — never client-supplied.
+- **Quote totals recompute via a trigger**, not client math: `quote_items`
+  is written to directly by the frontend (there's no `create_sale`-style
+  RPC for a draft quote), so a trigger on `quote_items` recomputes the
+  parent quote's totals after every insert/update/delete, and a
+  `BEFORE INSERT/UPDATE` trigger on `quote_items` itself overwrites
+  `unit_price_ht`/`tax_rate` from the live product record whenever
+  `product_id` is set — the same "never trust the client for a real
+  product's price" rule `create_sale` enforces, applied to quotes too.
+- **Credit installments share the sale's payment ledger.** Converting a
+  sale's balance to a credit (`create_credit`) just schedules
+  `credit_installments` against the existing `payments` row; each
+  installment payment goes through the same `record_payment` RPC with an
+  extra `p_credit_installment_id`, so the sale's `amount_paid`/`status`,
+  the credit's balance, and the specific installment all update in one
+  transaction — never three separate writes that could drift apart.
+- **Expenses paid from the cash drawer go through `record_expense`**, not
+  a bare insert, so the resulting `cash_movements` row is never silently
+  skipped — the RPC requires a payment method whenever a cash register id
+  is passed, the same class of bug (an untracked movement excluded from
+  the closure reconciliation) as the cash-register opening float.
 
 ## Project structure
 
