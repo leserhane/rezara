@@ -34,6 +34,8 @@ export function QuoteDetailPage() {
 
   if (!quote) return <p className="text-slate-400">Chargement…</p>
 
+  const subtotalTtc = (items ?? []).reduce((sum, it) => sum + it.line_total_ttc, 0)
+
   const setStatus = async (status: DocumentStatus) => {
     await supabase.from('quotes').update({ status }).eq('id', quote.id)
     refetch()
@@ -91,14 +93,15 @@ export function QuoteDetailPage() {
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
-            <tr><th className="px-4 py-3">Article</th><th className="px-4 py-3 text-right">Qté</th><th className="px-4 py-3 text-right">PU HT</th><th className="px-4 py-3 text-right">Total TTC</th></tr>
+            <tr><th className="px-4 py-3">Article</th><th className="px-4 py-3 text-right">Qté</th><th className="px-4 py-3 text-right">PU TTC</th><th className="px-4 py-3 text-right">Remise</th><th className="px-4 py-3 text-right">Total TTC</th></tr>
           </thead>
           <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {(items ?? []).map((it) => (
               <tr key={it.id}>
                 <td className="px-4 py-3">{it.description}</td>
                 <td className="px-4 py-3 text-right">{it.quantity}</td>
-                <td className="px-4 py-3 text-right">{formatCurrency(it.unit_price_ht)}</td>
+                <td className="px-4 py-3 text-right">{formatCurrency(it.unit_price_ht * (1 + it.tax_rate / 100))}</td>
+                <td className="px-4 py-3 text-right">{formatCurrency(it.discount_amount * (1 + it.tax_rate / 100))}</td>
                 <td className="px-4 py-3 text-right font-medium">{formatCurrency(it.line_total_ttc)}</td>
               </tr>
             ))}
@@ -107,8 +110,8 @@ export function QuoteDetailPage() {
       </div>
 
       <div className="card ml-auto max-w-xs space-y-1 p-4 text-sm">
-        <div className="flex justify-between"><span className="text-slate-500">Sous-total HT</span><span>{formatCurrency(quote.subtotal_ht)}</span></div>
-        <div className="flex justify-between"><span className="text-slate-500">Remise</span><span>- {formatCurrency(quote.discount_amount)}</span></div>
+        <div className="flex justify-between"><span className="text-slate-500">Sous-total TTC</span><span>{formatCurrency(subtotalTtc)}</span></div>
+        <div className="flex justify-between"><span className="text-slate-500">Remise</span><span>- {formatCurrency(subtotalTtc - quote.total_ttc)}</span></div>
         <div className="flex justify-between"><span className="text-slate-500">TVA</span><span>{formatCurrency(quote.tax_amount)}</span></div>
         <div className="flex justify-between border-t border-slate-200 pt-1 text-base font-semibold dark:border-slate-800"><span>Total TTC</span><span>{formatCurrency(quote.total_ttc)}</span></div>
       </div>

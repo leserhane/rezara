@@ -110,6 +110,7 @@ export function NewSalePage() {
   const totals = useMemo(() => {
     const subtotalHt = cart.reduce((sum, l) => sum + l.product.sale_price_ht * l.quantity - l.discount_amount, 0)
     const itemsTax = cart.reduce((sum, l) => sum + (l.product.sale_price_ht * l.quantity - l.discount_amount) * (l.product.tax_rate / 100), 0)
+    const subtotalTtc = subtotalHt + itemsTax
     const cartDiscountNum = Number(cartDiscount) || 0
     const ratio = subtotalHt > 0 ? (subtotalHt - cartDiscountNum) / subtotalHt : 1
     const totalHt = subtotalHt - cartDiscountNum
@@ -118,7 +119,7 @@ export function NewSalePage() {
     const costTotal = cart.reduce((sum, l) => sum + (l.product.purchase_price_ht ?? 0) * l.quantity, 0)
     const marginAmount = totalHt - costTotal
     const discountPercent = subtotalHt > 0 ? (cartDiscountNum / subtotalHt) * 100 : 0
-    return { subtotalHt, taxAmount, totalHt, totalTtc, costTotal, marginAmount, discountPercent }
+    return { subtotalHt, subtotalTtc, taxAmount, totalHt, totalTtc, costTotal, marginAmount, discountPercent }
   }, [cart, cartDiscount])
 
   const deposit = Number(depositAmount) || 0
@@ -241,7 +242,7 @@ export function NewSalePage() {
               <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 dark:border-slate-800">
                 <div className="min-w-[140px] flex-1">
                   <div className="text-sm font-medium">{l.product.name}</div>
-                  <div className="text-xs text-slate-400">{formatCurrency(l.product.sale_price_ht)} HT</div>
+                  <div className="text-xs text-slate-400">{formatCurrency(l.product.sale_price_ttc)} TTC</div>
                 </div>
                 <input
                   type="number" min={1} max={l.product.quantity} value={l.quantity}
@@ -254,7 +255,7 @@ export function NewSalePage() {
                   className="input w-24"
                 />
                 <div className="w-24 text-right text-sm font-medium">
-                  {formatCurrency(l.product.sale_price_ht * l.quantity - l.discount_amount)}
+                  {formatCurrency((l.product.sale_price_ht * l.quantity - l.discount_amount) * (1 + l.product.tax_rate / 100))}
                 </div>
                 <button onClick={() => removeLine(l.key)} className="text-slate-400 hover:text-red-600"><Trash2 size={16} /></button>
               </div>
@@ -295,8 +296,8 @@ export function NewSalePage() {
       <div className="lg:col-span-1">
         <div className="card sticky top-4 space-y-3 p-4">
           <h2 className="text-sm font-semibold">Récapitulatif</h2>
-          <SummaryRow label="Sous-total HT" value={formatCurrency(totals.subtotalHt)} />
-          <SummaryRow label="Remise" value={`- ${formatCurrency(Number(cartDiscount) || 0)}`} />
+          <SummaryRow label="Sous-total TTC" value={formatCurrency(totals.subtotalTtc)} />
+          <SummaryRow label="Remise" value={`- ${formatCurrency(totals.subtotalTtc - totals.totalTtc)}`} />
           <SummaryRow label="TVA" value={formatCurrency(totals.taxAmount)} />
           <div className="border-t border-slate-200 pt-2 dark:border-slate-800">
             <SummaryRow label="TOTAL TTC" value={formatCurrency(totals.totalTtc)} big />

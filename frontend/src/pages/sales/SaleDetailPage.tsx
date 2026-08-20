@@ -72,6 +72,8 @@ export function SaleDetailPage() {
 
   if (!sale) return <p className="text-slate-400">Chargement…</p>
 
+  const subtotalTtc = (items ?? []).reduce((sum, it) => sum + it.line_total_ttc, 0)
+
   const refreshAll = () => { refetch(); refetchPayments() }
 
   const createOrder = async () => {
@@ -143,7 +145,7 @@ export function SaleDetailPage() {
             <tr>
               <th className="px-4 py-3">Article</th>
               <th className="px-4 py-3 text-right">Qté</th>
-              <th className="px-4 py-3 text-right">PU HT</th>
+              <th className="px-4 py-3 text-right">PU TTC</th>
               <th className="px-4 py-3 text-right">Remise</th>
               <th className="px-4 py-3 text-right">Total TTC</th>
             </tr>
@@ -153,8 +155,8 @@ export function SaleDetailPage() {
               <tr key={it.id}>
                 <td className="px-4 py-3">{it.description}</td>
                 <td className="px-4 py-3 text-right">{it.quantity}</td>
-                <td className="px-4 py-3 text-right">{formatCurrency(it.unit_price_ht)}</td>
-                <td className="px-4 py-3 text-right">{formatCurrency(it.discount_amount)}</td>
+                <td className="px-4 py-3 text-right">{formatCurrency(it.unit_price_ht * (1 + it.tax_rate / 100))}</td>
+                <td className="px-4 py-3 text-right">{formatCurrency(it.discount_amount * (1 + it.tax_rate / 100))}</td>
                 <td className="px-4 py-3 text-right font-medium">{formatCurrency(it.line_total_ttc)}</td>
               </tr>
             ))}
@@ -165,8 +167,8 @@ export function SaleDetailPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="card space-y-2 p-4">
           <h2 className="mb-2 text-sm font-semibold">Résumé financier</h2>
-          <Row label="Sous-total HT" value={formatCurrency(sale.subtotal_ht)} />
-          <Row label="Remise" value={`- ${formatCurrency(sale.discount_amount)}`} />
+          <Row label="Sous-total TTC" value={formatCurrency(subtotalTtc)} />
+          <Row label="Remise" value={`- ${formatCurrency(subtotalTtc - sale.total_ttc)}`} />
           <Row label="TVA" value={formatCurrency(sale.tax_amount)} />
           <Row label="TOTAL TTC" value={formatCurrency(sale.total_ttc)} big />
           {isAdmin && sale.cost_total !== null && <Row label="Coût d'achat" value={formatCurrency(sale.cost_total)} />}

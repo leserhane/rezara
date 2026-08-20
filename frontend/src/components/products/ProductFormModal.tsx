@@ -141,7 +141,13 @@ export function ProductFormModal({
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
           <div><label className="label">Achat HT</label><input type="number" step="0.01" className="input" value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} /></div>
-          <div><label className="label">Vente HT *</label><input required type="number" step="0.01" className="input" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} /></div>
+          <div>
+            <label className="label">Vente HT *</label>
+            <input required type="number" step="0.01" className="input" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} />
+            <p className="mt-1 text-xs text-sand-700">
+              = {(Number(salePrice) * (1 + (Number(taxRate) || 0) / 100)).toFixed(2)} MAD TTC
+            </p>
+          </div>
           <div><label className="label">TVA %</label><input type="number" step="0.01" className="input" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} /></div>
           <div>
             <label className="label">Stock initial</label>

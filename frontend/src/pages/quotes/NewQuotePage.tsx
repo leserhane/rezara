@@ -79,9 +79,10 @@ export function NewQuotePage() {
     const discount = Number(cartDiscount) || 0
     const totalHt = subtotalHt - discount
     const itemsTax = cart.reduce((sum, l) => sum + (l.product.sale_price_ht * l.quantity - l.discount_amount) * (l.product.tax_rate / 100), 0)
+    const subtotalTtc = subtotalHt + itemsTax
     const ratio = subtotalHt > 0 ? Math.max(subtotalHt - discount, 0) / subtotalHt : 1
     const taxAmount = itemsTax * ratio
-    return { subtotalHt, totalHt, totalTtc: totalHt + taxAmount }
+    return { subtotalHt, subtotalTtc, totalHt, totalTtc: totalHt + taxAmount }
   }, [cart, cartDiscount])
 
   const submit = async () => {
@@ -185,7 +186,7 @@ export function NewQuotePage() {
                 <div className="min-w-[140px] flex-1 text-sm font-medium">{l.product.name}</div>
                 <input type="number" min={1} value={l.quantity} onChange={(e) => updateLine(l.key, { quantity: Number(e.target.value) || 1 })} className="input w-16 text-center" />
                 <input type="number" min={0} placeholder="Remise" value={l.discount_amount || ''} onChange={(e) => updateLine(l.key, { discount_amount: Number(e.target.value) || 0 })} className="input w-24" />
-                <div className="w-24 text-right text-sm font-medium">{formatCurrency(l.product.sale_price_ht * l.quantity - l.discount_amount)}</div>
+                <div className="w-24 text-right text-sm font-medium">{formatCurrency((l.product.sale_price_ht * l.quantity - l.discount_amount) * (1 + l.product.tax_rate / 100))}</div>
                 <button onClick={() => removeLine(l.key)} className="text-slate-400 hover:text-red-600"><Trash2 size={16} /></button>
               </div>
             ))}
@@ -205,8 +206,8 @@ export function NewQuotePage() {
       <div className="lg:col-span-1">
         <div className="card sticky top-4 space-y-3 p-4">
           <h2 className="text-sm font-semibold">Récapitulatif</h2>
-          <div className="flex justify-between text-sm"><span className="text-slate-500">Sous-total HT</span><span>{formatCurrency(totals.subtotalHt)}</span></div>
-          <div className="flex justify-between text-sm"><span className="text-slate-500">Remise</span><span>- {formatCurrency(Number(cartDiscount) || 0)}</span></div>
+          <div className="flex justify-between text-sm"><span className="text-slate-500">Sous-total TTC</span><span>{formatCurrency(totals.subtotalTtc)}</span></div>
+          <div className="flex justify-between text-sm"><span className="text-slate-500">Remise</span><span>- {formatCurrency(totals.subtotalTtc - totals.totalTtc)}</span></div>
           <div className="flex justify-between border-t border-slate-200 pt-2 text-lg font-semibold dark:border-slate-800"><span>TOTAL TTC</span><span>{formatCurrency(totals.totalTtc)}</span></div>
           {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
           <button onClick={submit} disabled={!customer || cart.length === 0 || submitting} className="btn-primary w-full">
