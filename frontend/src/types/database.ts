@@ -21,6 +21,12 @@ export type NotificationType =
   | 'stock_faible' | 'commande_prete' | 'commande_en_retard' | 'credit_echeance'
   | 'paiement_en_retard' | 'inventaire' | 'nouvelle_vente' | 'remise_validation' | 'autre'
 
+export type LensSheetCategory = 'homme_adulte' | 'femme_adulte' | 'homme_enfant' | 'femme_enfant'
+export type LensSheetType = 'standard' | 'aminci' | 'super_aminci' | 'extra_aminci'
+export type LensSheetMaterial = 'organique' | 'mineral' | 'polycarbonate'
+export type LensSheetFinish = 'clair' | 'anti_reflet' | 'lumiere_bleue' | 'photochromique' | 'transitions' | 'teinte'
+export type LensSheetVision = 'loin' | 'pres' | 'intermediaire' | 'progressif'
+
 export type Role = {
   id: string
   key: UserRoleKey
@@ -544,6 +550,54 @@ export type Appointment = {
   created_at: string
 }
 
+export type LensOrderSheet = {
+  id: string
+  sale_id: string
+  file_number: string
+  order_date: string
+  estimated_delivery_date: string | null
+
+  category: LensSheetCategory | null
+  lens_type: LensSheetType | null
+  material: LensSheetMaterial | null
+
+  finish: LensSheetFinish | null
+  tint_category: string | null
+  tint_color: string | null
+
+  lens_index: string | null
+  lens_index_other: string | null
+  diameter: string | null
+  diameter_other: string | null
+
+  vision_type: LensSheetVision | null
+
+  od_sphere: number | null
+  od_cylinder: number | null
+  od_axis: number | null
+  od_addition: number | null
+  od_prism: number | null
+  od_base: string | null
+  od_pd: number | null
+  od_height: number | null
+
+  og_sphere: number | null
+  og_cylinder: number | null
+  og_axis: number | null
+  og_addition: number | null
+  og_prism: number | null
+  og_base: string | null
+  og_pd: number | null
+  og_height: number | null
+
+  supplier_id: string | null
+  notes: string | null
+
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
 type Relationship = {
   foreignKeyName: string
   columns: string[]
@@ -587,8 +641,8 @@ export type Database = {
       lens_details: TableDef<LensDetails, Partial<LensDetails> & { product_id: string }>
       contact_lens_details: TableDef<ContactLensDetails, Partial<ContactLensDetails> & { product_id: string }>
       stock_movements: TableDef<StockMovement, Partial<StockMovement>>
-      sales: TableDef<Sale, Partial<Sale>>
-      sale_items: TableDef<SaleItem, Partial<SaleItem>>
+      sales: TableDef<Sale, Partial<Sale>, Partial<Sale>, FkTo<'customers', 'customer_id'>>
+      sale_items: TableDef<SaleItem, Partial<SaleItem>, Partial<SaleItem>, FkTo<'products', 'product_id'>>
       payments: TableDef<Payment, Partial<Payment>, Partial<Payment>, FkTo<'payment_methods', 'payment_method_id'>>
       credits: TableDef<Credit, Partial<Credit>, Partial<Credit>, [...FkTo<'sales', 'sale_id'>, ...FkTo<'customers', 'customer_id'>]>
       credit_installments: TableDef<CreditInstallment, Partial<CreditInstallment>>
@@ -605,6 +659,7 @@ export type Database = {
       order_status_history: TableDef<OrderStatusHistory, Partial<OrderStatusHistory>>
       deliveries: TableDef<Delivery, Partial<Delivery> & { sale_id: string }, Partial<Delivery>, FkTo<'sales', 'sale_id'>>
       appointments: TableDef<Appointment, Partial<Appointment> & { store_id: string; customer_id: string; scheduled_at: string }, Partial<Appointment>, FkTo<'customers', 'customer_id'>>
+      lens_order_sheets: TableDef<LensOrderSheet, Partial<LensOrderSheet> & { sale_id: string; file_number: string }, Partial<LensOrderSheet>, FkTo<'suppliers', 'supplier_id'>>
     }
     Views: {
       v_products: ViewDef<ProductWithVisibility>

@@ -21,6 +21,7 @@ import { QuotesListPage } from '@/pages/quotes/QuotesListPage'
 import { NewQuotePage } from '@/pages/quotes/NewQuotePage'
 import { QuoteDetailPage } from '@/pages/quotes/QuoteDetailPage'
 import { OrdersKanbanPage } from '@/pages/orders/OrdersKanbanPage'
+import { LensOrderSheetPage } from '@/pages/orders/LensOrderSheetPage'
 import { DeliveriesListPage } from '@/pages/deliveries/DeliveriesListPage'
 import { ExpensesListPage } from '@/pages/expenses/ExpensesListPage'
 import { CreditsListPage } from '@/pages/credits/CreditsListPage'
@@ -54,6 +55,7 @@ function App() {
           <Route path="/sales" element={<SalesListPage />} />
           <Route path="/sales/new" element={<NewSalePage />} />
           <Route path="/sales/:id" element={<SaleDetailPage />} />
+          <Route path="/sales/:saleId/lens-sheet" element={<LensOrderSheetPage />} />
           <Route path="/cash-register" element={<CashRegisterPage />} />
           <Route path="/invoices" element={<InvoicesListPage />} />
           <Route path="/invoices/:id" element={<InvoiceDetailPage />} />

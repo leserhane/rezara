@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Modal } from '@/components/ui/Modal'
 import { CreditFormModal } from '@/components/credits/CreditFormModal'
 import type { PaymentMethod } from '@/types/database'
-import { Receipt, Ban, Wrench, Truck, CreditCard } from 'lucide-react'
+import { Receipt, Ban, Wrench, Truck, CreditCard, Glasses } from 'lucide-react'
 
 export function SaleDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -103,6 +103,9 @@ export function SaleDetailPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {invoice && <Link to={`/invoices/${invoice.id}`} className="btn-secondary"><Receipt size={15} /> Facture</Link>}
+          {items?.some((it) => it.item_role === 'verre') && (
+            <Link to={`/sales/${sale.id}/lens-sheet`} className="btn-secondary"><Glasses size={15} /> Fiche technique verres</Link>
+          )}
           {!order && sale.status !== 'annule' && (
             <button onClick={createOrder} disabled={orderBusy} className="btn-secondary"><Wrench size={15} /> Créer une commande atelier</button>
           )}
