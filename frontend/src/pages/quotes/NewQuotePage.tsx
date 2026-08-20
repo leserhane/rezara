@@ -10,7 +10,7 @@ interface CartLine {
   key: string
   product: ProductWithVisibility
   quantity: number
-  discount_amount: number
+  discount_ttc: number
 }
 
 export function NewQuotePage() {
@@ -66,7 +66,7 @@ export function NewQuotePage() {
         copy[idx] = { ...copy[idx], quantity: copy[idx].quantity + 1 }
         return copy
       }
-      return [...prev, { key: crypto.randomUUID(), product, quantity: 1, discount_amount: 0 }]
+      return [...prev, { key: crypto.randomUUID(), product, quantity: 1, discount_ttc: 0 }]
     })
     setProductSearch('')
     setProductResults([])
@@ -74,15 +74,27 @@ export function NewQuotePage() {
   const updateLine = (key: string, patch: Partial<CartLine>) => setCart((prev) => prev.map((l) => (l.key === key ? { ...l, ...patch } : l)))
   const removeLine = (key: string) => setCart((prev) => prev.filter((l) => l.key !== key))
 
+  // Discounts are entered by staff in TTC (what the customer sees taken
+  // off). quote_items.discount_amount is HT by schema, so every TTC amount
+  // typed here is converted to its HT equivalent before it's inserted or
+  // sent to update_quote_discount — that HT amount, taxed back, lands on
+  // exactly the TTC reduction that was typed.
   const totals = useMemo(() => {
-    const subtotalHt = cart.reduce((sum, l) => sum + l.product.sale_price_ht * l.quantity - l.discount_amount, 0)
-    const discount = Number(cartDiscount) || 0
-    const totalHt = subtotalHt - discount
-    const itemsTax = cart.reduce((sum, l) => sum + (l.product.sale_price_ht * l.quantity - l.discount_amount) * (l.product.tax_rate / 100), 0)
+    const lines = cart.map((l) => {
+      const discountHt = l.discount_ttc / (1 + l.product.tax_rate / 100)
+      const lineHt = l.product.sale_price_ht * l.quantity - discountHt
+      return { discountHt, lineHt, tax: lineHt * (l.product.tax_rate / 100) }
+    })
+    const subtotalHt = lines.reduce((sum, x) => sum + x.lineHt, 0)
+    const itemsTax = lines.reduce((sum, x) => sum + x.tax, 0)
     const subtotalTtc = subtotalHt + itemsTax
-    const ratio = subtotalHt > 0 ? Math.max(subtotalHt - discount, 0) / subtotalHt : 1
+    const cartDiscountTtc = Number(cartDiscount) || 0
+    const avgTaxRate = subtotalHt > 0 ? itemsTax / subtotalHt : 0
+    const cartDiscountHt = cartDiscountTtc / (1 + avgTaxRate)
+    const totalHt = subtotalHt - cartDiscountHt
+    const ratio = subtotalHt > 0 ? Math.max(subtotalHt - cartDiscountHt, 0) / subtotalHt : 1
     const taxAmount = itemsTax * ratio
-    return { subtotalHt, subtotalTtc, totalHt, totalTtc: totalHt + taxAmount }
+    return { lines, subtotalHt, subtotalTtc, totalHt, totalTtc: totalHt + taxAmount, cartDiscountHt }
   }, [cart, cartDiscount])
 
   const submit = async () => {
@@ -106,13 +118,13 @@ export function NewQuotePage() {
     }
 
     const { error: itemsError } = await supabase.from('quote_items').insert(
-      cart.map((l) => ({
+      cart.map((l, idx) => ({
         quote_id: quote.id,
         product_id: l.product.id,
         item_role: l.product.type,
         quantity: l.quantity,
         unit_price_ht: l.product.sale_price_ht,
-        discount_amount: l.discount_amount,
+        discount_amount: totals.lines[idx].discountHt,
         tax_rate: l.product.tax_rate,
       }))
     )
@@ -124,7 +136,7 @@ export function NewQuotePage() {
     }
 
     if (Number(cartDiscount) > 0) {
-      await supabase.rpc('update_quote_discount', { p_quote_id: quote.id, p_discount_amount: Number(cartDiscount) })
+      await supabase.rpc('update_quote_discount', { p_quote_id: quote.id, p_discount_amount: totals.cartDiscountHt })
     }
 
     setSubmitting(false)
@@ -185,8 +197,8 @@ export function NewQuotePage() {
               <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 dark:border-slate-800">
                 <div className="min-w-[140px] flex-1 text-sm font-medium">{l.product.name}</div>
                 <input type="number" min={1} value={l.quantity} onChange={(e) => updateLine(l.key, { quantity: Number(e.target.value) || 1 })} className="input w-16 text-center" />
-                <input type="number" min={0} placeholder="Remise" value={l.discount_amount || ''} onChange={(e) => updateLine(l.key, { discount_amount: Number(e.target.value) || 0 })} className="input w-24" />
-                <div className="w-24 text-right text-sm font-medium">{formatCurrency((l.product.sale_price_ht * l.quantity - l.discount_amount) * (1 + l.product.tax_rate / 100))}</div>
+                <input type="number" min={0} placeholder="Remise TTC" value={l.discount_ttc || ''} onChange={(e) => updateLine(l.key, { discount_ttc: Number(e.target.value) || 0 })} className="input w-24" />
+                <div className="w-24 text-right text-sm font-medium">{formatCurrency(l.product.sale_price_ttc * l.quantity - l.discount_ttc)}</div>
                 <button onClick={() => removeLine(l.key)} className="text-slate-400 hover:text-red-600"><Trash2 size={16} /></button>
               </div>
             ))}
@@ -196,7 +208,7 @@ export function NewQuotePage() {
 
         <div className="card space-y-4 p-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div><label className="label">Remise panier (MAD)</label><input type="number" min={0} className="input" value={cartDiscount} onChange={(e) => setCartDiscount(e.target.value)} /></div>
+            <div><label className="label">Remise panier (MAD TTC)</label><input type="number" min={0} className="input" value={cartDiscount} onChange={(e) => setCartDiscount(e.target.value)} /></div>
             <div><label className="label">Valide jusqu'au</label><input type="date" className="input" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></div>
           </div>
           <div><label className="label">Notes</label><textarea className="input" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
@@ -207,7 +219,7 @@ export function NewQuotePage() {
         <div className="card sticky top-4 space-y-3 p-4">
           <h2 className="text-sm font-semibold">Récapitulatif</h2>
           <div className="flex justify-between text-sm"><span className="text-slate-500">Sous-total TTC</span><span>{formatCurrency(totals.subtotalTtc)}</span></div>
-          <div className="flex justify-between text-sm"><span className="text-slate-500">Remise</span><span>- {formatCurrency(totals.subtotalTtc - totals.totalTtc)}</span></div>
+          <div className="flex justify-between text-sm"><span className="text-slate-500">Remise</span><span>- {formatCurrency(Number(cartDiscount) || 0)}</span></div>
           <div className="flex justify-between border-t border-slate-200 pt-2 text-lg font-semibold dark:border-slate-800"><span>TOTAL TTC</span><span>{formatCurrency(totals.totalTtc)}</span></div>
           {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
           <button onClick={submit} disabled={!customer || cart.length === 0 || submitting} className="btn-primary w-full">

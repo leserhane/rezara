@@ -18,11 +18,11 @@ export function AppLayout() {
     .filter((s) => s.items.length > 0)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-sand-50 dark:bg-slate-950">
+    <div className="flex h-screen overflow-hidden bg-sand-300 dark:bg-slate-950">
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-sand-200 bg-white lg:flex dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-2.5 border-b border-sand-100 px-5 py-5 dark:border-slate-800">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sand-100 dark:bg-slate-800">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-sand-300 bg-sand-100 lg:flex dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-2.5 border-b border-sand-300 px-5 py-5 dark:border-slate-800">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-slate-800">
             <svg viewBox="0 0 200 140" className="h-6 w-9">
               <g fill="none" stroke="#6b1f2a" strokeWidth={13}>
                 <circle cx="75" cy="70" r="50" />
@@ -43,13 +43,13 @@ export function AppLayout() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col bg-white p-4 dark:bg-slate-900">
+          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col bg-sand-100 p-4 dark:bg-slate-900">
             <div className="mb-4 flex items-center justify-between">
               <span className="font-semibold text-brand-700 dark:text-white">Menu</span>
               <button onClick={() => setMobileMenuOpen(false)}><X size={20} /></button>
             </div>
             <SidebarNav sections={visibleSections} onNavigate={() => setMobileMenuOpen(false)} />
-            <div className="mt-4 border-t border-sand-200 pt-4 dark:border-slate-800">
+            <div className="mt-4 border-t border-sand-300 pt-4 dark:border-slate-800">
               <UserMenu />
             </div>
           </aside>
@@ -58,7 +58,7 @@ export function AppLayout() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex items-center gap-3 border-b border-sand-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+        <header className="flex items-center gap-3 border-b border-sand-300 bg-sand-100 px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
           <button onClick={() => setMobileMenuOpen(true)} className="text-slate-500 lg:hidden">
             <Menu size={22} />
           </button>
@@ -84,7 +84,7 @@ export function AppLayout() {
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-30 flex border-t border-sand-200 bg-white lg:hidden dark:border-slate-800 dark:bg-slate-900">
+        <nav className="fixed bottom-0 left-0 right-0 z-30 flex border-t border-sand-300 bg-sand-100 lg:hidden dark:border-slate-800 dark:bg-slate-900">
           {mobileNavItems.map((item) => (
             <NavLink
               key={item.to}

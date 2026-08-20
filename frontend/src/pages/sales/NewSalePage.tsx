@@ -11,7 +11,7 @@ interface CartLine {
   key: string
   product: ProductWithVisibility
   quantity: number
-  discount_amount: number
+  discount_ttc: number
 }
 
 export function NewSalePage() {
@@ -96,7 +96,7 @@ export function NewSalePage() {
         copy[existingIdx] = { ...copy[existingIdx], quantity: copy[existingIdx].quantity + 1 }
         return copy
       }
-      return [...prev, { key: crypto.randomUUID(), product, quantity: 1, discount_amount: 0 }]
+      return [...prev, { key: crypto.randomUUID(), product, quantity: 1, discount_ttc: 0 }]
     })
     setProductSearch('')
     setProductResults([])
@@ -107,19 +107,32 @@ export function NewSalePage() {
   }
   const removeLine = (key: string) => setCart((prev) => prev.filter((l) => l.key !== key))
 
+  // Discounts are entered by staff in TTC (what the customer actually sees
+  // taken off their bill). The server's discount_amount columns are HT by
+  // schema (line_total_ht = unit_price_ht*qty - discount_amount), so every
+  // TTC amount entered here is converted to its HT equivalent before it's
+  // ever sent to create_sale — that HT amount, added back with tax, lands
+  // on exactly the TTC reduction the staff typed.
   const totals = useMemo(() => {
-    const subtotalHt = cart.reduce((sum, l) => sum + l.product.sale_price_ht * l.quantity - l.discount_amount, 0)
-    const itemsTax = cart.reduce((sum, l) => sum + (l.product.sale_price_ht * l.quantity - l.discount_amount) * (l.product.tax_rate / 100), 0)
+    const lines = cart.map((l) => {
+      const discountHt = l.discount_ttc / (1 + l.product.tax_rate / 100)
+      const lineHt = l.product.sale_price_ht * l.quantity - discountHt
+      return { discountHt, lineHt, tax: lineHt * (l.product.tax_rate / 100), cost: (l.product.purchase_price_ht ?? 0) * l.quantity }
+    })
+    const subtotalHt = lines.reduce((sum, x) => sum + x.lineHt, 0)
+    const itemsTax = lines.reduce((sum, x) => sum + x.tax, 0)
     const subtotalTtc = subtotalHt + itemsTax
-    const cartDiscountNum = Number(cartDiscount) || 0
-    const ratio = subtotalHt > 0 ? (subtotalHt - cartDiscountNum) / subtotalHt : 1
-    const totalHt = subtotalHt - cartDiscountNum
+    const cartDiscountTtc = Number(cartDiscount) || 0
+    const avgTaxRate = subtotalHt > 0 ? itemsTax / subtotalHt : 0
+    const cartDiscountHt = cartDiscountTtc / (1 + avgTaxRate)
+    const ratio = subtotalHt > 0 ? (subtotalHt - cartDiscountHt) / subtotalHt : 1
+    const totalHt = subtotalHt - cartDiscountHt
     const taxAmount = itemsTax * ratio
     const totalTtc = totalHt + taxAmount
-    const costTotal = cart.reduce((sum, l) => sum + (l.product.purchase_price_ht ?? 0) * l.quantity, 0)
+    const costTotal = lines.reduce((sum, x) => sum + x.cost, 0)
     const marginAmount = totalHt - costTotal
-    const discountPercent = subtotalHt > 0 ? (cartDiscountNum / subtotalHt) * 100 : 0
-    return { subtotalHt, subtotalTtc, taxAmount, totalHt, totalTtc, costTotal, marginAmount, discountPercent }
+    const discountPercent = subtotalHt > 0 ? (cartDiscountHt / subtotalHt) * 100 : 0
+    return { lines, subtotalHt, subtotalTtc, taxAmount, totalHt, totalTtc, costTotal, marginAmount, discountPercent, cartDiscountHt }
   }, [cart, cartDiscount])
 
   const deposit = Number(depositAmount) || 0
@@ -148,14 +161,14 @@ export function NewSalePage() {
 
     const { data, error } = await supabase.rpc('create_sale', {
       p_customer_id: customer.id,
-      p_items: cart.map((l) => ({
+      p_items: cart.map((l, idx) => ({
         product_id: l.product.id,
         item_role: l.product.type,
         quantity: l.quantity,
-        discount_amount: l.discount_amount,
+        discount_amount: totals.lines[idx].discountHt,
       })),
       p_prescription_id: prescriptionId || null,
-      p_cart_discount_amount: Number(cartDiscount) || 0,
+      p_cart_discount_amount: totals.cartDiscountHt,
       p_deposit_amount: deposit > 0 ? deposit : 0,
       p_payment_method_id: deposit > 0 ? paymentMethodId || null : null,
       p_cash_register_id: openRegisterId,
@@ -250,12 +263,12 @@ export function NewSalePage() {
                   className="input w-16 text-center"
                 />
                 <input
-                  type="number" min={0} placeholder="Remise" value={l.discount_amount || ''}
-                  onChange={(e) => updateLine(l.key, { discount_amount: Number(e.target.value) || 0 })}
+                  type="number" min={0} placeholder="Remise TTC" value={l.discount_ttc || ''}
+                  onChange={(e) => updateLine(l.key, { discount_ttc: Number(e.target.value) || 0 })}
                   className="input w-24"
                 />
                 <div className="w-24 text-right text-sm font-medium">
-                  {formatCurrency((l.product.sale_price_ht * l.quantity - l.discount_amount) * (1 + l.product.tax_rate / 100))}
+                  {formatCurrency(l.product.sale_price_ttc * l.quantity - l.discount_ttc)}
                 </div>
                 <button onClick={() => removeLine(l.key)} className="text-slate-400 hover:text-red-600"><Trash2 size={16} /></button>
               </div>
@@ -269,7 +282,7 @@ export function NewSalePage() {
           <h2 className="text-sm font-semibold">3. Remise & acompte</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <label className="label">Remise panier (MAD)</label>
+              <label className="label">Remise panier (MAD TTC)</label>
               <input type="number" min={0} className="input" value={cartDiscount} onChange={(e) => setCartDiscount(e.target.value)} />
               {exceedsLimit && (
                 <p className="mt-1 text-xs text-amber-600">
@@ -297,7 +310,7 @@ export function NewSalePage() {
         <div className="card sticky top-4 space-y-3 p-4">
           <h2 className="text-sm font-semibold">Récapitulatif</h2>
           <SummaryRow label="Sous-total TTC" value={formatCurrency(totals.subtotalTtc)} />
-          <SummaryRow label="Remise" value={`- ${formatCurrency(totals.subtotalTtc - totals.totalTtc)}`} />
+          <SummaryRow label="Remise" value={`- ${formatCurrency(Number(cartDiscount) || 0)}`} />
           <SummaryRow label="TVA" value={formatCurrency(totals.taxAmount)} />
           <div className="border-t border-slate-200 pt-2 dark:border-slate-800">
             <SummaryRow label="TOTAL TTC" value={formatCurrency(totals.totalTtc)} big />
