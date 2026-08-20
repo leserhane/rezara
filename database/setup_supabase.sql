@@ -1,5 +1,5 @@
 -- Optimum Optic ERP — full schema + base seed, consolidated for a single paste
--- into the Supabase SQL Editor. Generated from migrations/001-023 + seed/001.
+-- into the Supabase SQL Editor. Generated from migrations/001-024 + seed/001.
 -- Run this ONCE on a fresh Supabase project.
 
 
@@ -2546,6 +2546,23 @@ create policy lens_order_sheets_delete on lens_order_sheets for delete using (is
 
 create trigger trg_lens_order_sheets_updated_at before update on lens_order_sheets
   for each row execute function set_updated_at();
+
+-- ===================================================================
+-- 024_notification_read_tracking.sql
+-- ===================================================================
+-- Per-user "last seen" marker for notifications.
+--
+-- Every notification currently inserted (nouvelle_vente, stock_faible, ...)
+-- is a store-wide broadcast (notifications.user_id is null), and the
+-- existing notifications.is_read column is a single shared flag — flipping
+-- it when one optician opens the bell would hide the notification for
+-- every other optician in the store too, which is wrong. Instead each
+-- profile independently remembers when they last opened the bell; a
+-- notification is "unread" for a given user simply if it was created after
+-- their own last-seen timestamp. This needs no RPC: profiles_self_update
+-- already lets a user update their own non-role_id columns.
+
+alter table profiles add column notifications_last_seen_at timestamptz;
 
 -- ===================================================================
 -- seed/001_base_seed.sql

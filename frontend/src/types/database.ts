@@ -80,6 +80,7 @@ export type Profile = {
   phone: string | null
   is_active: boolean
   max_discount_percent: number
+  notifications_last_seen_at: string | null
   created_at: string
   updated_at: string
 }
