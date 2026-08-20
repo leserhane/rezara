@@ -180,7 +180,11 @@ export function NewSalePage() {
       setError(error.message)
       return
     }
-    navigate(`/sales/${data.id}`)
+    // A sale that includes a lens goes straight to the technical order
+    // sheet — the optician fills it in as part of making the sale, not as
+    // an easy-to-miss button discovered later on the sale's detail page.
+    const hasLens = cart.some((l) => l.product.type === 'verre')
+    navigate(hasLens ? `/sales/${data.id}/lens-sheet` : `/sales/${data.id}`)
   }
 
   return (
