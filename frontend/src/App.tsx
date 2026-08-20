@@ -16,6 +16,17 @@ import { SaleDetailPage } from '@/pages/sales/SaleDetailPage'
 import { CashRegisterPage } from '@/pages/cash/CashRegisterPage'
 import { InvoicesListPage } from '@/pages/invoices/InvoicesListPage'
 import { InvoiceDetailPage } from '@/pages/invoices/InvoiceDetailPage'
+import { SuppliersListPage } from '@/pages/suppliers/SuppliersListPage'
+import { QuotesListPage } from '@/pages/quotes/QuotesListPage'
+import { NewQuotePage } from '@/pages/quotes/NewQuotePage'
+import { QuoteDetailPage } from '@/pages/quotes/QuoteDetailPage'
+import { OrdersKanbanPage } from '@/pages/orders/OrdersKanbanPage'
+import { DeliveriesListPage } from '@/pages/deliveries/DeliveriesListPage'
+import { ExpensesListPage } from '@/pages/expenses/ExpensesListPage'
+import { CreditsListPage } from '@/pages/credits/CreditsListPage'
+import { CreditDetailPage } from '@/pages/credits/CreditDetailPage'
+import { StatisticsPage } from '@/pages/statistics/StatisticsPage'
+import { AppointmentsPage } from '@/pages/appointments/AppointmentsPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 
@@ -29,17 +40,28 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/clients" element={<ClientsListPage />} />
           <Route path="/clients/:id" element={<ClientDetailPage />} />
           <Route path="/prescriptions" element={<PrescriptionsListPage />} />
+          <Route path="/appointments" element={<AppointmentsPage />} />
           <Route path="/products" element={<ProductsListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/suppliers" element={<SuppliersListPage />} />
+          <Route path="/quotes" element={<QuotesListPage />} />
+          <Route path="/quotes/new" element={<NewQuotePage />} />
+          <Route path="/quotes/:id" element={<QuoteDetailPage />} />
           <Route path="/sales" element={<SalesListPage />} />
           <Route path="/sales/new" element={<NewSalePage />} />
           <Route path="/sales/:id" element={<SaleDetailPage />} />
           <Route path="/cash-register" element={<CashRegisterPage />} />
           <Route path="/invoices" element={<InvoicesListPage />} />
           <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
+          <Route path="/credits" element={<CreditsListPage />} />
+          <Route path="/credits/:id" element={<CreditDetailPage />} />
+          <Route path="/orders" element={<OrdersKanbanPage />} />
+          <Route path="/deliveries" element={<DeliveriesListPage />} />
+          <Route path="/expenses" element={<ExpensesListPage />} />
         </Route>
       </Route>
 

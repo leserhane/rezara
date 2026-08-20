@@ -6,6 +6,7 @@ import { StatCard } from '@/components/ui/StatCard'
 import { formatCurrency } from '@/lib/format'
 import {
   Wallet, ShoppingCart, TrendingUp, Percent, PackageX, Users, AlertTriangle,
+  Wrench, CreditCard, CalendarClock,
 } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Link } from 'react-router-dom'
@@ -67,6 +68,41 @@ export function DashboardPage() {
     },
   })
 
+  const ordersQuery = useQuery({
+    queryKey: ['dashboard-orders'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('orders').select('id, order_number, status, expected_date, customer_id').neq('status', 'livree').neq('status', 'annulee')
+      if (error) throw error
+      return data
+    },
+  })
+
+  const creditsOverdueQuery = useQuery({
+    queryKey: ['dashboard-credits-overdue'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('credits').select('id, balance, due_date, customer_id').neq('status', 'solde').lt('due_date', new Date().toISOString().slice(0, 10))
+      if (error) throw error
+      return data
+    },
+  })
+
+  const appointmentsTodayQuery = useQuery({
+    queryKey: ['dashboard-appointments-today'],
+    queryFn: async () => {
+      const start = new Date(); start.setHours(0, 0, 0, 0)
+      const end = new Date(); end.setHours(23, 59, 59, 999)
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, scheduled_at, reason, status, customers(first_name, last_name)')
+        .gte('scheduled_at', start.toISOString())
+        .lte('scheduled_at', end.toISOString())
+        .neq('status', 'annule')
+        .order('scheduled_at')
+      if (error) throw error
+      return data as (typeof data[number] & { customers: { first_name: string; last_name: string } | null })[]
+    },
+  })
+
   const sales = salesQuery.data ?? []
   const totalTtc = sales.reduce((sum, s) => sum + s.total_ttc, 0)
   const totalMargin = sales.reduce((sum, s) => sum + (s.margin_amount ?? 0), 0)
@@ -75,6 +111,10 @@ export function DashboardPage() {
   const marginPercent = totalTtc > 0 ? (totalMargin / totalTtc) * 100 : 0
   const totalDue = sales.reduce((sum, s) => sum + s.amount_due, 0)
   const myTodaySales = sales.filter((s) => s.optician_id === profile?.id)
+  const ordersInProgress = ordersQuery.data ?? []
+  const ordersReady = ordersInProgress.filter((o) => o.status === 'prete' || o.status === 'client_informe')
+  const creditsOverdue = creditsOverdueQuery.data ?? []
+  const appointmentsToday = appointmentsTodayQuery.data ?? []
 
   const periods: { key: Period; label: string }[] = [
     { key: 'today', label: "Aujourd'hui" },
@@ -133,6 +173,9 @@ export function DashboardPage() {
           icon={Wallet}
           accent={openRegisterQuery.data ? 'positive' : 'negative'}
         />
+        <StatCard label="Commandes en cours" value={String(ordersInProgress.length)} icon={Wrench} />
+        <StatCard label="Commandes prêtes" value={String(ordersReady.length)} icon={Wrench} accent={ordersReady.length ? 'positive' : 'default'} />
+        <StatCard label="Crédits en retard" value={String(creditsOverdue.length)} icon={CreditCard} accent={creditsOverdue.length ? 'negative' : 'default'} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -160,6 +203,33 @@ export function DashboardPage() {
               </Link>
             ))}
             {(lowStockQuery.data ?? []).length === 0 && <p className="px-2 py-4 text-center text-sm text-slate-400">Aucune alerte de stock.</p>}
+          </div>
+        </div>
+
+        <div className="card p-4">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><CalendarClock size={16} /> Rendez-vous du jour</h2>
+          <div className="space-y-1">
+            {appointmentsToday.map((a) => (
+              <Link key={a.id} to="/appointments" className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                <span className="text-slate-500">{new Date(a.scheduled_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="text-slate-700 dark:text-slate-200">{a.customers ? `${a.customers.first_name} ${a.customers.last_name}` : '—'}</span>
+                <span className="text-xs text-slate-400">{a.reason ?? ''}</span>
+              </Link>
+            ))}
+            {appointmentsToday.length === 0 && <p className="px-2 py-4 text-center text-sm text-slate-400">Aucun rendez-vous aujourd'hui.</p>}
+          </div>
+        </div>
+
+        <div className="card p-4">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><Wrench size={16} /> Commandes atelier en cours</h2>
+          <div className="space-y-1">
+            {ordersInProgress.slice(0, 8).map((o) => (
+              <Link key={o.id} to="/orders" className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                <span className="font-medium text-slate-700 dark:text-slate-200">{o.order_number}</span>
+                <StatusBadge status={o.status} />
+              </Link>
+            ))}
+            {ordersInProgress.length === 0 && <p className="px-2 py-4 text-center text-sm text-slate-400">Aucune commande en cours.</p>}
           </div>
         </div>
       </div>
