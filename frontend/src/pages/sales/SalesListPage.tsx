@@ -48,7 +48,7 @@ export function SalesListPage() {
               key={s}
               onClick={() => setStatus(s)}
               className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                status === s ? 'bg-brand-700 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                status === s ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
               {s === 'all' ? 'Toutes' : s}
@@ -59,7 +59,7 @@ export function SalesListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr>
               <th className="px-4 py-3">N° Vente</th>
               <th className="px-4 py-3">Client</th>
@@ -69,9 +69,9 @@ export function SalesListPage() {
               <th className="px-4 py-3">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {(sales ?? []).map((s) => (
-              <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                 <td className="px-4 py-3"><Link to={`/sales/${s.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{s.sale_number}</Link></td>
                 <td className="px-4 py-3">{s.customer ? `${s.customer.first_name} ${s.customer.last_name}` : '—'}</td>
                 <td className="px-4 py-3 text-slate-500">{formatDateTime(s.created_at)}</td>

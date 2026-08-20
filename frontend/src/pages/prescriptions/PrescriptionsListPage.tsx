@@ -53,7 +53,7 @@ export function PrescriptionsListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr>
               <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Date</th>
@@ -63,9 +63,9 @@ export function PrescriptionsListPage() {
               <th className="px-4 py-3">Validité</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {(data ?? []).map((p) => (
-              <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <tr key={p.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                 <td className="px-4 py-3">
                   <Link to={`/clients/${p.customer_id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">
                     {p.customers?.first_name} {p.customers?.last_name}

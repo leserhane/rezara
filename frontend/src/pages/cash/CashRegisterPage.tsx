@@ -55,10 +55,10 @@ export function CashRegisterPage() {
           <div className="card p-4">
             <h2 className="mb-3 text-sm font-semibold">Mouvements de la journée</h2>
             <table className="w-full text-sm">
-              <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+              <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
                 <tr><th className="py-2">Heure</th><th className="py-2">Type</th><th className="py-2">Moyen</th><th className="py-2 text-right">Montant</th></tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
                 {(movements ?? []).map((m) => (
                   <tr key={m.id}>
                     <td className="py-2 text-slate-500">{formatDateTime(m.created_at)}</td>
@@ -81,10 +81,10 @@ export function CashRegisterPage() {
       <div className="card p-4">
         <h2 className="mb-3 text-sm font-semibold">Historique des clôtures</h2>
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr><th className="py-2">Clôturée le</th><th className="py-2 text-right">Attendu</th><th className="py-2 text-right">Réel</th><th className="py-2 text-right">Écart</th></tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {(history ?? []).map((r) => (
               <tr key={r.id}>
                 <td className="py-2 text-slate-500">{formatDateTime(r.closed_at)}</td>
@@ -185,7 +185,7 @@ function CloseRegisterModal({
     <Modal open={open} onClose={() => { setResult(null); onClose() }} title="Clôturer la caisse">
       {result ? (
         <div className="space-y-3">
-          <div className="rounded-lg bg-slate-50 p-4 text-sm dark:bg-slate-800">
+          <div className="rounded-lg bg-sand-50 p-4 text-sm dark:bg-slate-800">
             <Row label="Espèces théoriques" value={formatCurrency(result.register.expected_cash)} />
             <Row label="Espèces réelles" value={formatCurrency(result.register.actual_cash)} />
             <Row label="Écart" value={formatCurrency(result.register.cash_difference)} />

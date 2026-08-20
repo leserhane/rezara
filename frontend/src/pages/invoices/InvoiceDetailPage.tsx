@@ -53,7 +53,7 @@ export function InvoiceDetailPage() {
         </div>
 
         {invoice.customers && (
-          <div className="mb-6 rounded-lg bg-slate-50 p-3 text-sm dark:bg-slate-800">
+          <div className="mb-6 rounded-lg bg-sand-50 p-3 text-sm dark:bg-slate-800">
             <div className="font-medium">{invoice.customers.first_name} {invoice.customers.last_name}</div>
             <div className="text-xs text-slate-500">{invoice.customers.customer_number}</div>
             {invoice.customers.phone && <div className="text-xs text-slate-500">{invoice.customers.phone}</div>}
@@ -71,7 +71,7 @@ export function InvoiceDetailPage() {
               <th className="py-2 text-right">Total TTC</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-sand-100">
             {(items ?? []).map((it) => (
               <tr key={it.id}>
                 <td className="py-2">{it.description}</td>

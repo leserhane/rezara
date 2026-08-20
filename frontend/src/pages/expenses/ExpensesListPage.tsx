@@ -44,7 +44,7 @@ export function ExpensesListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr>
               <th className="px-4 py-3">N°</th>
               <th className="px-4 py-3">Date</th>
@@ -53,9 +53,9 @@ export function ExpensesListPage() {
               <th className="px-4 py-3 text-right">Montant TTC</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {filtered.map((e) => (
-              <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <tr key={e.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                 <td className="px-4 py-3 font-medium">{e.expense_number}</td>
                 <td className="px-4 py-3 text-slate-500">{formatDate(e.expense_date)}</td>
                 <td className="px-4 py-3">{categoryMap.get(e.category_id) ?? '—'}</td>

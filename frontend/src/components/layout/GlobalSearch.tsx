@@ -96,7 +96,7 @@ export function GlobalSearch() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-[10vh]" onClick={() => setOpen(false)}>
           <div className="card w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+            <div className="flex items-center gap-2 border-b border-sand-200 px-4 py-3 dark:border-slate-800">
               <Search size={18} className="text-slate-400" />
               <input
                 ref={inputRef}

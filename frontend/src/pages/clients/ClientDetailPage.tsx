@@ -81,7 +81,7 @@ export function ClientDetailPage() {
         <MiniStat label="Solde dû" value={formatCurrency(stats?.balance_due ?? 0)} warn={!!stats?.balance_due} />
       </div>
 
-      <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex gap-1 border-b border-sand-200 dark:border-slate-800">
         {[
           { key: 'info', label: 'Informations' },
           { key: 'prescriptions', label: `Ordonnances (${prescriptions?.length ?? 0})` },
@@ -144,7 +144,7 @@ export function ClientDetailPage() {
       {tab === 'history' && (
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+            <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
               <tr>
                 <th className="px-4 py-3">N° Vente</th>
                 <th className="px-4 py-3">Date</th>
@@ -154,9 +154,9 @@ export function ClientDetailPage() {
                 <th className="px-4 py-3">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
               {(sales ?? []).map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                   <td className="px-4 py-3"><Link to={`/sales/${s.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{s.sale_number}</Link></td>
                   <td className="px-4 py-3 text-slate-500">{formatDateTime(s.created_at)}</td>
                   <td className="px-4 py-3 text-right">{formatCurrency(s.total_ttc)}</td>

@@ -83,7 +83,7 @@ export function ClientsListPage() {
               key={s.key}
               onClick={() => setSegment(s.key as typeof segment)}
               className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                segment === s.key ? 'bg-brand-700 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                segment === s.key ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
               {s.label}
@@ -94,7 +94,7 @@ export function ClientsListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr>
               <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Téléphone</th>
@@ -104,11 +104,11 @@ export function ClientsListPage() {
               <th className="px-4 py-3">Dernier achat</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {filtered.map((c) => {
               const s = stats?.get(c.id)
               return (
-                <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <tr key={c.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                   <td className="px-4 py-3">
                     <Link to={`/clients/${c.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">
                       {c.first_name} {c.last_name}

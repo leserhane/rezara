@@ -41,7 +41,7 @@ export function SuppliersListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr>
               <th className="px-4 py-3">Nom</th>
               <th className="px-4 py-3">Contact</th>
@@ -51,9 +51,9 @@ export function SuppliersListPage() {
               {isAdmin && <th className="px-4 py-3"></th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {(suppliers ?? []).map((s) => (
-              <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                 <td className="px-4 py-3 font-medium">{s.name}</td>
                 <td className="px-4 py-3 text-slate-500">{s.contact_name ?? '—'}</td>
                 <td className="px-4 py-3 text-slate-500">{s.phone ?? '—'}</td>

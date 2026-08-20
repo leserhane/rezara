@@ -49,12 +49,12 @@ export function AppointmentsPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr><th className="px-4 py-3">Date</th><th className="px-4 py-3">Client</th><th className="px-4 py-3">Motif</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3"></th></tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
             {upcoming.map((a) => (
-              <tr key={a.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <tr key={a.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                 <td className="px-4 py-3">{formatDateTime(a.scheduled_at)}</td>
                 <td className="px-4 py-3">
                   {a.customers ? <Link to={`/clients/${a.customer_id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{a.customers.first_name} {a.customers.last_name}</Link> : '—'}
@@ -133,7 +133,7 @@ function AppointmentFormModal({ open, onClose, onSaved }: { open: boolean; onClo
         <div>
           <label className="label">Client</label>
           {customer ? (
-            <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800">
+            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-slate-800">
               <span>{customer.first_name} {customer.last_name}</span>
               <button onClick={() => setCustomer(null)} className="text-xs text-red-600">Changer</button>
             </div>
@@ -144,7 +144,7 @@ function AppointmentFormModal({ open, onClose, onSaved }: { open: boolean; onClo
               {results.length > 0 && (
                 <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
                   {results.map((c) => (
-                    <button key={c.id} onClick={() => { setCustomer(c); setResults([]) }} className="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700">
+                    <button key={c.id} onClick={() => { setCustomer(c); setResults([]) }} className="block w-full px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
                       {c.first_name} {c.last_name}
                     </button>
                   ))}

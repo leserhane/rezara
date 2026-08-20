@@ -19,10 +19,10 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-950">
+    <div className="flex min-h-screen items-center justify-center bg-sand-100 px-4 dark:bg-slate-950">
       <div className="w-full max-w-sm">
-        <h1 className="mb-6 text-center text-lg font-semibold text-slate-900 dark:text-white">Mot de passe oublié</h1>
-        <div className="card p-6">
+        <h1 className="mb-6 text-center text-lg font-semibold text-brand-700 dark:text-white">Mot de passe oublié</h1>
+        <div className="card border-t-4 border-t-brand-700 p-6">
           {sent ? (
             <p className="text-sm text-slate-600 dark:text-slate-300">
               Si un compte existe pour cet email, un lien de réinitialisation vient d'être envoyé.

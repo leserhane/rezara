@@ -138,7 +138,7 @@ export function NewQuotePage() {
         <div className="card p-4">
           <h2 className="mb-2 text-sm font-semibold">Client</h2>
           {customer ? (
-            <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800">
+            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-slate-800">
               <div>
                 <div className="font-medium">{customer.first_name} {customer.last_name}</div>
                 <div className="text-xs text-slate-400">{customer.customer_number}</div>
@@ -152,7 +152,7 @@ export function NewQuotePage() {
               {customerResults.length > 0 && (
                 <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
                   {customerResults.map((c) => (
-                    <button key={c.id} onClick={() => { setCustomer(c); setCustomerSearch(''); setCustomerResults([]) }} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700">
+                    <button key={c.id} onClick={() => { setCustomer(c); setCustomerSearch(''); setCustomerResults([]) }} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
                       <span>{c.first_name} {c.last_name}</span>
                       <span className="text-xs text-slate-400">{c.phone}</span>
                     </button>
@@ -171,7 +171,7 @@ export function NewQuotePage() {
             {productResults.length > 0 && (
               <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
                 {productResults.map((p) => (
-                  <button key={p.id} onClick={() => addToCart(p)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700">
+                  <button key={p.id} onClick={() => addToCart(p)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
                     <span>{p.name}</span>
                     <span className="text-xs text-slate-500">{formatCurrency(p.sale_price_ttc)}</span>
                   </button>
