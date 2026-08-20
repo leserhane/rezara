@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Search } from 'lucide-react'
+import { Plus, Search, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDate } from '@/lib/format'
+import { PrescriptionFormModal } from '@/components/prescriptions/PrescriptionFormModal'
+import type { Customer } from '@/types/database'
 
 interface Row {
   id: string
@@ -18,8 +20,12 @@ interface Row {
 
 export function PrescriptionsListPage() {
   const [search, setSearch] = useState('')
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [customerSearch, setCustomerSearch] = useState('')
+  const [customerResults, setCustomerResults] = useState<Customer[]>([])
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['all-prescriptions', search],
     queryFn: async () => {
       let query = supabase
@@ -42,9 +48,31 @@ export function PrescriptionsListPage() {
     },
   })
 
+  useEffect(() => {
+    if (!customerSearch.trim()) { setCustomerResults([]); return }
+    const t = setTimeout(async () => {
+      const { data } = await supabase
+        .from('customers')
+        .select('*')
+        .or(`first_name.ilike.%${customerSearch}%,last_name.ilike.%${customerSearch}%,phone.ilike.%${customerSearch}%`)
+        .limit(6)
+      setCustomerResults(data ?? [])
+    }, 250)
+    return () => clearTimeout(t)
+  }, [customerSearch])
+
+  const closePicker = () => {
+    setPickerOpen(false)
+    setCustomerSearch('')
+    setCustomerResults([])
+  }
+
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Ordonnances</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Ordonnances</h1>
+        <button onClick={() => setPickerOpen(true)} className="btn-primary"><Plus size={16} /> Nouvelle ordonnance</button>
+      </div>
 
       <div className="relative max-w-xs">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -84,6 +112,50 @@ export function PrescriptionsListPage() {
           </tbody>
         </table>
       </div>
+
+      {pickerOpen && !selectedCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="card w-full max-w-sm p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold">Pour quel client ?</h3>
+              <button onClick={closePicker} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+            </div>
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                autoFocus
+                className="input pl-9"
+                placeholder="Rechercher un client…"
+                value={customerSearch}
+                onChange={(e) => setCustomerSearch(e.target.value)}
+              />
+            </div>
+            {customerResults.length > 0 && (
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-sand-200 dark:border-slate-700">
+                {customerResults.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setSelectedCustomer(c)}
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700"
+                  >
+                    <span>{c.first_name} {c.last_name}</span>
+                    <span className="text-xs text-slate-400">{c.phone}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {selectedCustomer && (
+        <PrescriptionFormModal
+          open={true}
+          customerId={selectedCustomer.id}
+          onClose={() => { setSelectedCustomer(null); closePicker() }}
+          onSaved={() => { setSelectedCustomer(null); closePicker(); refetch() }}
+        />
+      )}
     </div>
   )
 }
