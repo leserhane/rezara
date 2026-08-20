@@ -19,11 +19,10 @@ export default defineConfig({
         theme_color: '#6b1f2a',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
-        scope: '/',
+        start_url: '/dashboard/',
+        scope: '/dashboard/',
         icons: [
-          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
       workbox: {
@@ -31,6 +30,7 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/dashboard/',
   resolve: {
     alias: {
       '@': path.resolve(dirname, './src'),

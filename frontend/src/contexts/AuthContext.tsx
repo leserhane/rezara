@@ -67,8 +67,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const requestPasswordReset = async (email: string) => {
+    // HashRouter: the route lives after '#', so the link Supabase emails
+    // must point at '<origin><base>#/reset-password', not a plain path —
+    // a plain '/reset-password' would 404 on a static host with no
+    // server-side rewrite rule.
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}#/reset-password`,
     })
     return { error: error?.message ?? null }
   }
