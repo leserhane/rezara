@@ -245,13 +245,20 @@ export function LensOrderSheetPage() {
 
   if (!sale) return <p className="text-slate-400">Chargement…</p>
 
+  const supplierName = suppliers?.find((s) => s.id === supplierId)?.name
+
   return (
     <div className="space-y-5">
+      {/* Printed output is the compact A5 sheet below, not this editable
+          screen view — a plain window.print() of the full editing form
+          wastes space and cuts off across A4 pages. */}
+      <style>{`@media print { @page { size: A5 portrait; margin: 9mm; } }`}</style>
+
       <div className="print:hidden">
         <Link to={`/sales/${saleId}`} className="text-sm text-brand-700 hover:underline dark:text-brand-400">&larr; Retour à la vente {sale.sale_number}</Link>
       </div>
 
-      <div id="lens-sheet-print" className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+      <div id="lens-sheet-edit" className="overflow-hidden rounded-xl border border-slate-200 print:hidden dark:border-slate-800">
         {/* Branded header */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4" style={{ backgroundColor: MAROON }}>
           <div className="flex items-center gap-3 text-white">
@@ -426,6 +433,103 @@ export function LensOrderSheetPage() {
           <p className="text-xs text-slate-400">Dossier créé le {formatDate(sale.created_at)}.</p>
         </div>
       </div>
+
+      {/* Compact A5 print sheet — dense, single-page layout built for a
+          printer, not a scaled-down copy of the on-screen editing form. */}
+      <div className="hidden print:block" style={{ fontSize: '9px', lineHeight: 1.4, color: '#1a1a1a' }}>
+        <div className="flex items-baseline justify-between border-b-2 pb-1.5" style={{ borderColor: MAROON }}>
+          <div>
+            <div className="text-[14px] font-bold" style={{ color: MAROON }}>Fiche technique verres</div>
+            <div className="text-[9px]">
+              {sale.customers ? `${sale.customers.first_name} ${sale.customers.last_name}` : 'Client non renseigné'}
+            </div>
+          </div>
+          <div className="text-right text-[8.5px]">
+            <div>Dossier <strong>{fileNumber || sale.sale_number}</strong></div>
+            <div>Commandé le {formatDate(orderDate)}</div>
+            {estimatedDelivery && <div>Livraison prévue le {formatDate(estimatedDelivery)}</div>}
+          </div>
+        </div>
+
+        <div className="mt-2 grid grid-cols-3 gap-x-3 gap-y-1 border-b pb-2" style={{ borderColor: '#ddd' }}>
+          <PrintField label="Catégorie" value={labelOf(CATEGORY_OPTIONS, category)} />
+          <PrintField label="Vision" value={labelOf(VISION_OPTIONS, visionType)} />
+          <PrintField label="Fournisseur verres" value={supplierName} />
+        </div>
+
+        <div className="mt-2 grid grid-cols-3 gap-x-3 gap-y-1 border-b pb-2" style={{ borderColor: '#ddd' }}>
+          <PrintField label="Type de verre" value={labelOf(LENS_TYPE_OPTIONS, lensType)} />
+          <PrintField label="Matériau" value={labelOf(MATERIAL_OPTIONS, material)} />
+          <PrintField label="Finition" value={labelOf(FINISH_OPTIONS, finish)} />
+          <PrintField label="Indice" value={lensIndex === 'autre' ? lensIndexOther : lensIndex} />
+          <PrintField label="Diamètre" value={diameter === 'autre' ? diameterOther : diameter} />
+          {finish === 'teinte' && (
+            <PrintField label="Teinte" value={[tintCategory, labelOf(TINT_COLOR_OPTIONS, tintColor)].filter(Boolean).join(' · ')} />
+          )}
+        </div>
+
+        <div className="mt-2 rounded px-2 py-1.5 text-[9px] font-semibold" style={{ backgroundColor: SAND, color: MAROON }}>
+          Verre : {lensSummary}
+        </div>
+
+        <table className="mt-2.5 w-full border-collapse text-[8px]">
+          <thead>
+            <tr>
+              <th className="border px-1 py-1" style={{ borderColor: '#ccc' }}></th>
+              {['Sphère', 'Cyl.', 'Axe', 'Add.', 'Prisme', 'Base', 'DP', 'Hauteur'].map((h) => (
+                <th key={h} className="border px-1 py-1 text-center font-medium" style={{ borderColor: '#ccc' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[{ label: 'OD', v: od }, { label: 'OG', v: og }].map((row) => (
+              <tr key={row.label}>
+                <td className="border px-1 py-1 font-semibold" style={{ borderColor: '#ccc' }}>{row.label}</td>
+                {[row.v.sphere, row.v.cylinder, row.v.axis, row.v.addition, row.v.prism, row.v.base, row.v.pd, row.v.height].map((v, i) => (
+                  <td key={i} className="border px-1 py-1 text-center" style={{ borderColor: '#ccc' }}>{v || '—'}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-2.5 rounded px-2 py-1.5 text-[9px]" style={{ backgroundColor: SAND, color: MAROON }}>
+          <span className="font-semibold">Monture — </span>
+          {frameItem ? (
+            <>
+              {frameItem.description}
+              {[frameDetails?.color, frameDetails?.size, frameDetails?.material].filter(Boolean).length > 0 &&
+                ` (${[frameDetails?.color, frameDetails?.size, frameDetails?.material].filter(Boolean).join(' · ')})`}
+            </>
+          ) : (
+            'Aucune monture associée.'
+          )}
+        </div>
+
+        {notes && (
+          <div className="mt-2 text-[8.5px]">
+            <span className="font-semibold">Notes : </span>{notes}
+          </div>
+        )}
+
+        <div className="mt-5 flex items-end justify-between text-[8px] text-slate-500">
+          <span>Dossier créé le {formatDate(sale.created_at)}</span>
+          <span>Signature opticien : ________________________</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function labelOf<T extends string>(options: { value: T; label: string }[], value: T | ''): string {
+  return options.find((o) => o.value === value)?.label ?? ''
+}
+
+function PrintField({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div>
+      <span className="text-[7.5px] uppercase tracking-wide text-slate-500">{label}</span>{' '}
+      <span className="font-semibold">{value || '—'}</span>
     </div>
   )
 }
