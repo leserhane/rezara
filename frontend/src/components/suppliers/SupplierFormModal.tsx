@@ -1,7 +1,15 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { supabase } from '@/lib/supabase'
-import type { Supplier } from '@/types/database'
+import type { Supplier, SupplierCategory } from '@/types/database'
+
+export const SUPPLIER_CATEGORY_OPTIONS: { value: SupplierCategory; label: string }[] = [
+  { value: 'monture_optique', label: 'Montures optiques' },
+  { value: 'monture_solaire', label: 'Lunettes de soleil' },
+  { value: 'lentilles', label: 'Lentilles de contact' },
+  { value: 'accessoires', label: 'Accessoires' },
+  { value: 'autres', label: 'Autres produits' },
+]
 
 export function SupplierFormModal({
   open, onClose, onSaved, existing,
@@ -19,6 +27,7 @@ export function SupplierFormModal({
   const [ice, setIce] = useState('')
   const [paymentTerms, setPaymentTerms] = useState('')
   const [leadTime, setLeadTime] = useState('')
+  const [categories, setCategories] = useState<SupplierCategory[]>([])
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,8 +41,13 @@ export function SupplierFormModal({
     setIce(existing?.ice ?? '')
     setPaymentTerms(existing?.payment_terms ?? '')
     setLeadTime(existing?.average_lead_time_days ? String(existing.average_lead_time_days) : '')
+    setCategories(existing?.categories ?? [])
     setNotes(existing?.notes ?? '')
   }, [existing, open])
+
+  const toggleCategory = (c: SupplierCategory) => {
+    setCategories((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]))
+  }
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -43,7 +57,7 @@ export function SupplierFormModal({
     const payload = {
       name, contact_name: contactName || null, phone: phone || null, email: email || null,
       address: address || null, ice: ice || null, payment_terms: paymentTerms || null,
-      average_lead_time_days: leadTime ? Number(leadTime) : null, notes: notes || null,
+      average_lead_time_days: leadTime ? Number(leadTime) : null, categories, notes: notes || null,
     }
 
     const result = existing
@@ -71,6 +85,23 @@ export function SupplierFormModal({
           <div><label className="label">ICE</label><input className="input" value={ice} onChange={(e) => setIce(e.target.value)} /></div>
           <div><label className="label">Conditions de paiement</label><input className="input" value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} /></div>
           <div><label className="label">Délai moyen (jours)</label><input type="number" min={0} className="input" value={leadTime} onChange={(e) => setLeadTime(e.target.value)} /></div>
+        </div>
+        <div>
+          <label className="label">Type de fournisseur</label>
+          <div className="flex flex-wrap gap-2">
+            {SUPPLIER_CATEGORY_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => toggleCategory(o.value)}
+                className={`rounded-lg px-3 py-1.5 text-sm ${
+                  categories.includes(o.value) ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div><label className="label">Notes</label><textarea className="input" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
         <div className="flex justify-end gap-2">

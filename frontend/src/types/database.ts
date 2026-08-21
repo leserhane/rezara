@@ -93,6 +93,8 @@ export type Brand = {
   created_at: string
 }
 
+export type SupplierCategory = 'monture_optique' | 'monture_solaire' | 'lentilles' | 'accessoires' | 'autres'
+
 export type Supplier = {
   id: string
   name: string
@@ -105,6 +107,7 @@ export type Supplier = {
   rc: string | null
   payment_terms: string | null
   average_lead_time_days: number | null
+  categories: SupplierCategory[]
   notes: string | null
   is_active: boolean
   created_at: string

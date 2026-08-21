@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query'
 import { Plus, Search, Pencil } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
-import { SupplierFormModal } from '@/components/suppliers/SupplierFormModal'
-import type { Supplier } from '@/types/database'
+import { SupplierFormModal, SUPPLIER_CATEGORY_OPTIONS } from '@/components/suppliers/SupplierFormModal'
+import type { Supplier, SupplierCategory } from '@/types/database'
 
 export function SuppliersListPage() {
   const { isAdmin } = useAuth()
   const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<SupplierCategory | 'all'>('all')
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Supplier | null>(null)
 
@@ -23,6 +24,10 @@ export function SuppliersListPage() {
     },
   })
 
+  const filtered = (suppliers ?? []).filter(
+    (s) => categoryFilter === 'all' || s.categories.includes(categoryFilter)
+  )
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -34,9 +39,32 @@ export function SuppliersListPage() {
         )}
       </div>
 
-      <div className="relative max-w-xs">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nom, contact, téléphone…" className="input pl-9" />
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-xs flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nom, contact, téléphone…" className="input pl-9" />
+        </div>
+        <div className="flex flex-wrap gap-1">
+          <button
+            onClick={() => setCategoryFilter('all')}
+            className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
+              categoryFilter === 'all' ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+            }`}
+          >
+            Tous
+          </button>
+          {SUPPLIER_CATEGORY_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              onClick={() => setCategoryFilter(o.value)}
+              className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
+                categoryFilter === o.value ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="card overflow-x-auto">
@@ -44,6 +72,7 @@ export function SuppliersListPage() {
           <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
             <tr>
               <th className="px-4 py-3">Nom</th>
+              <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">Téléphone</th>
               <th className="px-4 py-3">Conditions</th>
@@ -52,9 +81,22 @@ export function SuppliersListPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
-            {(suppliers ?? []).map((s) => (
+            {filtered.map((s) => (
               <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
                 <td className="px-4 py-3 font-medium">{s.name}</td>
+                <td className="px-4 py-3">
+                  {s.categories.length === 0 ? (
+                    <span className="text-slate-400">—</span>
+                  ) : (
+                    <div className="flex flex-wrap gap-1">
+                      {s.categories.map((c) => (
+                        <span key={c} className="badge bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                          {SUPPLIER_CATEGORY_OPTIONS.find((o) => o.value === c)?.label ?? c}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-slate-500">{s.contact_name ?? '—'}</td>
                 <td className="px-4 py-3 text-slate-500">{s.phone ?? '—'}</td>
                 <td className="px-4 py-3 text-slate-500">{s.payment_terms ?? '—'}</td>
@@ -68,8 +110,8 @@ export function SuppliersListPage() {
                 )}
               </tr>
             ))}
-            {!isLoading && (suppliers ?? []).length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">Aucun fournisseur.</td></tr>
+            {!isLoading && filtered.length === 0 && (
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Aucun fournisseur.</td></tr>
             )}
           </tbody>
         </table>
