@@ -1,4 +1,5 @@
 import { TextReveal } from "@/components/ui/TextReveal";
+import { Parallax } from "@/components/ui/Parallax";
 
 const LINES = [
   "It is how you perceive.",
@@ -9,8 +10,24 @@ const LINES = [
 
 export function Manifesto() {
   return (
-    <section id="vision" aria-labelledby="vision-heading" className="relative px-6 py-20 sm:py-28 md:px-12 md:py-48">
-      <div className="mx-auto max-w-4xl">
+    <section
+      id="vision"
+      aria-labelledby="vision-heading"
+      className="relative overflow-hidden px-6 py-20 sm:py-28 md:px-12 md:py-48"
+    >
+      <Parallax
+        speed={0.14}
+        className="pointer-events-none absolute -bottom-[15vw] -left-[18vw] -z-10 h-[55vw] w-[55vw] max-w-[760px] opacity-[0.07]"
+      >
+        <svg viewBox="0 0 200 140" className="h-full w-full" aria-hidden="true">
+          <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="3">
+            <circle cx="75" cy="70" r="52" />
+            <circle cx="122" cy="70" r="52" />
+          </g>
+        </svg>
+      </Parallax>
+
+      <div className="relative mx-auto max-w-4xl">
         <TextReveal
           as="h2"
           text="Vision is more than what you see."

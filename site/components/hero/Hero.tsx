@@ -5,6 +5,7 @@ import { useGsap } from "@/lib/animations/gsap";
 import { useReducedMotion } from "@/lib/animations/useReducedMotion";
 import { useIsTouch } from "@/lib/animations/useIsTouch";
 import { OpticalLensText } from "@/components/optical-lens/OpticalLensText";
+import { Parallax } from "@/components/ui/Parallax";
 import { siteConfig } from "@/lib/config/site";
 
 export function Hero() {
@@ -81,18 +82,19 @@ export function Hero() {
       aria-label="Introduction"
       className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-6 md:px-12"
     >
-      <div
-        ref={ringRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-[20vw] -top-[10vw] h-[70vw] w-[70vw] max-w-[900px] opacity-[0.12] md:-right-[12vw] md:h-[46vw] md:w-[46vw]"
+      <Parallax
+        speed={0.18}
+        className="pointer-events-none absolute -right-[20vw] -top-[10vw] h-[70vw] w-[70vw] max-w-[900px] md:-right-[12vw] md:h-[46vw] md:w-[46vw]"
       >
-        <svg viewBox="0 0 200 140" className="h-full w-full">
-          <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="4">
-            <circle cx="75" cy="70" r="52" />
-            <circle cx="122" cy="70" r="52" />
-          </g>
-        </svg>
-      </div>
+        <div ref={ringRef} aria-hidden="true" className="h-full w-full opacity-[0.12]">
+          <svg viewBox="0 0 200 140" className="h-full w-full">
+            <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="4">
+              <circle cx="75" cy="70" r="52" />
+              <circle cx="122" cy="70" r="52" />
+            </g>
+          </svg>
+        </div>
+      </Parallax>
 
       <div
         ref={sweepRef}

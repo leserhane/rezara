@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { Parallax } from "@/components/ui/Parallax";
 
 const CATEGORIES = [
   { name: "Optical", note: "Precision frames for daily vision." },
@@ -9,8 +10,24 @@ const CATEGORIES = [
 
 export function Collection() {
   return (
-    <section id="collection" aria-labelledby="collection-heading" className="relative px-6 py-20 sm:py-28 md:px-12 md:py-48">
-      <div className="mx-auto max-w-5xl">
+    <section
+      id="collection"
+      aria-labelledby="collection-heading"
+      className="relative overflow-hidden px-6 py-20 sm:py-28 md:px-12 md:py-48"
+    >
+      <Parallax
+        speed={0.16}
+        className="pointer-events-none absolute -right-[16vw] top-1/3 -z-10 h-[50vw] w-[50vw] max-w-[700px] opacity-[0.07]"
+      >
+        <svg viewBox="0 0 200 140" className="h-full w-full" aria-hidden="true">
+          <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="3">
+            <circle cx="75" cy="70" r="52" />
+            <circle cx="122" cy="70" r="52" />
+          </g>
+        </svg>
+      </Parallax>
+
+      <div className="relative mx-auto max-w-5xl">
         <Reveal>
           <span className="font-display text-xs uppercase tracking-widest2 text-muted">02 — The Collection</span>
           <h2

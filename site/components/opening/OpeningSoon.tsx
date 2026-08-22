@@ -1,4 +1,5 @@
 import { TextReveal } from "@/components/ui/TextReveal";
+import { Parallax } from "@/components/ui/Parallax";
 import { Countdown } from "./Countdown";
 import { siteConfig } from "@/lib/config/site";
 
@@ -7,9 +8,21 @@ export function OpeningSoon() {
     <section
       id="opening"
       aria-labelledby="opening-heading"
-      className="relative flex min-h-[80vh] flex-col items-center justify-center px-6 py-20 sm:py-28 text-center md:px-12 md:py-48"
+      className="relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden px-6 py-20 sm:py-28 text-center md:px-12 md:py-48"
     >
-      <span className="font-display text-xs uppercase tracking-widest2 text-muted">03 — Status</span>
+      <Parallax
+        speed={0.2}
+        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[85vw] w-[85vw] max-w-[820px] -translate-x-1/2 -translate-y-1/2 opacity-[0.06]"
+      >
+        <svg viewBox="0 0 200 140" className="h-full w-full" aria-hidden="true">
+          <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="2.5">
+            <circle cx="75" cy="70" r="52" />
+            <circle cx="122" cy="70" r="52" />
+          </g>
+        </svg>
+      </Parallax>
+
+      <span className="relative font-display text-xs uppercase tracking-widest2 text-muted">03 — Status</span>
 
       <TextReveal
         as="h2"

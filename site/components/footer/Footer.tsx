@@ -1,5 +1,6 @@
 import { Logo } from "@/components/ui/Logo";
 import { TextReveal } from "@/components/ui/TextReveal";
+import { Parallax } from "@/components/ui/Parallax";
 import { siteConfig } from "@/lib/config/site";
 
 const SOCIAL_LABELS: Record<string, string> = {
@@ -13,7 +14,19 @@ export function Footer() {
   ) as Array<[keyof typeof SOCIAL_LABELS, string]>;
 
   return (
-    <footer className="relative flex flex-col items-center gap-10 px-6 py-20 sm:py-28 text-center md:py-40">
+    <footer className="relative flex flex-col items-center gap-10 overflow-hidden px-6 py-20 sm:py-28 text-center md:py-40">
+      <Parallax
+        speed={0.15}
+        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[70vw] w-[70vw] max-w-[760px] -translate-x-1/2 -translate-y-1/2 opacity-[0.06]"
+      >
+        <svg viewBox="0 0 200 140" className="h-full w-full" aria-hidden="true">
+          <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="2.5">
+            <circle cx="75" cy="70" r="52" />
+            <circle cx="122" cy="70" r="52" />
+          </g>
+        </svg>
+      </Parallax>
+
       <Logo className="h-10 w-auto opacity-90 md:h-12" />
 
       <TextReveal

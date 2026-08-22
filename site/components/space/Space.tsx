@@ -1,9 +1,14 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { ClipReveal } from "@/components/ui/ClipReveal";
+import { Parallax } from "@/components/ui/Parallax";
 
 export function Space() {
   return (
-    <section id="space" aria-labelledby="space-heading" className="relative px-6 py-20 sm:py-28 md:px-12 md:py-48">
+    <section
+      id="space"
+      aria-labelledby="space-heading"
+      className="relative overflow-hidden px-6 py-20 sm:py-28 md:px-12 md:py-48"
+    >
       <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-5">
           <Reveal>
@@ -32,16 +37,14 @@ export function Space() {
                   "linear-gradient(155deg, var(--color-primary-deep) 0%, var(--color-primary) 55%, #7d2f3c 100%)",
               }}
             />
-            <svg
-              className="absolute -right-10 -top-10 h-2/3 w-2/3 opacity-25"
-              viewBox="0 0 200 140"
-              aria-hidden="true"
-            >
-              <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="2.5">
-                <circle cx="75" cy="70" r="52" />
-                <circle cx="122" cy="70" r="52" />
-              </g>
-            </svg>
+            <Parallax speed={0.12} className="absolute -right-10 -top-10 h-2/3 w-2/3 opacity-25">
+              <svg viewBox="0 0 200 140" className="h-full w-full" aria-hidden="true">
+                <g fill="none" stroke="var(--color-secondary-light)" strokeWidth="2.5">
+                  <circle cx="75" cy="70" r="52" />
+                  <circle cx="122" cy="70" r="52" />
+                </g>
+              </svg>
+            </Parallax>
             <svg className="absolute inset-0 h-full w-full opacity-30" aria-hidden="true">
               <line x1="0" y1="30%" x2="100%" y2="30%" stroke="var(--color-secondary)" strokeWidth="1" />
               <line x1="18%" y1="0" x2="18%" y2="100%" stroke="var(--color-secondary)" strokeWidth="1" />
