@@ -1,11 +1,11 @@
 /**
- * Sends an email to the opening-list backend, once one exists.
+ * Sends an email to the opening-list backend.
  *
- * Configure `NEXT_PUBLIC_SUBSCRIBE_ENDPOINT` (see .env.example) to point at
- * a real provider (a serverless function, a CRM form endpoint, etc). Until
- * then this resolves successfully without sending the address anywhere —
- * it exists so the form's loading/success/error states can be built and
- * tested against a real network call shape from day one.
+ * Configured (see .env.production) to POST to FormSubmit.co, which
+ * forwards submissions by email — no account or API key needed. Its very
+ * first delivery to a given destination address is an activation email
+ * sent to that address instead of the actual submission; every submission
+ * after the link in that email is clicked arrives normally.
  *
  * Never put a private API key here: this file ships to the browser.
  */
@@ -21,8 +21,13 @@ export async function subscribeToOpeningList(
   try {
     const response = await fetch(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        email,
+        _subject: "New Optimum Optic early-access signup",
+        _template: "table",
+        message: `${email} joined the Optimum Optic opening list from optimumoptic.com.`,
+      }),
     });
 
     if (!response.ok) {
