@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Sampled from the official logo artwork — see lib/config/theme.ts */
+  --color-primary: #6b1f2a;
+  --color-primary-deep: #551821;
+  --color-secondary: #d9c3a6;
+  --color-secondary-light: #f2e2c6;
+  --color-secondary-shadow: #b7997a;
+
+  --color-background: var(--color-primary);
+  --color-background-deep: var(--color-primary-deep);
+  --color-surface: rgba(217, 195, 166, 0.06);
+  --color-text: var(--color-secondary-light);
+  /* 0.8 alpha keeps ~4.8:1 contrast on the burgundy background (WCAG AA) */
+  --color-muted: rgba(217, 195, 166, 0.8);
+
+  --font-display: var(--font-poppins), "Helvetica Neue", Arial, sans-serif;
+  --font-body: var(--font-inter), "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: var(--color-secondary-light);
+  color: var(--color-primary-deep);
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--color-secondary-light);
+  outline-offset: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: -100%;
+  left: 1rem;
+  background: var(--color-secondary-light);
+  color: var(--color-primary-deep);
+  padding: 0.75rem 1.25rem;
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
