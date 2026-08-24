@@ -85,7 +85,7 @@ export function OrdersKanbanPage() {
                     )}
                   </div>
                 ))}
-                {columnOrders.length === 0 && <div className="rounded-lg border border-dashed border-slate-200 p-4 text-center text-xs text-slate-400 dark:border-slate-800">Vide</div>}
+                {columnOrders.length === 0 && <div className="rounded-lg border border-dashed border-slate-200 p-4 text-center text-xs text-slate-400 dark:border-stone-800">Vide</div>}
               </div>
             </div>
           )

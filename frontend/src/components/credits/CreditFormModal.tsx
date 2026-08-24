@@ -66,7 +66,7 @@ export function CreditFormModal({
     <Modal open={open} onClose={onClose} title="Convertir le solde en crédit" wide>
       <div className="space-y-4">
         {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
-        <div className="rounded-lg bg-sand-50 px-3 py-2 text-sm dark:bg-slate-800">
+        <div className="rounded-lg bg-sand-50 px-3 py-2 text-sm dark:bg-stone-800">
           Solde à échelonner : <strong>{formatCurrency(amountDue)}</strong>
         </div>
         <div>

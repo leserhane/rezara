@@ -30,7 +30,7 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-sand-300 px-4 dark:bg-slate-950">
+    <div className="flex min-h-screen items-center justify-center bg-sand-300 px-4 dark:bg-stone-950">
       <div className="w-full max-w-sm">
         <h1 className="mb-6 text-center text-lg font-semibold text-brand-700 dark:text-white">Nouveau mot de passe</h1>
         <form onSubmit={onSubmit} className="card space-y-4 border-t-4 border-t-brand-700 p-6">

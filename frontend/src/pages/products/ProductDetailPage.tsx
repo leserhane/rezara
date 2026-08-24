@@ -70,7 +70,7 @@ export function ProductDetailPage() {
       <div className="card p-4">
         <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Historique des mouvements de stock</h2>
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="py-2">Date</th>
               <th className="py-2">Type</th>
@@ -79,7 +79,7 @@ export function ProductDetailPage() {
               <th className="py-2">Raison</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(movements ?? []).map((m) => (
               <tr key={m.id}>
                 <td className="py-2 text-slate-500">{formatDateTime(m.created_at)}</td>

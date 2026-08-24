@@ -7,9 +7,9 @@ const STYLES: Record<string, string> = {
   partiellement_paye: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
   non_paye: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
   credit: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-  annule: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+  annule: 'bg-slate-100 text-slate-500 dark:bg-stone-800 dark:text-stone-400',
   // order status
-  creee: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  creee: 'bg-slate-100 text-slate-700 dark:bg-stone-800 dark:text-stone-300',
   verres_commandes: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
   en_attente: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
   recue: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
@@ -20,7 +20,7 @@ const STYLES: Record<string, string> = {
   livree: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
   // register
   ouverte: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-  cloturee: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+  cloturee: 'bg-slate-100 text-slate-500 dark:bg-stone-800 dark:text-stone-400',
 }
 
 const LABELS: Record<string, string> = {

@@ -81,7 +81,7 @@ export function ExpenseFormModal({ open, onClose, onSaved }: { open: boolean; on
             </select>
           </div>
           <div className="flex items-end">
-            <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+            <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-stone-300">
               <input type="checkbox" checked={payFromRegister} onChange={(e) => setPayFromRegister(e.target.checked)} disabled={!register} />
               Payée depuis la caisse {!register && '(aucune caisse ouverte)'}
             </label>

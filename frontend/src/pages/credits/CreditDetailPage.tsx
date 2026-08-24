@@ -46,7 +46,7 @@ export function CreditDetailPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Échéance</th>
               <th className="px-4 py-3 text-right">Montant</th>
@@ -55,7 +55,7 @@ export function CreditDetailPage() {
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(installments ?? []).map((i) => {
               const overdue = i.status !== 'payee' && new Date(i.due_date) < new Date()
               return (

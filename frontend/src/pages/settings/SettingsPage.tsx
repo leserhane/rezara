@@ -10,7 +10,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-5">
       <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Paramètres</h1>
-      <div className="flex gap-1 border-b border-sand-200 dark:border-slate-800">
+      <div className="flex gap-1 border-b border-sand-200 dark:border-stone-800">
         {[{ key: 'store', label: 'Magasin' }, { key: 'users', label: 'Utilisateurs' }].map((t) => (
           <button
             key={t.key}
@@ -130,7 +130,7 @@ function UsersTab() {
       </div>
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Nom</th>
               <th className="px-4 py-3">Rôle</th>
@@ -138,7 +138,7 @@ function UsersTab() {
               <th className="px-4 py-3">Actif</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(users ?? []).map((u) => (
               <tr key={u.id}>
                 <td className="px-4 py-3 font-medium">{u.first_name} {u.last_name}</td>

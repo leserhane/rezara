@@ -258,7 +258,7 @@ export function LensOrderSheetPage() {
         <Link to={`/sales/${saleId}`} className="text-sm text-brand-700 hover:underline dark:text-brand-400">&larr; Retour à la vente {sale.sale_number}</Link>
       </div>
 
-      <div id="lens-sheet-edit" className="overflow-hidden rounded-xl border border-slate-200 print:hidden dark:border-slate-800">
+      <div id="lens-sheet-edit" className="overflow-hidden rounded-xl border border-slate-200 print:hidden dark:border-stone-800">
         {/* Branded header */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4" style={{ backgroundColor: MAROON }}>
           <div className="flex items-center gap-3 text-white">
@@ -280,7 +280,7 @@ export function LensOrderSheetPage() {
           </div>
         </div>
 
-        <div className="space-y-6 bg-white p-5 dark:bg-slate-900">
+        <div className="space-y-6 bg-white p-5 dark:bg-stone-900">
           {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
           {savedAt && !error && <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 print:hidden">Enregistré à {savedAt}.</div>}
 
@@ -340,7 +340,7 @@ export function LensOrderSheetPage() {
             </div>
 
             {finish === 'teinte' && (
-              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 rounded-lg border border-dashed border-slate-300 p-3 dark:border-slate-700">
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 rounded-lg border border-dashed border-slate-300 p-3 dark:border-stone-700">
                 <Field label="Catégorie de teinte">
                   <select className="input" value={tintCategory} onChange={(e) => setTintCategory(e.target.value)}>
                     <option value="">—</option>
@@ -576,7 +576,7 @@ function EyeBlock({ title, values, onChange }: { title: string; values: EyeValue
     { key: 'height', label: 'Hauteur' },
   ]
   return (
-    <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+    <div className="rounded-lg border border-slate-200 p-3 dark:border-stone-800">
       <h3 className="mb-2 text-sm font-semibold" style={{ color: MAROON }}>{title}</h3>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {fields.map((f) => (

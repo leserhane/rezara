@@ -27,10 +27,10 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-sand-300 px-4 dark:bg-slate-950">
+    <div className="flex min-h-screen items-center justify-center bg-sand-300 px-4 dark:bg-stone-950">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
-          <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-sm dark:bg-slate-900">
+          <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-sm dark:bg-stone-900">
             <svg viewBox="0 0 200 140" className="h-11 w-16">
               <g fill="none" stroke="#6b1f2a" strokeWidth={13}>
                 <circle cx="75" cy="70" r="50" />
@@ -39,7 +39,7 @@ export function LoginPage() {
             </svg>
           </div>
           <h1 className="text-lg font-semibold text-brand-700 dark:text-white">Optimum Optic</h1>
-          <p className="text-sm text-sand-700 dark:text-slate-400">Espace de gestion</p>
+          <p className="text-sm text-sand-700 dark:text-stone-400">Espace de gestion</p>
         </div>
 
         <form onSubmit={onSubmit} className="card space-y-4 border-t-4 border-t-brand-700 p-6">

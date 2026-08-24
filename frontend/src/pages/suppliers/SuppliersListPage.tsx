@@ -25,7 +25,7 @@ export function SuppliersListPage() {
   })
 
   const filtered = (suppliers ?? []).filter(
-    (s) => categoryFilter === 'all' || s.categories.includes(categoryFilter)
+    (s) => categoryFilter === 'all' || (s.categories ?? []).includes(categoryFilter)
   )
 
   return (
@@ -48,7 +48,7 @@ export function SuppliersListPage() {
           <button
             onClick={() => setCategoryFilter('all')}
             className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-              categoryFilter === 'all' ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+              categoryFilter === 'all' ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
             }`}
           >
             Tous
@@ -58,7 +58,7 @@ export function SuppliersListPage() {
               key={o.value}
               onClick={() => setCategoryFilter(o.value)}
               className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                categoryFilter === o.value ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                categoryFilter === o.value ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
               }`}
             >
               {o.label}
@@ -69,7 +69,7 @@ export function SuppliersListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Nom</th>
               <th className="px-4 py-3">Type</th>
@@ -80,17 +80,17 @@ export function SuppliersListPage() {
               {isAdmin && <th className="px-4 py-3"></th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {filtered.map((s) => (
-              <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3 font-medium">{s.name}</td>
                 <td className="px-4 py-3">
-                  {s.categories.length === 0 ? (
+                  {(s.categories ?? []).length === 0 ? (
                     <span className="text-slate-400">—</span>
                   ) : (
                     <div className="flex flex-wrap gap-1">
-                      {s.categories.map((c) => (
-                        <span key={c} className="badge bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      {(s.categories ?? []).map((c) => (
+                        <span key={c} className="badge bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300">
                           {SUPPLIER_CATEGORY_OPTIONS.find((o) => o.value === c)?.label ?? c}
                         </span>
                       ))}

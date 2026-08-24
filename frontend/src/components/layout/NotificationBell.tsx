@@ -83,7 +83,7 @@ export function NotificationBell() {
     <div className="relative">
       <button
         onClick={toggleOpen}
-        className="relative text-slate-500 hover:text-slate-700 dark:text-slate-400"
+        className="relative text-slate-500 hover:text-slate-700 dark:text-stone-400"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
@@ -93,8 +93,8 @@ export function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[90vw] rounded-lg border border-sand-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
-          <div className="flex items-center justify-between border-b border-sand-100 px-4 py-2 dark:border-slate-700">
+        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[90vw] rounded-lg border border-sand-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-800">
+          <div className="flex items-center justify-between border-b border-sand-100 px-4 py-2 dark:border-stone-700">
             <span className="text-sm font-semibold">Notifications</span>
             <button
               onClick={() => setHideRead((h) => !h)}
@@ -111,7 +111,7 @@ export function NotificationBell() {
               </p>
             )}
             {visibleItems.map((n) => (
-              <div key={n.id} className="flex gap-2 border-b border-sand-100 px-4 py-3 last:border-0 dark:border-slate-700/50">
+              <div key={n.id} className="flex gap-2 border-b border-sand-100 px-4 py-3 last:border-0 dark:border-stone-700/50">
                 {isUnreadThisSession(n) ? (
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-700" />
                 ) : (
@@ -119,7 +119,7 @@ export function NotificationBell() {
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-slate-900 dark:text-white">{n.title}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{n.message}</div>
+                  <div className="text-xs text-slate-500 dark:text-stone-400">{n.message}</div>
                   <div className="mt-1 text-[11px] text-slate-400">{formatDateTime(n.created_at)}</div>
                 </div>
               </div>

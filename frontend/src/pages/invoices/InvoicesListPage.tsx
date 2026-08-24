@@ -30,7 +30,7 @@ export function InvoicesListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">N° Facture</th>
               <th className="px-4 py-3">Client</th>
@@ -39,9 +39,9 @@ export function InvoicesListPage() {
               <th className="px-4 py-3 text-right">Restant</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(invoices ?? []).map((inv) => (
-              <tr key={inv.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={inv.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3"><Link to={`/invoices/${inv.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{inv.invoice_number}</Link></td>
                 <td className="px-4 py-3">{inv.customers ? `${inv.customers.first_name} ${inv.customers.last_name}` : '—'}</td>
                 <td className="px-4 py-3 text-slate-500">{formatDate(inv.issued_at)}</td>

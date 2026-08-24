@@ -46,7 +46,7 @@ export function CreditsListPage() {
             key={f.key}
             onClick={() => setFilter(f.key as typeof filter)}
             className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-              filter === f.key ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+              filter === f.key ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
             }`}
           >
             {f.label}
@@ -56,7 +56,7 @@ export function CreditsListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Vente</th>
@@ -66,9 +66,9 @@ export function CreditsListPage() {
               <th className="px-4 py-3">Échéance</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {filtered.map((c) => (
-              <tr key={c.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={c.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3">
                   <Link to={`/credits/${c.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">
                     {c.customers ? `${c.customers.first_name} ${c.customers.last_name}` : '—'}

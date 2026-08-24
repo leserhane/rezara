@@ -95,7 +95,7 @@ export function SupplierFormModal({
                 type="button"
                 onClick={() => toggleCategory(o.value)}
                 className={`rounded-lg px-3 py-1.5 text-sm ${
-                  categories.includes(o.value) ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                  categories.includes(o.value) ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
                 }`}
               >
                 {o.label}

@@ -202,7 +202,7 @@ export function NewSalePage() {
         <div className="card p-4">
           <h2 className="mb-2 text-sm font-semibold">1. Client</h2>
           {customer ? (
-            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-slate-800">
+            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-stone-800">
               <div>
                 <div className="font-medium">{customer.first_name} {customer.last_name}</div>
                 <div className="text-xs text-slate-400">{customer.customer_number} {customer.phone && `· ${customer.phone}`}</div>
@@ -214,9 +214,9 @@ export function NewSalePage() {
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input className="input pl-9" placeholder="Rechercher un client…" value={customerSearch} onChange={(e) => setCustomerSearch(e.target.value)} />
               {customerResults.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-800">
                   {customerResults.map((c) => (
-                    <button key={c.id} onClick={() => { setCustomer(c); setCustomerSearch(''); setCustomerResults([]) }} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
+                    <button key={c.id} onClick={() => { setCustomer(c); setCustomerSearch(''); setCustomerResults([]) }} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-stone-700">
                       <span>{c.first_name} {c.last_name}</span>
                       <span className="text-xs text-slate-400">{c.phone}</span>
                     </button>
@@ -243,9 +243,9 @@ export function NewSalePage() {
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input className="input pl-9" placeholder="Rechercher un produit à ajouter…" value={productSearch} onChange={(e) => setProductSearch(e.target.value)} />
             {productResults.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+              <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-800">
                 {productResults.map((p) => (
-                  <button key={p.id} onClick={() => addToCart(p)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
+                  <button key={p.id} onClick={() => addToCart(p)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-stone-700">
                     <span>{p.name} <span className="text-xs text-slate-400">({p.sku})</span></span>
                     <span className="text-xs text-slate-500">{formatCurrency(p.sale_price_ttc)} · stock {p.quantity}</span>
                   </button>
@@ -256,7 +256,7 @@ export function NewSalePage() {
 
           <div className="mt-3 space-y-2">
             {cart.map((l) => (
-              <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 dark:border-slate-800">
+              <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 dark:border-stone-800">
                 <div className="min-w-[140px] flex-1">
                   <div className="text-sm font-medium">{l.product.name}</div>
                   <div className="text-xs text-slate-400">{formatCurrency(l.product.sale_price_ttc)} TTC</div>
@@ -316,13 +316,13 @@ export function NewSalePage() {
           <SummaryRow label="Sous-total TTC" value={formatCurrency(totals.subtotalTtc)} />
           <SummaryRow label="Remise" value={`- ${formatCurrency(Number(cartDiscount) || 0)}`} />
           <SummaryRow label="TVA" value={formatCurrency(totals.taxAmount)} />
-          <div className="border-t border-slate-200 pt-2 dark:border-slate-800">
+          <div className="border-t border-slate-200 pt-2 dark:border-stone-800">
             <SummaryRow label="TOTAL TTC" value={formatCurrency(totals.totalTtc)} big />
           </div>
           {isAdmin && (
             <SummaryRow label="Marge" value={`${formatCurrency(totals.marginAmount)} (${totals.totalHt > 0 ? ((totals.marginAmount / totals.totalHt) * 100).toFixed(1) : '0'}%)`} accent />
           )}
-          <div className="border-t border-slate-200 pt-2 dark:border-slate-800">
+          <div className="border-t border-slate-200 pt-2 dark:border-stone-800">
             <SummaryRow label="PAYÉ (acompte)" value={formatCurrency(deposit)} />
             <SummaryRow label="RESTANT" value={formatCurrency(balance)} accent />
           </div>

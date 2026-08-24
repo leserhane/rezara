@@ -81,7 +81,7 @@ export function ClientDetailPage() {
         <MiniStat label="Solde dû" value={formatCurrency(stats?.balance_due ?? 0)} warn={!!stats?.balance_due} />
       </div>
 
-      <div className="flex gap-1 border-b border-sand-200 dark:border-slate-800">
+      <div className="flex gap-1 border-b border-sand-200 dark:border-stone-800">
         {[
           { key: 'info', label: 'Informations' },
           { key: 'prescriptions', label: `Ordonnances (${prescriptions?.length ?? 0})` },
@@ -108,9 +108,9 @@ export function ClientDetailPage() {
           <InfoRow label="Date de naissance" value={formatDate(customer.birth_date)} />
           <InfoRow label="Client depuis" value={formatDate(customer.created_at)} />
           {customer.notes && (
-            <div className="border-t border-slate-100 pt-3 dark:border-slate-800">
+            <div className="border-t border-slate-100 pt-3 dark:border-stone-800">
               <div className="text-xs font-medium text-slate-400">Notes</div>
-              <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{customer.notes}</p>
+              <p className="mt-1 text-sm text-slate-700 dark:text-stone-300">{customer.notes}</p>
             </div>
           )}
         </div>
@@ -144,7 +144,7 @@ export function ClientDetailPage() {
       {tab === 'history' && (
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+            <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
               <tr>
                 <th className="px-4 py-3">N° Vente</th>
                 <th className="px-4 py-3">Date</th>
@@ -154,9 +154,9 @@ export function ClientDetailPage() {
                 <th className="px-4 py-3">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
               {(sales ?? []).map((s) => (
-                <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+                <tr key={s.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                   <td className="px-4 py-3"><Link to={`/sales/${s.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{s.sale_number}</Link></td>
                   <td className="px-4 py-3 text-slate-500">{formatDateTime(s.created_at)}</td>
                   <td className="px-4 py-3 text-right">{formatCurrency(s.total_ttc)}</td>
@@ -201,7 +201,7 @@ function InfoRow({ icon: Icon, label, value }: { icon?: typeof Phone; label: str
     <div className="flex items-center gap-3 text-sm">
       {Icon && <Icon size={15} className="text-slate-400" />}
       <span className="w-32 text-slate-400">{label}</span>
-      <span className="text-slate-700 dark:text-slate-200">{value || '—'}</span>
+      <span className="text-slate-700 dark:text-stone-200">{value || '—'}</span>
     </div>
   )
 }
@@ -212,7 +212,7 @@ function EyeSummary({
   return (
     <div>
       <div className="mb-1 text-xs font-semibold text-slate-400">{title}</div>
-      <div className="text-slate-700 dark:text-slate-200">
+      <div className="text-slate-700 dark:text-stone-200">
         Sph {sphere ?? '—'} · Cyl {cylinder ?? '—'} · Axe {axis ?? '—'} · Add {addition ?? '—'}
         {acuity && <span className="text-slate-400"> · AV {acuity}</span>}
       </div>

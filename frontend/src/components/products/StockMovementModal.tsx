@@ -71,7 +71,7 @@ export function StockMovementModal({
           <label className="label">Justification</label>
           <textarea className="input" rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Obligatoire pour un ajustement" />
         </div>
-        <div className="rounded-lg bg-sand-50 px-3 py-2 text-sm dark:bg-slate-800">
+        <div className="rounded-lg bg-sand-50 px-3 py-2 text-sm dark:bg-stone-800">
           Stock actuel : <strong>{currentQuantity}</strong> → nouveau stock : <strong className={resultingQuantity < 0 ? 'text-red-600' : ''}>{resultingQuantity}</strong>
         </div>
         <div className="flex justify-end gap-2">

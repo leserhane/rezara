@@ -113,8 +113,8 @@ function EyeBlock({
   setAcuity: (v: string) => void
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-      <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">{title}</h3>
+    <div className="rounded-lg border border-slate-200 p-3 dark:border-stone-800">
+      <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-stone-200">{title}</h3>
       <div className="grid grid-cols-2 gap-2">
         {eyeFields.map((f) => (
           <div key={f.key}>

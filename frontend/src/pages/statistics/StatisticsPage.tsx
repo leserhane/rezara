@@ -102,12 +102,12 @@ export function StatisticsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Statistiques</h1>
-        <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-stone-800 dark:bg-stone-900">
           {(['30', '90', '365'] as Period[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium ${period === p ? 'bg-brand-700 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium ${period === p ? 'bg-brand-700 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-stone-800'}`}
             >
               {p === '30' ? '30 jours' : p === '90' ? '90 jours' : '12 mois'}
             </button>
@@ -130,7 +130,7 @@ export function StatisticsPage() {
         <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">Évolution du chiffre d'affaires {isAdmin && 'et de la marge'}</h2>
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={dailySeries} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-slate-800" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-stone-800" vertical={false} />
             <XAxis dataKey="date" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
             <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} width={70} tickFormatter={(v) => formatCurrency(v)} />
             <Tooltip formatter={(value) => formatCurrency(Number(value))} />
@@ -146,7 +146,7 @@ export function StatisticsPage() {
           <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">Produits les plus vendus (CA HT)</h2>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={topProducts} layout="vertical" margin={{ left: 8, right: 24, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-slate-800" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-stone-800" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(v)} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} width={140} />
               <Tooltip formatter={(value) => formatCurrency(Number(value))} />
@@ -161,10 +161,10 @@ export function StatisticsPage() {
             {byOptician.map((o) => (
               <div key={o.name}>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{o.name}</span>
+                  <span className="font-medium text-slate-700 dark:text-stone-200">{o.name}</span>
                   <span className="text-slate-500">{formatCurrency(o.ca)} · {o.count} ventes</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-stone-800">
                   <div
                     className="h-full rounded-full"
                     style={{ width: `${byOptician[0] ? (o.ca / byOptician[0].ca) * 100 : 0}%`, backgroundColor: COLOR_CA }}

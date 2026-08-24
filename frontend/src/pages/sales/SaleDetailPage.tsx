@@ -141,7 +141,7 @@ export function SaleDetailPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Article</th>
               <th className="px-4 py-3 text-right">Qté</th>
@@ -150,7 +150,7 @@ export function SaleDetailPage() {
               <th className="px-4 py-3 text-right">Total TTC</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(items ?? []).map((it) => (
               <tr key={it.id}>
                 <td className="px-4 py-3">{it.description}</td>
@@ -173,7 +173,7 @@ export function SaleDetailPage() {
           <Row label="TOTAL TTC" value={formatCurrency(sale.total_ttc)} big />
           {isAdmin && sale.cost_total !== null && <Row label="Coût d'achat" value={formatCurrency(sale.cost_total)} />}
           <Row label="Marge" value={`${formatCurrency(sale.margin_amount)} (${sale.margin_percent.toFixed(1)}%)`} accent />
-          <div className="border-t border-slate-200 pt-2 dark:border-slate-800">
+          <div className="border-t border-slate-200 pt-2 dark:border-stone-800">
             <Row label="PAYÉ" value={formatCurrency(sale.amount_paid)} />
             <Row label="RESTANT" value={formatCurrency(sale.amount_due)} accent={sale.amount_due > 0} />
           </div>
@@ -183,7 +183,7 @@ export function SaleDetailPage() {
           <h2 className="mb-2 text-sm font-semibold">Paiements</h2>
           <div className="space-y-2">
             {(payments ?? []).map((p) => (
-              <div key={p.id} className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 text-sm dark:bg-slate-800">
+              <div key={p.id} className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 text-sm dark:bg-stone-800">
                 <div>
                   <div className="font-medium">{p.payment_number}</div>
                   <div className="text-xs text-slate-400">{formatDateTime(p.created_at)} · {p.payment_type}</div>

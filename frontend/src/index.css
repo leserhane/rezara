@@ -42,7 +42,7 @@ body,
 
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
-  @apply dark:bg-slate-950 dark:text-slate-100;
+  @apply dark:bg-stone-950 dark:text-stone-100;
 }
 
 * {
@@ -51,7 +51,7 @@ body {
 
 @layer utilities {
   .card {
-    @apply rounded-xl border border-sand-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900;
+    @apply rounded-xl border border-sand-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900;
   }
   .btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
@@ -60,19 +60,19 @@ body {
     @apply bg-brand-700 text-white hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2;
   }
   .btn-secondary {
-    @apply border border-sand-300 bg-white text-slate-700 hover:bg-sand-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+    @apply border border-sand-300 bg-white text-slate-700 hover:bg-sand-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800;
   }
   .btn-ghost {
-    @apply text-slate-600 hover:bg-sand-100 dark:text-slate-300 dark:hover:bg-slate-800;
+    @apply text-slate-600 hover:bg-sand-100 dark:text-stone-300 dark:hover:bg-stone-800;
   }
   .btn-danger {
     @apply bg-red-600 text-white hover:bg-red-700;
   }
   .input {
-    @apply w-full rounded-lg border border-sand-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100;
+    @apply w-full rounded-lg border border-sand-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100;
   }
   .label {
-    @apply mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300;
+    @apply mb-1 block text-sm font-medium text-slate-700 dark:text-stone-300;
   }
   .badge {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;

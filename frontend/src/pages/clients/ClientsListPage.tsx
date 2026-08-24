@@ -9,7 +9,7 @@ import { ClientFormModal } from '@/components/clients/ClientFormModal'
 const VIP_LABELS: Record<string, string> = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', vip: 'VIP' }
 const VIP_STYLES: Record<string, string> = {
   bronze: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  silver: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
+  silver: 'bg-slate-200 text-slate-700 dark:bg-stone-700 dark:text-stone-200',
   gold: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   vip: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
 }
@@ -83,7 +83,7 @@ export function ClientsListPage() {
               key={s.key}
               onClick={() => setSegment(s.key as typeof segment)}
               className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                segment === s.key ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                segment === s.key ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
               }`}
             >
               {s.label}
@@ -94,7 +94,7 @@ export function ClientsListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Téléphone</th>
@@ -104,18 +104,18 @@ export function ClientsListPage() {
               <th className="px-4 py-3">Dernier achat</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {filtered.map((c) => {
               const s = stats?.get(c.id)
               return (
-                <tr key={c.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+                <tr key={c.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                   <td className="px-4 py-3">
                     <Link to={`/clients/${c.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">
                       {c.first_name} {c.last_name}
                     </Link>
                     <div className="text-xs text-slate-400">{c.customer_number}</div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{c.phone ?? '—'}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-stone-300">{c.phone ?? '—'}</td>
                   <td className="px-4 py-3">
                     {s && <span className={`badge ${VIP_STYLES[s.vip_tier]}`}>{VIP_LABELS[s.vip_tier]}</span>}
                   </td>

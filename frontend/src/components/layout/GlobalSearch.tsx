@@ -86,17 +86,17 @@ export function GlobalSearch() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex w-full max-w-sm items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-400 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900"
+        className="flex w-full max-w-sm items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-400 hover:border-slate-400 dark:border-stone-700 dark:bg-stone-900"
       >
         <Search size={16} />
         <span className="flex-1 text-left">Rechercher clients, produits, ventes…</span>
-        <kbd className="hidden rounded border border-slate-300 px-1.5 py-0.5 text-xs text-slate-400 sm:inline dark:border-slate-700">⌘K</kbd>
+        <kbd className="hidden rounded border border-slate-300 px-1.5 py-0.5 text-xs text-slate-400 sm:inline dark:border-stone-700">⌘K</kbd>
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-[10vh]" onClick={() => setOpen(false)}>
           <div className="card w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b border-sand-200 px-4 py-3 dark:border-slate-800">
+            <div className="flex items-center gap-2 border-b border-sand-200 px-4 py-3 dark:border-stone-800">
               <Search size={18} className="text-slate-400" />
               <input
                 ref={inputRef}
@@ -122,7 +122,7 @@ export function GlobalSearch() {
                       setOpen(false)
                       setQuery('')
                     }}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-stone-800"
                   >
                     <Icon size={16} className="text-brand-700 dark:text-brand-400" />
                     <div>

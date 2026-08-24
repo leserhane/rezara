@@ -12,7 +12,7 @@ const STATUS_LABELS: Record<string, string> = { planifie: 'Planifié', confirme:
 const STATUS_STYLES: Record<string, string> = {
   planifie: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   confirme: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  realise: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+  realise: 'bg-slate-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300',
   annule: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   absent: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
 }
@@ -49,12 +49,12 @@ export function AppointmentsPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr><th className="px-4 py-3">Date</th><th className="px-4 py-3">Client</th><th className="px-4 py-3">Motif</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3"></th></tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {upcoming.map((a) => (
-              <tr key={a.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={a.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3">{formatDateTime(a.scheduled_at)}</td>
                 <td className="px-4 py-3">
                   {a.customers ? <Link to={`/clients/${a.customer_id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{a.customers.first_name} {a.customers.last_name}</Link> : '—'}
@@ -133,7 +133,7 @@ function AppointmentFormModal({ open, onClose, onSaved }: { open: boolean; onClo
         <div>
           <label className="label">Client</label>
           {customer ? (
-            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-slate-800">
+            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-stone-800">
               <span>{customer.first_name} {customer.last_name}</span>
               <button onClick={() => setCustomer(null)} className="text-xs text-red-600">Changer</button>
             </div>
@@ -142,9 +142,9 @@ function AppointmentFormModal({ open, onClose, onSaved }: { open: boolean; onClo
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input className="input pl-9" value={search} onChange={(e) => onSearch(e.target.value)} placeholder="Rechercher un client…" />
               {results.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-800">
                   {results.map((c) => (
-                    <button key={c.id} onClick={() => { setCustomer(c); setResults([]) }} className="block w-full px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
+                    <button key={c.id} onClick={() => { setCustomer(c); setResults([]) }} className="block w-full px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-stone-700">
                       {c.first_name} {c.last_name}
                     </button>
                   ))}

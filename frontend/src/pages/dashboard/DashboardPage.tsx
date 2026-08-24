@@ -132,13 +132,13 @@ export function DashboardPage() {
           </h1>
           <p className="text-sm text-slate-500">Voici l'activité du magasin.</p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-stone-800 dark:bg-stone-900">
           {periods.map((p) => (
             <button
               key={p.key}
               onClick={() => setPeriod(p.key)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium ${
-                period === p.key ? 'bg-brand-700 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                period === p.key ? 'bg-brand-700 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-stone-800'
               }`}
             >
               {p.label}
@@ -183,7 +183,7 @@ export function DashboardPage() {
           <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Ventes récentes</h2>
           <div className="space-y-1">
             {sales.slice(0, 8).map((s) => (
-              <Link key={s.id} to={`/sales/${s.id}`} className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-slate-800">
+              <Link key={s.id} to={`/sales/${s.id}`} className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-stone-800">
                 <span className="text-slate-500">{new Date(s.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
                 <span className="font-medium text-slate-900 dark:text-white">{formatCurrency(s.total_ttc)}</span>
                 <StatusBadge status={s.status} />
@@ -197,8 +197,8 @@ export function DashboardPage() {
           <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Stock faible</h2>
           <div className="space-y-1">
             {(lowStockQuery.data ?? []).map((p) => (
-              <Link key={p.id} to={`/products/${p.id}`} className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-slate-800">
-                <span className="text-slate-700 dark:text-slate-200">{p.name}</span>
+              <Link key={p.id} to={`/products/${p.id}`} className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-stone-800">
+                <span className="text-slate-700 dark:text-stone-200">{p.name}</span>
                 <span className="text-red-600 dark:text-red-400">{p.quantity} / min {p.stock_min}</span>
               </Link>
             ))}
@@ -210,9 +210,9 @@ export function DashboardPage() {
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><CalendarClock size={16} /> Rendez-vous du jour</h2>
           <div className="space-y-1">
             {appointmentsToday.map((a) => (
-              <Link key={a.id} to="/appointments" className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-slate-800">
+              <Link key={a.id} to="/appointments" className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-stone-800">
                 <span className="text-slate-500">{new Date(a.scheduled_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-                <span className="text-slate-700 dark:text-slate-200">{a.customers ? `${a.customers.first_name} ${a.customers.last_name}` : '—'}</span>
+                <span className="text-slate-700 dark:text-stone-200">{a.customers ? `${a.customers.first_name} ${a.customers.last_name}` : '—'}</span>
                 <span className="text-xs text-slate-400">{a.reason ?? ''}</span>
               </Link>
             ))}
@@ -224,8 +224,8 @@ export function DashboardPage() {
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><Wrench size={16} /> Commandes atelier en cours</h2>
           <div className="space-y-1">
             {ordersInProgress.slice(0, 8).map((o) => (
-              <Link key={o.id} to="/orders" className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-slate-800">
-                <span className="font-medium text-slate-700 dark:text-slate-200">{o.order_number}</span>
+              <Link key={o.id} to="/orders" className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-stone-800">
+                <span className="font-medium text-slate-700 dark:text-stone-200">{o.order_number}</span>
                 <StatusBadge status={o.status} />
               </Link>
             ))}

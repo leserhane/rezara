@@ -8,7 +8,7 @@ import type { Delivery } from '@/types/database'
 
 const STATUS_LABELS: Record<string, string> = { en_preparation: 'En préparation', prete: 'Prête', livree: 'Livrée' }
 const STATUS_STYLES: Record<string, string> = {
-  en_preparation: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+  en_preparation: 'bg-slate-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300',
   prete: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   livree: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
 }
@@ -39,7 +39,7 @@ export function DeliveriesListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Vente</th>
               <th className="px-4 py-3">Créée le</th>
@@ -48,9 +48,9 @@ export function DeliveriesListPage() {
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(deliveries ?? []).map((d) => (
-              <tr key={d.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={d.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3">
                   <Link to={`/sales/${d.sale_id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{d.sales?.sale_number ?? '—'}</Link>
                 </td>

@@ -103,7 +103,7 @@ export function ProductFormModal({
                 type="button"
                 disabled={!!existing}
                 onClick={() => setType(t)}
-                className={`rounded-lg px-3 py-1.5 text-sm ${type === t ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+                className={`rounded-lg px-3 py-1.5 text-sm ${type === t ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'}`}
               >
                 {t}
               </button>

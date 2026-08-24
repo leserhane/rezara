@@ -11,7 +11,7 @@ const STATUS_LABELS: Record<DocumentStatus, string> = {
   refuse: 'Refusé', expire: 'Expiré', transforme: 'Transformé en vente',
 }
 const STATUS_STYLES: Record<DocumentStatus, string> = {
-  brouillon: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+  brouillon: 'bg-slate-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300',
   envoye: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   accepte: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   refuse: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
@@ -53,7 +53,7 @@ export function QuotesListPage() {
               key={s}
               onClick={() => setStatus(s)}
               className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                status === s ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                status === s ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
               }`}
             >
               {s === 'all' ? 'Tous' : STATUS_LABELS[s]}
@@ -64,7 +64,7 @@ export function QuotesListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">N° Devis</th>
               <th className="px-4 py-3">Client</th>
@@ -73,9 +73,9 @@ export function QuotesListPage() {
               <th className="px-4 py-3">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(quotes ?? []).map((q) => (
-              <tr key={q.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={q.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3"><Link to={`/quotes/${q.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{q.quote_number}</Link></td>
                 <td className="px-4 py-3">{q.customers ? `${q.customers.first_name} ${q.customers.last_name}` : '—'}</td>
                 <td className="px-4 py-3 text-slate-500">{formatDate(q.created_at)}</td>

@@ -151,7 +151,7 @@ export function NewQuotePage() {
         <div className="card p-4">
           <h2 className="mb-2 text-sm font-semibold">Client</h2>
           {customer ? (
-            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-slate-800">
+            <div className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2 dark:bg-stone-800">
               <div>
                 <div className="font-medium">{customer.first_name} {customer.last_name}</div>
                 <div className="text-xs text-slate-400">{customer.customer_number}</div>
@@ -163,9 +163,9 @@ export function NewQuotePage() {
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input className="input pl-9" placeholder="Rechercher un client…" value={customerSearch} onChange={(e) => setCustomerSearch(e.target.value)} />
               {customerResults.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-800">
                   {customerResults.map((c) => (
-                    <button key={c.id} onClick={() => { setCustomer(c); setCustomerSearch(''); setCustomerResults([]) }} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
+                    <button key={c.id} onClick={() => { setCustomer(c); setCustomerSearch(''); setCustomerResults([]) }} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-stone-700">
                       <span>{c.first_name} {c.last_name}</span>
                       <span className="text-xs text-slate-400">{c.phone}</span>
                     </button>
@@ -182,9 +182,9 @@ export function NewQuotePage() {
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input className="input pl-9" placeholder="Rechercher un produit à ajouter…" value={productSearch} onChange={(e) => setProductSearch(e.target.value)} />
             {productResults.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+              <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-800">
                 {productResults.map((p) => (
-                  <button key={p.id} onClick={() => addToCart(p)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700">
+                  <button key={p.id} onClick={() => addToCart(p)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-stone-700">
                     <span>{p.name}</span>
                     <span className="text-xs text-slate-500">{formatCurrency(p.sale_price_ttc)}</span>
                   </button>
@@ -194,7 +194,7 @@ export function NewQuotePage() {
           </div>
           <div className="mt-3 space-y-2">
             {cart.map((l) => (
-              <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 dark:border-slate-800">
+              <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 dark:border-stone-800">
                 <div className="min-w-[140px] flex-1 text-sm font-medium">{l.product.name}</div>
                 <input type="number" min={1} value={l.quantity} onChange={(e) => updateLine(l.key, { quantity: Number(e.target.value) || 1 })} className="input w-16 text-center" />
                 <input type="number" min={0} placeholder="Remise TTC" value={l.discount_ttc || ''} onChange={(e) => updateLine(l.key, { discount_ttc: Number(e.target.value) || 0 })} className="input w-24" />
@@ -220,7 +220,7 @@ export function NewQuotePage() {
           <h2 className="text-sm font-semibold">Récapitulatif</h2>
           <div className="flex justify-between text-sm"><span className="text-slate-500">Sous-total TTC</span><span>{formatCurrency(totals.subtotalTtc)}</span></div>
           <div className="flex justify-between text-sm"><span className="text-slate-500">Remise</span><span>- {formatCurrency(Number(cartDiscount) || 0)}</span></div>
-          <div className="flex justify-between border-t border-slate-200 pt-2 text-lg font-semibold dark:border-slate-800"><span>TOTAL TTC</span><span>{formatCurrency(totals.totalTtc)}</span></div>
+          <div className="flex justify-between border-t border-slate-200 pt-2 text-lg font-semibold dark:border-stone-800"><span>TOTAL TTC</span><span>{formatCurrency(totals.totalTtc)}</span></div>
           {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
           <button onClick={submit} disabled={!customer || cart.length === 0 || submitting} className="btn-primary w-full">
             {submitting ? 'Création…' : 'Créer le devis'}

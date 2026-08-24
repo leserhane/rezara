@@ -81,7 +81,7 @@ export function PrescriptionsListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Date</th>
@@ -91,9 +91,9 @@ export function PrescriptionsListPage() {
               <th className="px-4 py-3">Validité</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(data ?? []).map((p) => (
-              <tr key={p.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={p.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3">
                   <Link to={`/clients/${p.customer_id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">
                     {p.customers?.first_name} {p.customers?.last_name}
@@ -131,12 +131,12 @@ export function PrescriptionsListPage() {
               />
             </div>
             {customerResults.length > 0 && (
-              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-sand-200 dark:border-slate-700">
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-sand-200 dark:border-stone-700">
                 {customerResults.map((c) => (
                   <button
                     key={c.id}
                     onClick={() => setSelectedCustomer(c)}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-slate-700"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-sand-50 dark:hover:bg-stone-700"
                   >
                     <span>{c.first_name} {c.last_name}</span>
                     <span className="text-xs text-slate-400">{c.phone}</span>

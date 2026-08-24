@@ -92,10 +92,10 @@ export function QuoteDetailPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr><th className="px-4 py-3">Article</th><th className="px-4 py-3 text-right">Qté</th><th className="px-4 py-3 text-right">PU TTC</th><th className="px-4 py-3 text-right">Remise</th><th className="px-4 py-3 text-right">Total TTC</th></tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {(items ?? []).map((it) => (
               <tr key={it.id}>
                 <td className="px-4 py-3">{it.description}</td>
@@ -113,7 +113,7 @@ export function QuoteDetailPage() {
         <div className="flex justify-between"><span className="text-slate-500">Sous-total TTC</span><span>{formatCurrency(subtotalTtc)}</span></div>
         <div className="flex justify-between"><span className="text-slate-500">Remise</span><span>- {formatCurrency(subtotalTtc - quote.total_ttc)}</span></div>
         <div className="flex justify-between"><span className="text-slate-500">TVA</span><span>{formatCurrency(quote.tax_amount)}</span></div>
-        <div className="flex justify-between border-t border-slate-200 pt-1 text-base font-semibold dark:border-slate-800"><span>Total TTC</span><span>{formatCurrency(quote.total_ttc)}</span></div>
+        <div className="flex justify-between border-t border-slate-200 pt-1 text-base font-semibold dark:border-stone-800"><span>Total TTC</span><span>{formatCurrency(quote.total_ttc)}</span></div>
       </div>
     </div>
   )

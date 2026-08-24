@@ -55,7 +55,7 @@ export function ProductsListPage() {
               key={t}
               onClick={() => setType(t)}
               className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                type === t ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                type === t ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'
               }`}
             >
               {t === 'all' ? 'Tous' : TYPE_LABELS[t]}
@@ -70,7 +70,7 @@ export function ProductsListPage() {
 
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-slate-800">
+          <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
             <tr>
               <th className="px-4 py-3">Produit</th>
               <th className="px-4 py-3">Type</th>
@@ -79,9 +79,9 @@ export function ProductsListPage() {
               <th className="px-4 py-3 text-right">Stock</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
             {filtered.map((p) => (
-              <tr key={p.id} className="hover:bg-sand-50 dark:hover:bg-slate-800/50">
+              <tr key={p.id} className="hover:bg-sand-50 dark:hover:bg-stone-800/50">
                 <td className="px-4 py-3">
                   <Link to={`/products/${p.id}`} className="font-medium text-brand-700 hover:underline dark:text-brand-400">{p.name}</Link>
                   <div className="text-xs text-slate-400">{p.sku}</div>
@@ -94,7 +94,7 @@ export function ProductsListPage() {
                   </td>
                 )}
                 <td className="px-4 py-3 text-right">
-                  <span className={p.quantity <= p.stock_min ? 'font-semibold text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-200'}>
+                  <span className={p.quantity <= p.stock_min ? 'font-semibold text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-stone-200'}>
                     {p.quantity}
                   </span>
                 </td>
