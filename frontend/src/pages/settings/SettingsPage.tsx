@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
+import { ExportDataTab } from '@/components/settings/ExportDataTab'
 import type { Store, StoreSettings, Profile, Role } from '@/types/database'
 
 export function SettingsPage() {
-  const [tab, setTab] = useState<'store' | 'users'>('store')
+  const [tab, setTab] = useState<'store' | 'users' | 'export'>('store')
 
   return (
     <div className="space-y-5">
       <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Paramètres</h1>
       <div className="flex gap-1 border-b border-sand-200 dark:border-stone-800">
-        {[{ key: 'store', label: 'Magasin' }, { key: 'users', label: 'Utilisateurs' }].map((t) => (
+        {[{ key: 'store', label: 'Magasin' }, { key: 'users', label: 'Utilisateurs' }, { key: 'export', label: 'Export des données' }].map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key as typeof tab)}
@@ -21,7 +22,9 @@ export function SettingsPage() {
           </button>
         ))}
       </div>
-      {tab === 'store' ? <StoreSettingsTab /> : <UsersTab />}
+      {tab === 'store' && <StoreSettingsTab />}
+      {tab === 'users' && <UsersTab />}
+      {tab === 'export' && <ExportDataTab />}
     </div>
   )
 }
