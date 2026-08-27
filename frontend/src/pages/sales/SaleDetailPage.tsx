@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { formatCurrency, formatDateTime } from '@/lib/format'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useAuth } from '@/contexts/AuthContext'
 import { Modal } from '@/components/ui/Modal'
 import { CreditFormModal } from '@/components/credits/CreditFormModal'
-import type { PaymentMethod } from '@/types/database'
-import { Receipt, Ban, Wrench, Truck, CreditCard, Glasses } from 'lucide-react'
+import type { PaymentMethod, Cheque } from '@/types/database'
+import { Receipt, Ban, Wrench, Truck, CreditCard, Glasses, Plus, Trash2, CheckCircle2, XCircle } from 'lucide-react'
 
 export function SaleDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -74,7 +74,12 @@ export function SaleDetailPage() {
 
   const subtotalTtc = (items ?? []).reduce((sum, it) => sum + it.line_total_ttc, 0)
 
-  const refreshAll = () => { refetch(); refetchPayments() }
+  const queryClient = useQueryClient()
+  const refreshAll = () => {
+    refetch()
+    refetchPayments()
+    queryClient.invalidateQueries({ queryKey: ['sale-cheques', sale.id] })
+  }
 
   const createOrder = async () => {
     if (!profile) return
@@ -196,6 +201,8 @@ export function SaleDetailPage() {
         </div>
       </div>
 
+      <ChequesCard saleId={sale.id} />
+
       <RecordPaymentModal
         open={paymentModalOpen}
         onClose={() => setPaymentModalOpen(false)}
@@ -229,11 +236,22 @@ function Row({ label, value, big, accent }: { label: string; value: string; big?
   )
 }
 
+interface ChequeLine {
+  key: string
+  amount: string
+  due_date: string
+  cheque_number: string
+  bank_name: string
+}
+
+const emptyChequeLine = (): ChequeLine => ({ key: crypto.randomUUID(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
+
 function RecordPaymentModal({
   open, onClose, onSaved, saleId, amountDue,
 }: { open: boolean; onClose: () => void; onSaved: () => void; saleId: string; amountDue: number }) {
   const [amount, setAmount] = useState(String(amountDue))
   const [paymentMethodId, setPaymentMethodId] = useState('')
+  const [cheques, setCheques] = useState<ChequeLine[]>([emptyChequeLine()])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -248,10 +266,40 @@ function RecordPaymentModal({
     enabled: open,
   })
 
+  const isCheque = methods?.find((m) => m.id === paymentMethodId)?.code === 'cheque'
+  const chequeTotal = cheques.reduce((sum, c) => sum + (Number(c.amount) || 0), 0)
+
+  const updateCheque = (key: string, patch: Partial<ChequeLine>) => {
+    setCheques((prev) => prev.map((c) => (c.key === key ? { ...c, ...patch } : c)))
+  }
+  const addCheque = () => setCheques((prev) => (prev.length >= 5 ? prev : [...prev, emptyChequeLine()]))
+  const removeCheque = (key: string) => setCheques((prev) => (prev.length <= 1 ? prev : prev.filter((c) => c.key !== key)))
+
   const submit = async () => {
     if (!paymentMethodId) { setError('Choisissez un moyen de paiement.'); return }
     setSubmitting(true)
     setError(null)
+
+    if (isCheque) {
+      if (cheques.some((c) => !c.amount || !c.due_date)) {
+        setSubmitting(false)
+        setError('Chaque chèque doit avoir un montant et une date d\'échéance.')
+        return
+      }
+      const { error } = await supabase.rpc('record_cheque_payment', {
+        p_sale_id: saleId,
+        p_cheques: cheques.map((c) => ({
+          amount: Number(c.amount), due_date: c.due_date,
+          cheque_number: c.cheque_number || null, bank_name: c.bank_name || null,
+        })),
+        p_cash_register_id: register?.id ?? null,
+      })
+      setSubmitting(false)
+      if (error) { setError(error.message); return }
+      onSaved()
+      return
+    }
+
     const { error } = await supabase.rpc('record_payment', {
       p_sale_id: saleId,
       p_amount: Number(amount),
@@ -265,13 +313,9 @@ function RecordPaymentModal({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Encaisser un paiement">
+    <Modal open={open} onClose={onClose} title="Encaisser un paiement" wide={isCheque}>
       <div className="space-y-4">
         {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
-        <div>
-          <label className="label">Montant (restant : {formatCurrency(amountDue)})</label>
-          <input type="number" max={amountDue} min={0.01} step="0.01" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        </div>
         <div>
           <label className="label">Moyen de paiement</label>
           <select className="input" value={paymentMethodId} onChange={(e) => setPaymentMethodId(e.target.value)}>
@@ -279,12 +323,162 @@ function RecordPaymentModal({
             {(methods ?? []).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
         </div>
+
+        {isCheque ? (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-400">
+              Répartissez le paiement sur 1 à 5 chèques (à échéances différentes si besoin). Chaque chèque sera suivi
+              individuellement jusqu'à son encaissement.
+            </p>
+            {cheques.map((c, idx) => (
+              <div key={c.key} className="grid grid-cols-2 gap-2 rounded-lg border border-sand-200 p-3 sm:grid-cols-5 dark:border-stone-700">
+                <div className="sm:col-span-1">
+                  <label className="label text-xs">Montant #{idx + 1}</label>
+                  <input type="number" min={0.01} step="0.01" className="input" value={c.amount} onChange={(e) => updateCheque(c.key, { amount: e.target.value })} />
+                </div>
+                <div className="sm:col-span-1">
+                  <label className="label text-xs">Échéance</label>
+                  <input type="date" className="input" value={c.due_date} onChange={(e) => updateCheque(c.key, { due_date: e.target.value })} />
+                </div>
+                <div className="sm:col-span-1">
+                  <label className="label text-xs">N° chèque</label>
+                  <input className="input" value={c.cheque_number} onChange={(e) => updateCheque(c.key, { cheque_number: e.target.value })} />
+                </div>
+                <div className="sm:col-span-1">
+                  <label className="label text-xs">Banque</label>
+                  <input className="input" value={c.bank_name} onChange={(e) => updateCheque(c.key, { bank_name: e.target.value })} />
+                </div>
+                <div className="flex items-end sm:col-span-1">
+                  <button
+                    type="button" onClick={() => removeCheque(c.key)} disabled={cheques.length <= 1}
+                    className="btn-secondary w-full justify-center disabled:opacity-30"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-between">
+              <button type="button" onClick={addCheque} disabled={cheques.length >= 5} className="btn-secondary text-xs disabled:opacity-40">
+                <Plus size={14} /> Ajouter un chèque {cheques.length >= 5 && '(max. 5)'}
+              </button>
+              <span className={`text-sm font-medium ${chequeTotal > amountDue ? 'text-red-600' : 'text-slate-500'}`}>
+                Total : {formatCurrency(chequeTotal)} / {formatCurrency(amountDue)}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <label className="label">Montant (restant : {formatCurrency(amountDue)})</label>
+            <input type="number" max={amountDue} min={0.01} step="0.01" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          </div>
+        )}
+
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="btn-secondary">Annuler</button>
-          <button onClick={submit} disabled={submitting} className="btn-primary">{submitting ? 'Encaissement…' : 'Confirmer'}</button>
+          <button onClick={submit} disabled={submitting || (isCheque && chequeTotal > amountDue)} className="btn-primary">
+            {submitting ? 'Encaissement…' : 'Confirmer'}
+          </button>
         </div>
       </div>
     </Modal>
+  )
+}
+
+function ChequesCard({ saleId }: { saleId: string }) {
+  const queryClient = useQueryClient()
+  const { data: cheques, refetch } = useQuery({
+    queryKey: ['sale-cheques', saleId],
+    queryFn: async () => (await supabase.from('cheques').select('*').eq('sale_id', saleId).order('due_date')).data as Cheque[],
+  })
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [rejectingId, setRejectingId] = useState<string | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
+
+  if (!cheques || cheques.length === 0) return null
+
+  const cash = async (id: string) => {
+    setBusyId(id)
+    await supabase.rpc('cash_cheque', { p_cheque_id: id })
+    setBusyId(null)
+    refetch()
+  }
+  const reject = async (id: string) => {
+    setBusyId(id)
+    await supabase.rpc('reject_cheque', { p_cheque_id: id, p_reason: rejectReason || null })
+    setBusyId(null)
+    setRejectingId(null)
+    setRejectReason('')
+    refetch()
+    // A bounced cheque reverses part of the sale's amount_paid, so the
+    // financial summary card (driven by a separate query) needs a refresh too.
+    queryClient.invalidateQueries({ queryKey: ['sale', saleId] })
+  }
+
+  const statusLabel: Record<Cheque['status'], string> = { en_attente: 'En attente', encaisse: 'Encaissé', rejete: 'Rejeté' }
+  const statusStyle: Record<Cheque['status'], string> = {
+    en_attente: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    encaisse: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+    rejete: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  }
+
+  return (
+    <div className="card overflow-x-auto">
+      <div className="border-b border-sand-200 px-4 py-3 text-sm font-semibold dark:border-stone-800">Chèques</div>
+      <table className="w-full text-sm">
+        <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
+          <tr>
+            <th className="px-4 py-2">N°</th>
+            <th className="px-4 py-2">Banque</th>
+            <th className="px-4 py-2 text-right">Montant</th>
+            <th className="px-4 py-2">Échéance</th>
+            <th className="px-4 py-2">Statut</th>
+            <th className="px-4 py-2"></th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
+          {cheques.map((c) => (
+            <Fragment key={c.id}>
+              <tr>
+                <td className="px-4 py-2">{c.cheque_number || '—'}</td>
+                <td className="px-4 py-2 text-slate-500">{c.bank_name || '—'}</td>
+                <td className="px-4 py-2 text-right font-medium">{formatCurrency(c.amount)}</td>
+                <td className={`px-4 py-2 ${c.status === 'en_attente' && c.due_date < new Date().toISOString().slice(0, 10) ? 'font-medium text-red-600' : ''}`}>
+                  {formatDateTime(c.due_date).split(' ')[0]}
+                </td>
+                <td className="px-4 py-2"><span className={`badge ${statusStyle[c.status]}`}>{statusLabel[c.status]}</span></td>
+                <td className="px-4 py-2">
+                  {c.status === 'en_attente' && (
+                    <div className="flex gap-1">
+                      <button onClick={() => cash(c.id)} disabled={busyId === c.id} title="Marquer encaissé" className="text-slate-400 hover:text-emerald-600">
+                        <CheckCircle2 size={16} />
+                      </button>
+                      <button onClick={() => setRejectingId(rejectingId === c.id ? null : c.id)} title="Marquer rejeté" className="text-slate-400 hover:text-red-600">
+                        <XCircle size={16} />
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+              {rejectingId === c.id && (
+                <tr>
+                  <td colSpan={6} className="bg-sand-50 px-4 py-2 dark:bg-stone-900">
+                    <div className="flex items-center gap-2">
+                      <input
+                        className="input flex-1" placeholder="Motif du rejet (facultatif)"
+                        value={rejectReason} onChange={(e) => setRejectReason(e.target.value)}
+                      />
+                      <button onClick={() => reject(c.id)} disabled={busyId === c.id} className="btn-danger">Confirmer le rejet</button>
+                      <button onClick={() => setRejectingId(null)} className="btn-secondary">Annuler</button>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

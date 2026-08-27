@@ -6,7 +6,7 @@ import { StatCard } from '@/components/ui/StatCard'
 import { formatCurrency } from '@/lib/format'
 import {
   Wallet, ShoppingCart, TrendingUp, Percent, PackageX, Users, AlertTriangle,
-  Wrench, CreditCard, CalendarClock,
+  Wrench, CreditCard, CalendarClock, Banknote,
 } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Link } from 'react-router-dom'
@@ -86,6 +86,21 @@ export function DashboardPage() {
     },
   })
 
+  const chequesDueSoonQuery = useQuery({
+    queryKey: ['dashboard-cheques-due-soon'],
+    queryFn: async () => {
+      const inSevenDays = new Date(); inSevenDays.setDate(inSevenDays.getDate() + 7)
+      const { data, error } = await supabase
+        .from('cheques')
+        .select('id, sale_id, amount, due_date, cheque_number, customers(first_name, last_name)')
+        .eq('status', 'en_attente')
+        .lte('due_date', inSevenDays.toISOString().slice(0, 10))
+        .order('due_date')
+      if (error) throw error
+      return data
+    },
+  })
+
   const appointmentsTodayQuery = useQuery({
     queryKey: ['dashboard-appointments-today'],
     queryFn: async () => {
@@ -115,6 +130,9 @@ export function DashboardPage() {
   const ordersReady = ordersInProgress.filter((o) => o.status === 'prete' || o.status === 'client_informe')
   const creditsOverdue = creditsOverdueQuery.data ?? []
   const appointmentsToday = appointmentsTodayQuery.data ?? []
+  const chequesDueSoon = chequesDueSoonQuery.data ?? []
+  const today = new Date().toISOString().slice(0, 10)
+  const chequesOverdue = chequesDueSoon.filter((c) => c.due_date < today)
 
   const periods: { key: Period; label: string }[] = [
     { key: 'today', label: "Aujourd'hui" },
@@ -176,6 +194,10 @@ export function DashboardPage() {
         <StatCard label="Commandes en cours" value={String(ordersInProgress.length)} icon={Wrench} />
         <StatCard label="Commandes prêtes" value={String(ordersReady.length)} icon={Wrench} accent={ordersReady.length ? 'positive' : 'default'} />
         <StatCard label="Crédits en retard" value={String(creditsOverdue.length)} icon={CreditCard} accent={creditsOverdue.length ? 'negative' : 'default'} />
+        <StatCard
+          label="Chèques à échéance (7j)" value={String(chequesDueSoon.length)} icon={Banknote}
+          accent={chequesOverdue.length ? 'negative' : chequesDueSoon.length ? 'warning' : 'default'}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -230,6 +252,24 @@ export function DashboardPage() {
               </Link>
             ))}
             {ordersInProgress.length === 0 && <p className="px-2 py-4 text-center text-sm text-slate-400">Aucune commande en cours.</p>}
+          </div>
+        </div>
+
+        <div className="card p-4">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><Banknote size={16} /> Chèques à échéance</h2>
+          <div className="space-y-1">
+            {chequesDueSoon.slice(0, 8).map((c) => (
+              <Link key={c.id} to={`/sales/${c.sale_id}`} className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-sand-50 dark:hover:bg-stone-800">
+                <span className={c.due_date < today ? 'font-medium text-red-600 dark:text-red-400' : 'text-slate-500'}>
+                  {new Date(c.due_date).toLocaleDateString('fr-FR')}
+                </span>
+                <span className="text-slate-700 dark:text-stone-200">
+                  {c.customers ? `${c.customers.first_name} ${c.customers.last_name}` : '—'}
+                </span>
+                <span className="font-medium text-slate-900 dark:text-white">{formatCurrency(c.amount)}</span>
+              </Link>
+            ))}
+            {chequesDueSoon.length === 0 && <p className="px-2 py-4 text-center text-sm text-slate-400">Aucun chèque à échéance sous 7 jours.</p>}
           </div>
         </div>
       </div>

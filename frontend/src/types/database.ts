@@ -355,6 +355,26 @@ export type Credit = {
   created_at: string
 }
 
+export type ChequeStatus = 'en_attente' | 'encaisse' | 'rejete'
+
+export type Cheque = {
+  id: string
+  store_id: string
+  sale_id: string
+  customer_id: string
+  payment_id: string | null
+  cheque_number: string | null
+  bank_name: string | null
+  amount: number
+  due_date: string
+  status: ChequeStatus
+  cashed_at: string | null
+  reject_reason: string | null
+  notes: string | null
+  created_by: string | null
+  created_at: string
+}
+
 export type CreditInstallment = {
   id: string
   credit_id: string
@@ -649,6 +669,7 @@ export type Database = {
       sale_items: TableDef<SaleItem, Partial<SaleItem>, Partial<SaleItem>, FkTo<'products', 'product_id'>>
       payments: TableDef<Payment, Partial<Payment>, Partial<Payment>, FkTo<'payment_methods', 'payment_method_id'>>
       credits: TableDef<Credit, Partial<Credit>, Partial<Credit>, [...FkTo<'sales', 'sale_id'>, ...FkTo<'customers', 'customer_id'>]>
+      cheques: TableDef<Cheque, Partial<Cheque>, Partial<Cheque>, [...FkTo<'sales', 'sale_id'>, ...FkTo<'customers', 'customer_id'>]>
       credit_installments: TableDef<CreditInstallment, Partial<CreditInstallment>>
       cash_registers: TableDef<CashRegister, Partial<CashRegister>>
       cash_movements: TableDef<CashMovement, Partial<CashMovement>, Partial<CashMovement>, FkTo<'payment_methods', 'payment_method_id'>>
@@ -771,6 +792,23 @@ export type Database = {
       cancel_sale: {
         Args: { p_sale_id: string; p_reason: string }
         Returns: Sale
+      }
+      record_cheque_payment: {
+        Args: {
+          p_sale_id: string
+          p_cheques: { amount: number; due_date: string; cheque_number?: string | null; bank_name?: string | null }[]
+          p_cash_register_id?: string | null
+          p_notes?: string | null
+        }
+        Returns: Sale
+      }
+      cash_cheque: {
+        Args: { p_cheque_id: string }
+        Returns: Cheque
+      }
+      reject_cheque: {
+        Args: { p_cheque_id: string; p_reason?: string | null }
+        Returns: Cheque
       }
     }
     Enums: {
