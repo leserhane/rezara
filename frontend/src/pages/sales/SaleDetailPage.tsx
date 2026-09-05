@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { formatCurrency, formatDateTime } from '@/lib/format'
+import { uid } from '@/lib/uid'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useAuth } from '@/contexts/AuthContext'
 import { Modal } from '@/components/ui/Modal'
@@ -244,7 +245,7 @@ interface ChequeLine {
   bank_name: string
 }
 
-const emptyChequeLine = (): ChequeLine => ({ key: crypto.randomUUID(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
+const emptyChequeLine = (): ChequeLine => ({ key: uid(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
 
 function RecordPaymentModal({
   open, onClose, onSaved, saleId, amountDue,

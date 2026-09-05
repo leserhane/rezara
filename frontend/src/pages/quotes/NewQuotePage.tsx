@@ -4,6 +4,7 @@ import { Search, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/format'
+import { uid } from '@/lib/uid'
 import type { Customer, ProductWithVisibility } from '@/types/database'
 
 interface CartLine {
@@ -66,7 +67,7 @@ export function NewQuotePage() {
         copy[idx] = { ...copy[idx], quantity: copy[idx].quantity + 1 }
         return copy
       }
-      return [...prev, { key: crypto.randomUUID(), product, quantity: 1, discount_ttc: 0 }]
+      return [...prev, { key: uid(), product, quantity: 1, discount_ttc: 0 }]
     })
     setProductSearch('')
     setProductResults([])

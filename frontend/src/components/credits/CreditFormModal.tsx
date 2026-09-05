@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { supabase } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/format'
+import { uid } from '@/lib/uid'
 import { Plus, Trash2 } from 'lucide-react'
 
 interface Installment {
@@ -23,7 +24,7 @@ export function CreditFormModal({
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()).toISOString().slice(0, 10)
   const [frequency, setFrequency] = useState('mensuel')
   const [installments, setInstallments] = useState<Installment[]>([
-    { key: crypto.randomUUID(), due_date: nextMonth, amount: String(amountDue) },
+    { key: uid(), due_date: nextMonth, amount: String(amountDue) },
   ])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +35,7 @@ export function CreditFormModal({
   const addInstallment = () => {
     const last = installments[installments.length - 1]
     const nextDate = last ? new Date(new Date(last.due_date).setMonth(new Date(last.due_date).getMonth() + 1)) : new Date()
-    setInstallments((prev) => [...prev, { key: crypto.randomUUID(), due_date: nextDate.toISOString().slice(0, 10), amount: '' }])
+    setInstallments((prev) => [...prev, { key: uid(), due_date: nextDate.toISOString().slice(0, 10), amount: '' }])
   }
   const updateInstallment = (key: string, patch: Partial<Installment>) =>
     setInstallments((prev) => prev.map((i) => (i.key === key ? { ...i, ...patch } : i)))

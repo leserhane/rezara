@@ -11,7 +11,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icon-512.png'],
       manifest: {
         name: 'Optimum Optic ERP',
         short_name: 'Optimum Optic',
@@ -23,6 +23,8 @@ export default defineConfig({
         scope: '/dashboard/',
         icons: [
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
         ],
       },
       workbox: {

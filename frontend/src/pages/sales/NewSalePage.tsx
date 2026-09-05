@@ -5,6 +5,7 @@ import { Search, Trash2, AlertTriangle, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/format'
+import { uid } from '@/lib/uid'
 import type { Customer, Prescription, ProductWithVisibility, PaymentMethod } from '@/types/database'
 
 interface CartLine {
@@ -22,7 +23,7 @@ interface ChequeLine {
   bank_name: string
 }
 
-const emptyChequeLine = (): ChequeLine => ({ key: crypto.randomUUID(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
+const emptyChequeLine = (): ChequeLine => ({ key: uid(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
 
 export function NewSalePage() {
   const { profile, isAdmin } = useAuth()
@@ -107,7 +108,7 @@ export function NewSalePage() {
         copy[existingIdx] = { ...copy[existingIdx], quantity: copy[existingIdx].quantity + 1 }
         return copy
       }
-      return [...prev, { key: crypto.randomUUID(), product, quantity: 1, discount_ttc: 0 }]
+      return [...prev, { key: uid(), product, quantity: 1, discount_ttc: 0 }]
     })
     setProductSearch('')
     setProductResults([])
