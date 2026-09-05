@@ -254,7 +254,7 @@ alter table payment_methods enable row level security;
 alter table expense_categories enable row level security;
 
 create policy brands_read on brands for select using (auth.uid() is not null);
-create policy brands_write on brands for all using (auth.uid() is not null) with check (auth.uid() is not null);
+create policy brands_write on brands for all using (is_admin()) with check (is_admin());
 
 create policy suppliers_read on suppliers for select using (auth.uid() is not null);
 create policy suppliers_write on suppliers for insert with check (auth.uid() is not null);

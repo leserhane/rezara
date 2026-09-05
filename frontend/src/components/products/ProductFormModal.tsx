@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Plus, X } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -14,6 +15,11 @@ export function ProductFormModal({
   existing?: Product | null
 }) {
   const { profile } = useAuth()
+  const queryClient = useQueryClient()
+  const [addingBrand, setAddingBrand] = useState(false)
+  const [newBrandName, setNewBrandName] = useState('')
+  const [addingCategory, setAddingCategory] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
   const [type, setType] = useState<ProductType>(existing?.type ?? 'monture')
   const [sku, setSku] = useState(existing?.sku ?? '')
   const [name, setName] = useState(existing?.name ?? '')
@@ -51,6 +57,26 @@ export function ProductFormModal({
   const { data: brands } = useQuery({ queryKey: ['brands'], queryFn: async () => (await supabase.from('brands').select('*').order('name')).data ?? [] })
   const { data: suppliers } = useQuery({ queryKey: ['suppliers'], queryFn: async () => (await supabase.from('suppliers').select('*').order('name')).data ?? [] })
   const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: async () => (await supabase.from('product_categories').select('*').order('name')).data ?? [] })
+
+  const createBrand = async () => {
+    if (!newBrandName.trim()) return
+    const { data, error: insertError } = await supabase.from('brands').insert({ name: newBrandName.trim() }).select().single()
+    if (insertError) { setError(insertError.message); return }
+    await queryClient.invalidateQueries({ queryKey: ['brands'] })
+    setBrandId(data.id)
+    setNewBrandName('')
+    setAddingBrand(false)
+  }
+
+  const createCategory = async () => {
+    if (!newCategoryName.trim()) return
+    const { data, error: insertError } = await supabase.from('product_categories').insert({ name: newCategoryName.trim() }).select().single()
+    if (insertError) { setError(insertError.message); return }
+    await queryClient.invalidateQueries({ queryKey: ['categories'] })
+    setCategoryId(data.id)
+    setNewCategoryName('')
+    setAddingCategory(false)
+  }
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -118,17 +144,47 @@ export function ProductFormModal({
           <div><label className="label">Emplacement</label><input className="input" value={location} onChange={(e) => setLocation(e.target.value)} /></div>
           <div>
             <label className="label">Marque</label>
-            <select className="input" value={brandId} onChange={(e) => setBrandId(e.target.value)}>
-              <option value="">—</option>
-              {(brands ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
+            {addingBrand ? (
+              <div className="flex gap-1">
+                <input
+                  autoFocus className="input" placeholder="Nom de la nouvelle marque"
+                  value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); createBrand() } }}
+                />
+                <button type="button" onClick={createBrand} className="btn-secondary px-2"><Plus size={14} /></button>
+                <button type="button" onClick={() => { setAddingBrand(false); setNewBrandName('') }} className="btn-secondary px-2"><X size={14} /></button>
+              </div>
+            ) : (
+              <div className="flex gap-1">
+                <select className="input" value={brandId} onChange={(e) => setBrandId(e.target.value)}>
+                  <option value="">—</option>
+                  {(brands ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                </select>
+                <button type="button" onClick={() => setAddingBrand(true)} className="btn-secondary px-2" title="Nouvelle marque"><Plus size={14} /></button>
+              </div>
+            )}
           </div>
           <div>
             <label className="label">Catégorie</label>
-            <select className="input" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-              <option value="">—</option>
-              {(categories ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            {addingCategory ? (
+              <div className="flex gap-1">
+                <input
+                  autoFocus className="input" placeholder="Nom de la nouvelle catégorie"
+                  value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); createCategory() } }}
+                />
+                <button type="button" onClick={createCategory} className="btn-secondary px-2"><Plus size={14} /></button>
+                <button type="button" onClick={() => { setAddingCategory(false); setNewCategoryName('') }} className="btn-secondary px-2"><X size={14} /></button>
+              </div>
+            ) : (
+              <div className="flex gap-1">
+                <select className="input" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+                  <option value="">—</option>
+                  {(categories ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+                <button type="button" onClick={() => setAddingCategory(true)} className="btn-secondary px-2" title="Nouvelle catégorie"><Plus size={14} /></button>
+              </div>
+            )}
           </div>
           <div>
             <label className="label">Fournisseur</label>
