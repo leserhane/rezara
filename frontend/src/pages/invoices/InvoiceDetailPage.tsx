@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { Printer } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Printer, Pencil, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatCurrency, formatDate } from '@/lib/format'
 
@@ -9,7 +9,12 @@ type DiscountMode = 'detail' | 'net'
 
 export function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const queryClient = useQueryClient()
   const [discountMode, setDiscountMode] = useState<DiscountMode | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [editedPrices, setEditedPrices] = useState<Record<string, string>>({})
+  const [saving, setSaving] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
 
   const { data: invoice } = useQuery({
     queryKey: ['invoice', id],
@@ -21,7 +26,7 @@ export function InvoiceDetailPage() {
     enabled: !!id,
   })
 
-  const { data: items } = useQuery({
+  const { data: items, refetch: refetchItems } = useQuery({
     queryKey: ['invoice-items', id],
     queryFn: async () => (await supabase.from('invoice_items').select('*').eq('invoice_id', id!)).data ?? [],
     enabled: !!id,
@@ -45,6 +50,34 @@ export function InvoiceDetailPage() {
 
   const askDiscountMode = hasDiscount && discountMode === null
   const mode: DiscountMode = discountMode ?? 'net'
+
+  const startEditingPrices = () => {
+    const initial: Record<string, string> = {}
+    for (const it of items ?? []) initial[it.id] = it.line_total_ttc.toFixed(2)
+    setEditedPrices(initial)
+    setEditError(null)
+    setEditing(true)
+  }
+
+  const editedTotal = (items ?? []).reduce((sum, it) => sum + (Number(editedPrices[it.id]) || 0), 0)
+  const editedTotalMatches = Math.abs(editedTotal - invoice.total_ttc) < 0.01
+
+  const saveReallocatedPrices = async () => {
+    setSaving(true)
+    setEditError(null)
+    const { error } = await supabase.rpc('reallocate_invoice_item_prices', {
+      p_invoice_id: invoice.id,
+      p_items: (items ?? []).map((it) => ({ invoice_item_id: it.id, new_price_ttc: Number(editedPrices[it.id]) || 0 })),
+    })
+    setSaving(false)
+    if (error) {
+      setEditError(error.message)
+      return
+    }
+    setEditing(false)
+    refetchItems()
+    queryClient.invalidateQueries({ queryKey: ['invoice', id] })
+  }
 
   return (
     <div className="space-y-4">
@@ -86,9 +119,52 @@ export function InvoiceDetailPage() {
               </button>
             </div>
           )}
+          {!editing && (
+            <button onClick={startEditingPrices} className="btn-secondary"><Pencil size={15} /> Modifier les prix</button>
+          )}
           <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Imprimer / PDF</button>
         </div>
       </div>
+
+      {editing && (
+        <div className="card space-y-3 border-t-4 border-t-brand-700 p-4 print:hidden">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold">Répartir le montant de la facture</h2>
+            <button onClick={() => setEditing(false)} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+          </div>
+          <p className="text-xs text-slate-500">
+            Ajustez la répartition entre les articles (ex. monture / verres) sans changer le total de la facture.
+          </p>
+          {editError && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{editError}</div>}
+          <div className="space-y-2">
+            {(items ?? []).map((it) => (
+              <div key={it.id} className="flex items-center justify-between gap-3">
+                <span className="text-sm text-slate-700 dark:text-stone-200">{it.description}</span>
+                <div className="relative w-32">
+                  <input
+                    type="number" step="0.01" min={0} className="input pr-12 text-right"
+                    value={editedPrices[it.id] ?? ''}
+                    onChange={(e) => setEditedPrices((prev) => ({ ...prev, [it.id]: e.target.value }))}
+                  />
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">MAD</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between border-t border-sand-200 pt-3 text-sm dark:border-stone-800">
+            <span className={editedTotalMatches ? 'text-slate-500' : 'font-medium text-red-600'}>
+              Total saisi : {formatCurrency(editedTotal)} / {formatCurrency(invoice.total_ttc)}
+              {!editedTotalMatches && ' — doit être identique au total de la facture'}
+            </span>
+            <div className="flex gap-2">
+              <button onClick={() => setEditing(false)} className="btn-secondary">Annuler</button>
+              <button onClick={saveReallocatedPrices} disabled={saving || !editedTotalMatches} className="btn-primary">
+                {saving ? 'Enregistrement…' : 'Enregistrer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div id="invoice-print" className="card mx-auto max-w-2xl p-8 print:border-0 print:shadow-none">
         <div className="mb-8 flex items-start justify-between">

@@ -810,6 +810,13 @@ export type Database = {
         Args: { p_cheque_id: string; p_reason?: string | null }
         Returns: Cheque
       }
+      reallocate_invoice_item_prices: {
+        Args: {
+          p_invoice_id: string
+          p_items: { invoice_item_id: string; new_price_ttc: number }[]
+        }
+        Returns: Invoice
+      }
     }
     Enums: {
       user_role_key: UserRoleKey

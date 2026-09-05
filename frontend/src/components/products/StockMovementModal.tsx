@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import type { StockMovementType } from '@/types/database'
 
 const TYPE_OPTIONS: { value: StockMovementType; label: string; sign: 1 | -1; adminOnly?: boolean }[] = [
-  { value: 'entree', label: 'Entrée de stock', sign: 1 },
+  { value: 'entree', label: 'Entrée de stock', sign: 1, adminOnly: true },
   { value: 'sortie', label: 'Sortie de stock', sign: -1 },
   { value: 'retour_fournisseur', label: 'Retour fournisseur', sign: -1 },
   { value: 'retour_client', label: 'Retour client', sign: 1 },

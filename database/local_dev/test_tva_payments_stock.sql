@@ -74,11 +74,28 @@ select (amount_paid = 5000.00 and amount_due = 0.00 and status = 'paye') as is_o
 -- ------------------------------------------------------------------
 select quantity as stock_before from products where id = 'aaaaaaaa-0000-0000-0000-000000000001' \gset
 
+-- entree (adding new stock) requires admin, same as ajustement/inventaire;
+-- opticien should be rejected.
+select format($fmt$
+do $do$
+begin
+  perform apply_stock_movement(%L::uuid, 'entree', 20, 'Reception fournisseur');
+  raise exception 'TEST FAILED: opticien entree was not rejected';
+exception when others then
+  if sqlerrm like 'TEST FAILED%%' then raise; end if;
+  raise notice 'PASS: opticien cannot apply entree (%%)', sqlerrm;
+end $do$;
+$fmt$, 'aaaaaaaa-0000-0000-0000-000000000001') \gexec
+
+select set_config('app.current_user_id', '11111111-1111-1111-1111-111111111111', false); -- admin
+
 select (apply_stock_movement('aaaaaaaa-0000-0000-0000-000000000001', 'entree', 20, 'Reception fournisseur')).new_quantity as after_entree \gset
-select 'ENTREE' as label, :stock_before as before, :after_entree as after;
+select 'ENTREE (admin)' as label, :stock_before as before, :after_entree as after;
+
+select set_config('app.current_user_id', '22222222-2222-2222-2222-222222222222', false); -- back to opticien
 
 select (apply_stock_movement('aaaaaaaa-0000-0000-0000-000000000001', 'retour_fournisseur', -5, 'Retour produits defectueux')).new_quantity as after_retour \gset
-select 'RETOUR FOURNISSEUR' as label, :after_entree as before, :after_retour as after;
+select 'RETOUR FOURNISSEUR (opticien, still allowed)' as label, :after_entree as before, :after_retour as after;
 
 -- ajustement requires admin; opticien should be rejected (re-verify then switch).
 select format($fmt$
