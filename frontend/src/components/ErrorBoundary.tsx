@@ -44,7 +44,22 @@ export class ErrorBoundary extends Component<Props, State> {
               {this.state.error.message}
             </pre>
             <button
-              onClick={() => { this.setState({ error: null }); window.location.reload() }}
+              onClick={async () => {
+                // A plain reload can still be served by a stale service
+                // worker's own cache — this crash is often exactly that
+                // (an old cached version of the app meeting a newer
+                // database), so clear it out before reloading.
+                try {
+                  const registrations = await navigator.serviceWorker?.getRegistrations()
+                  await Promise.all((registrations ?? []).map((r) => r.unregister()))
+                  const keys = await caches?.keys()
+                  await Promise.all((keys ?? []).map((k) => caches.delete(k)))
+                } catch {
+                  // Best effort — fall through to reload regardless.
+                }
+                this.setState({ error: null })
+                window.location.reload()
+              }}
               className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white"
               style={{ backgroundColor: MAROON }}
             >
