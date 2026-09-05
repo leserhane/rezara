@@ -26,7 +26,19 @@ export function SalesListPage() {
         : { data: [] as { id: string; first_name: string; last_name: string }[] }
       const customerMap = new Map((customers ?? []).map((c) => [c.id, c]))
 
-      return data.map((s) => ({ ...s, customer: customerMap.get(s.customer_id) ?? null }))
+      const saleIds = data.map((s) => s.id)
+      const { data: payments } = saleIds.length
+        ? await supabase.from('payments').select('sale_id, payment_methods(name)').in('sale_id', saleIds)
+        : { data: [] as { sale_id: string | null; payment_methods: { name: string } | null }[] }
+      const methodsBySale = new Map<string, string[]>()
+      for (const p of payments ?? []) {
+        if (!p.sale_id || !p.payment_methods) continue
+        const list = methodsBySale.get(p.sale_id) ?? []
+        if (!list.includes(p.payment_methods.name)) list.push(p.payment_methods.name)
+        methodsBySale.set(p.sale_id, list)
+      }
+
+      return data.map((s) => ({ ...s, customer: customerMap.get(s.customer_id) ?? null, paymentMethods: methodsBySale.get(s.id) ?? [] }))
     },
   })
 
@@ -67,6 +79,7 @@ export function SalesListPage() {
               <th className="px-4 py-3 text-right">Total</th>
               <th className="px-4 py-3 text-right">Restant</th>
               <th className="px-4 py-3">Statut</th>
+              <th className="px-4 py-3">Paiement</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
@@ -80,9 +93,10 @@ export function SalesListPage() {
                   <span className={s.amount_due > 0 ? 'font-medium text-red-600 dark:text-red-400' : 'text-slate-400'}>{formatCurrency(s.amount_due)}</span>
                 </td>
                 <td className="px-4 py-3"><StatusBadge status={s.status} /></td>
+                <td className="px-4 py-3 text-slate-500">{s.paymentMethods.length ? s.paymentMethods.join(', ') : '—'}</td>
               </tr>
             ))}
-            {!isLoading && (sales ?? []).length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">Aucune vente.</td></tr>}
+            {!isLoading && (sales ?? []).length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Aucune vente.</td></tr>}
           </tbody>
         </table>
       </div>
