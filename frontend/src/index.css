@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+/* Make `dark:` utilities follow the .dark class ThemeContext toggles on
+   <html> (the app's own Clair/Sombre/Système switcher), instead of
+   Tailwind v4's default of only following the OS prefers-color-scheme —
+   without this, picking "Clair" does nothing on a laptop whose OS is set
+   to dark mode. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
 
