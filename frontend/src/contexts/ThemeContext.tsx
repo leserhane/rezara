@@ -12,11 +12,34 @@ const ThemeContext = createContext<ThemeState | undefined>(undefined)
 const STORAGE_KEY = 'optimum-optic-theme'
 
 function getSystemTheme(): 'light' | 'dark' {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  } catch {
+    return 'light'
+  }
+}
+
+// Some mobile browsers (Safari private browsing, several in-app webviews
+// like Instagram/Facebook/TikTok) throw on any localStorage access instead
+// of just returning null — this reads/writes the theme preference on a
+// best-effort basis so a blocked storage never takes down the whole app.
+function safeGetItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+function safeSetItem(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // Ignored: theme just won't persist across visits on this browser.
+  }
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => (localStorage.getItem(STORAGE_KEY) as Theme) || 'system')
+  const [theme, setThemeState] = useState<Theme>(() => (safeGetItem(STORAGE_KEY) as Theme) || 'system')
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(
     theme === 'system' ? getSystemTheme() : theme
   )
@@ -40,7 +63,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme])
 
   const setTheme = (t: Theme) => {
-    localStorage.setItem(STORAGE_KEY, t)
+    safeSetItem(STORAGE_KEY, t)
     setThemeState(t)
   }
 
