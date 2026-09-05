@@ -375,6 +375,31 @@ export type Cheque = {
   created_at: string
 }
 
+export type InventoryStatus = 'en_cours' | 'valide' | 'annule'
+
+export type Inventory = {
+  id: string
+  store_id: string
+  reference: string
+  status: InventoryStatus
+  started_by: string | null
+  started_at: string
+  validated_by: string | null
+  validated_at: string | null
+  notes: string | null
+}
+
+export type InventoryItem = {
+  id: string
+  inventory_id: string
+  product_id: string
+  theoretical_quantity: number
+  counted_quantity: number | null
+  difference: number
+  counted_by: string | null
+  counted_at: string | null
+}
+
 export type CreditInstallment = {
   id: string
   credit_id: string
@@ -670,6 +695,8 @@ export type Database = {
       payments: TableDef<Payment, Partial<Payment>, Partial<Payment>, FkTo<'payment_methods', 'payment_method_id'>>
       credits: TableDef<Credit, Partial<Credit>, Partial<Credit>, [...FkTo<'sales', 'sale_id'>, ...FkTo<'customers', 'customer_id'>]>
       cheques: TableDef<Cheque, Partial<Cheque>, Partial<Cheque>, [...FkTo<'sales', 'sale_id'>, ...FkTo<'customers', 'customer_id'>]>
+      inventories: TableDef<Inventory, Partial<Inventory>, Partial<Inventory>, FkTo<'profiles', 'started_by'>>
+      inventory_items: TableDef<InventoryItem, Partial<InventoryItem>, Partial<InventoryItem>, FkTo<'products', 'product_id'>>
       credit_installments: TableDef<CreditInstallment, Partial<CreditInstallment>>
       cash_registers: TableDef<CashRegister, Partial<CashRegister>>
       cash_movements: TableDef<CashMovement, Partial<CashMovement>, Partial<CashMovement>, FkTo<'payment_methods', 'payment_method_id'>>
@@ -809,6 +836,18 @@ export type Database = {
       reject_cheque: {
         Args: { p_cheque_id: string; p_reason?: string | null }
         Returns: Cheque
+      }
+      start_inventory: {
+        Args: { p_notes?: string | null }
+        Returns: Inventory
+      }
+      validate_inventory: {
+        Args: { p_inventory_id: string }
+        Returns: Inventory
+      }
+      cancel_inventory: {
+        Args: { p_inventory_id: string }
+        Returns: Inventory
       }
       reallocate_invoice_item_prices: {
         Args: {

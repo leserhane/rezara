@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Users, FileText, Glasses, Package, ShoppingCart,
   Wallet, Receipt, Settings, Truck, Wrench, CreditCard, FileSpreadsheet,
-  BarChart3, CalendarClock, Banknote, type LucideIcon,
+  BarChart3, CalendarClock, Banknote, ClipboardList, type LucideIcon,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -36,6 +36,7 @@ export const navSections: NavSection[] = [
     label: 'Catalogue',
     items: [
       { to: '/products', label: 'Produits & Stock', icon: Glasses },
+      { to: '/inventory', label: 'Inventaire', icon: ClipboardList },
       { to: '/suppliers', label: 'Fournisseurs', icon: Truck },
     ],
   },

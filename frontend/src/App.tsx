@@ -17,6 +17,8 @@ import { CashRegisterPage } from '@/pages/cash/CashRegisterPage'
 import { InvoicesListPage } from '@/pages/invoices/InvoicesListPage'
 import { InvoiceDetailPage } from '@/pages/invoices/InvoiceDetailPage'
 import { SuppliersListPage } from '@/pages/suppliers/SuppliersListPage'
+import { InventoriesListPage } from '@/pages/inventory/InventoriesListPage'
+import { InventoryDetailPage } from '@/pages/inventory/InventoryDetailPage'
 import { QuotesListPage } from '@/pages/quotes/QuotesListPage'
 import { NewQuotePage } from '@/pages/quotes/NewQuotePage'
 import { QuoteDetailPage } from '@/pages/quotes/QuoteDetailPage'
@@ -49,6 +51,8 @@ function App() {
           <Route path="/products" element={<ProductsListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/suppliers" element={<SuppliersListPage />} />
+          <Route path="/inventory" element={<InventoriesListPage />} />
+          <Route path="/inventory/:id" element={<InventoryDetailPage />} />
           <Route path="/quotes" element={<QuotesListPage />} />
           <Route path="/quotes/new" element={<NewQuotePage />} />
           <Route path="/quotes/:id" element={<QuoteDetailPage />} />

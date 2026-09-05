@@ -6,7 +6,7 @@ import { StatCard } from '@/components/ui/StatCard'
 import { formatCurrency } from '@/lib/format'
 import {
   Wallet, ShoppingCart, TrendingUp, Percent, PackageX, Users, AlertTriangle,
-  Wrench, CreditCard, CalendarClock, Banknote,
+  Wrench, CreditCard, CalendarClock, Banknote, ClipboardList,
 } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Link } from 'react-router-dom'
@@ -101,6 +101,20 @@ export function DashboardPage() {
     },
   })
 
+  const lastInventoryQuery = useQuery({
+    queryKey: ['dashboard-last-inventory'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('inventories')
+        .select('id, reference, status, started_at')
+        .order('started_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (error) throw error
+      return data
+    },
+  })
+
   const appointmentsTodayQuery = useQuery({
     queryKey: ['dashboard-appointments-today'],
     queryFn: async () => {
@@ -133,6 +147,19 @@ export function DashboardPage() {
   const chequesDueSoon = chequesDueSoonQuery.data ?? []
   const today = new Date().toISOString().slice(0, 10)
   const chequesOverdue = chequesDueSoon.filter((c) => c.due_date < today)
+
+  // No cron job runs in this app — every reminder here is simply
+  // recomputed each time the dashboard loads. "Every month" is treated as
+  // a rolling 30-day window since the last inventory was started, not a
+  // calendar month, so it can't reset to "done" on the 1st just because
+  // one happened on the 28th.
+  const lastInventory = lastInventoryQuery.data
+  const inventoryInProgress = lastInventory?.status === 'en_cours'
+  const daysSinceLastInventory = lastInventory
+    ? Math.floor((Date.now() - new Date(lastInventory.started_at).getTime()) / 86_400_000)
+    : null
+  const showInventoryReminder =
+    !lastInventoryQuery.isLoading && !inventoryInProgress && (daysSinceLastInventory === null || daysSinceLastInventory >= 30)
 
   const periods: { key: Period; label: string }[] = [
     { key: 'today', label: "Aujourd'hui" },
@@ -170,6 +197,16 @@ export function DashboardPage() {
           <AlertTriangle size={18} />
           Aucune caisse n'est ouverte.
           <Link to="/cash-register" className="ml-auto font-medium underline">Ouvrir la caisse</Link>
+        </div>
+      )}
+
+      {showInventoryReminder && (
+        <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400">
+          <ClipboardList size={18} />
+          {daysSinceLastInventory === null
+            ? "Aucun inventaire n'a encore été fait."
+            : `Il est temps de refaire l'inventaire — dernier le ${new Date(lastInventory!.started_at).toLocaleDateString('fr-FR')} (il y a ${daysSinceLastInventory} jours).`}
+          <Link to="/inventory" className="ml-auto font-medium underline">Faire l'inventaire</Link>
         </div>
       )}
 
