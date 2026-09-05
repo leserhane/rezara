@@ -2572,7 +2572,7 @@ alter table profiles add column notifications_last_seen_at timestamptz;
 -- so this is an array rather than a single category.
 
 create type supplier_category as enum (
-  'monture_optique', 'monture_solaire', 'lentilles', 'accessoires', 'autres'
+  'monture_optique', 'monture_solaire', 'verres', 'lentilles', 'accessoires', 'autres'
 );
 
 alter table suppliers add column categories supplier_category[] not null default '{}';

@@ -6,6 +6,7 @@ import type { Supplier, SupplierCategory } from '@/types/database'
 export const SUPPLIER_CATEGORY_OPTIONS: { value: SupplierCategory; label: string }[] = [
   { value: 'monture_optique', label: 'Montures optiques' },
   { value: 'monture_solaire', label: 'Lunettes de soleil' },
+  { value: 'verres', label: 'Verres' },
   { value: 'lentilles', label: 'Lentilles de contact' },
   { value: 'accessoires', label: 'Accessoires' },
   { value: 'autres', label: 'Autres produits' },

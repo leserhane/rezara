@@ -93,7 +93,7 @@ export type Brand = {
   created_at: string
 }
 
-export type SupplierCategory = 'monture_optique' | 'monture_solaire' | 'lentilles' | 'accessoires' | 'autres'
+export type SupplierCategory = 'monture_optique' | 'monture_solaire' | 'verres' | 'lentilles' | 'accessoires' | 'autres'
 
 export type Supplier = {
   id: string
