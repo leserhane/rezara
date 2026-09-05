@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Search, Trash2, AlertTriangle } from 'lucide-react'
+import { Search, Trash2, AlertTriangle, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/format'
@@ -13,6 +13,16 @@ interface CartLine {
   quantity: number
   discount_ttc: number
 }
+
+interface ChequeLine {
+  key: string
+  amount: string
+  due_date: string
+  cheque_number: string
+  bank_name: string
+}
+
+const emptyChequeLine = (): ChequeLine => ({ key: crypto.randomUUID(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
 
 export function NewSalePage() {
   const { profile, isAdmin } = useAuth()
@@ -30,6 +40,7 @@ export function NewSalePage() {
   const [cartDiscount, setCartDiscount] = useState('0')
   const [depositAmount, setDepositAmount] = useState('')
   const [paymentMethodId, setPaymentMethodId] = useState('')
+  const [cheques, setCheques] = useState<ChequeLine[]>([emptyChequeLine()])
   const [openRegisterId, setOpenRegisterId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -135,9 +146,17 @@ export function NewSalePage() {
     return { lines, subtotalHt, subtotalTtc, taxAmount, totalHt, totalTtc, costTotal, marginAmount, discountPercent, cartDiscountHt }
   }, [cart, cartDiscount])
 
-  const deposit = Number(depositAmount) || 0
+  const isCheque = paymentMethods?.find((m) => m.id === paymentMethodId)?.code === 'cheque'
+  const chequeTotal = cheques.reduce((sum, c) => sum + (Number(c.amount) || 0), 0)
+  const deposit = isCheque ? chequeTotal : Number(depositAmount) || 0
   const balance = totals.totalTtc - deposit
   const exceedsLimit = profile && !isAdmin && totals.discountPercent > profile.max_discount_percent
+
+  const updateCheque = (key: string, patch: Partial<ChequeLine>) => {
+    setCheques((prev) => prev.map((c) => (c.key === key ? { ...c, ...patch } : c)))
+  }
+  const addCheque = () => setCheques((prev) => (prev.length >= 5 ? prev : [...prev, emptyChequeLine()]))
+  const removeCheque = (key: string) => setCheques((prev) => (prev.length <= 1 ? prev : prev.filter((c) => c.key !== key)))
 
   const doAuthorize = async () => {
     setAuthError(null)
@@ -156,9 +175,16 @@ export function NewSalePage() {
       setAuthModal(true)
       return
     }
+    if (isCheque && chequeTotal > 0 && cheques.some((c) => !c.amount || !c.due_date)) {
+      setError('Chaque chèque doit avoir un montant et une date d\'échéance.')
+      return
+    }
     setSubmitting(true)
     setError(null)
 
+    // A cheque payment plan is recorded via a dedicated RPC that needs an
+    // existing sale, so the sale itself is always created with no deposit
+    // in that case, and the cheques are attached right after.
     const { data, error } = await supabase.rpc('create_sale', {
       p_customer_id: customer.id,
       p_items: cart.map((l, idx) => ({
@@ -169,17 +195,37 @@ export function NewSalePage() {
       })),
       p_prescription_id: prescriptionId || null,
       p_cart_discount_amount: totals.cartDiscountHt,
-      p_deposit_amount: deposit > 0 ? deposit : 0,
-      p_payment_method_id: deposit > 0 ? paymentMethodId || null : null,
+      p_deposit_amount: isCheque ? 0 : deposit > 0 ? deposit : 0,
+      p_payment_method_id: isCheque ? null : deposit > 0 ? paymentMethodId || null : null,
       p_cash_register_id: openRegisterId,
       p_discount_authorized_by: authorizedBy,
     })
 
-    setSubmitting(false)
     if (error) {
+      setSubmitting(false)
       setError(error.message)
       return
     }
+
+    if (isCheque && chequeTotal > 0) {
+      const { error: chequeError } = await supabase.rpc('record_cheque_payment', {
+        p_sale_id: data.id,
+        p_cheques: cheques.map((c) => ({
+          amount: Number(c.amount), due_date: c.due_date,
+          cheque_number: c.cheque_number || null, bank_name: c.bank_name || null,
+        })),
+        p_cash_register_id: openRegisterId,
+      })
+      setSubmitting(false)
+      if (chequeError) {
+        setError(`Vente créée, mais l'enregistrement des chèques a échoué : ${chequeError.message}. Vous pouvez réessayer depuis la fiche de la vente.`)
+        navigate(`/sales/${data.id}`)
+        return
+      }
+    } else {
+      setSubmitting(false)
+    }
+
     // A sale that includes a lens goes straight to the technical order
     // sheet — the optician fills it in as part of making the sale, not as
     // an easy-to-miss button discovered later on the sale's detail page.
@@ -295,17 +341,64 @@ export function NewSalePage() {
               )}
             </div>
             <div>
-              <label className="label">Acompte (MAD)</label>
-              <input type="number" min={0} className="input" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-            </div>
-            <div>
               <label className="label">Moyen de paiement</label>
-              <select className="input" value={paymentMethodId} onChange={(e) => setPaymentMethodId(e.target.value)} disabled={deposit <= 0}>
+              <select className="input" value={paymentMethodId} onChange={(e) => setPaymentMethodId(e.target.value)}>
                 <option value="">—</option>
                 {(paymentMethods ?? []).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
+            {!isCheque && (
+              <div>
+                <label className="label">Acompte (MAD)</label>
+                <input type="number" min={0} className="input" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} disabled={!paymentMethodId} />
+              </div>
+            )}
           </div>
+
+          {isCheque && (
+            <div className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Répartissez le paiement sur 1 à 5 chèques (à échéances différentes si besoin). Chaque chèque sera suivi
+                individuellement jusqu'à son encaissement.
+              </p>
+              {cheques.map((c, idx) => (
+                <div key={c.key} className="grid grid-cols-2 gap-2 rounded-lg border border-sand-200 p-3 sm:grid-cols-5 dark:border-stone-700">
+                  <div className="sm:col-span-1">
+                    <label className="label text-xs">Montant #{idx + 1}</label>
+                    <input type="number" min={0.01} step="0.01" className="input" value={c.amount} onChange={(e) => updateCheque(c.key, { amount: e.target.value })} />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="label text-xs">Échéance</label>
+                    <input type="date" className="input" value={c.due_date} onChange={(e) => updateCheque(c.key, { due_date: e.target.value })} />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="label text-xs">N° chèque</label>
+                    <input className="input" value={c.cheque_number} onChange={(e) => updateCheque(c.key, { cheque_number: e.target.value })} />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="label text-xs">Banque</label>
+                    <input className="input" value={c.bank_name} onChange={(e) => updateCheque(c.key, { bank_name: e.target.value })} />
+                  </div>
+                  <div className="flex items-end sm:col-span-1">
+                    <button
+                      type="button" onClick={() => removeCheque(c.key)} disabled={cheques.length <= 1}
+                      className="btn-secondary w-full justify-center disabled:opacity-30"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-center justify-between">
+                <button type="button" onClick={addCheque} disabled={cheques.length >= 5} className="btn-secondary text-xs disabled:opacity-40">
+                  <Plus size={14} /> Ajouter un chèque {cheques.length >= 5 && '(max. 5)'}
+                </button>
+                <span className={`text-sm font-medium ${chequeTotal > totals.totalTtc ? 'text-red-600' : 'text-slate-500'}`}>
+                  Total chèques : {formatCurrency(chequeTotal)} / {formatCurrency(totals.totalTtc)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -331,7 +424,7 @@ export function NewSalePage() {
 
           <button
             onClick={confirmSale}
-            disabled={!customer || cart.length === 0 || submitting}
+            disabled={!customer || cart.length === 0 || submitting || (isCheque && chequeTotal > totals.totalTtc)}
             className="btn-primary w-full"
           >
             {submitting ? 'Création…' : 'Confirmer la vente'}
