@@ -1,8 +1,11 @@
 import { useState, type FormEvent } from 'react'
+import { X } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Customer, GenderType } from '@/types/database'
+
+export const SUGGESTED_CUSTOMER_TAGS = ['Prospect', 'VIP', 'Fidèle', 'À contacter', 'Insatisfait']
 
 export function ClientFormModal({
   open, onClose, onSaved, existing,
@@ -22,8 +25,18 @@ export function ClientFormModal({
   const [birthDate, setBirthDate] = useState(existing?.birth_date ?? '')
   const [gender, setGender] = useState<GenderType | ''>(existing?.gender ?? '')
   const [notes, setNotes] = useState(existing?.notes ?? '')
+  const [tags, setTags] = useState<string[]>(existing?.tags ?? [])
+  const [tagInput, setTagInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim()
+    if (!trimmed || tags.includes(trimmed)) return
+    setTags((prev) => [...prev, trimmed])
+    setTagInput('')
+  }
+  const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag))
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -41,6 +54,7 @@ export function ClientFormModal({
       birth_date: birthDate || null,
       gender: gender || null,
       notes: notes || null,
+      tags,
     }
 
     const result = existing
@@ -96,6 +110,31 @@ export function ClientFormModal({
           <div>
             <label className="label">Adresse</label>
             <input className="input" value={address} onChange={(e) => setAddress(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <label className="label">Étiquettes</label>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {tags.map((tag) => (
+              <span key={tag} className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+                {tag}
+                <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-600"><X size={12} /></button>
+              </span>
+            ))}
+            <input
+              className="input h-7 w-32 py-0 text-xs"
+              placeholder="+ étiquette"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput) } }}
+            />
+          </div>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {SUGGESTED_CUSTOMER_TAGS.filter((t) => !tags.includes(t)).map((t) => (
+              <button key={t} type="button" onClick={() => addTag(t)} className="rounded-full bg-sand-100 px-2.5 py-0.5 text-xs text-slate-500 hover:bg-sand-200 dark:bg-stone-800 dark:text-stone-400">
+                + {t}
+              </button>
+            ))}
           </div>
         </div>
         <div>

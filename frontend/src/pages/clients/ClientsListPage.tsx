@@ -17,6 +17,7 @@ const VIP_STYLES: Record<string, string> = {
 export function ClientsListPage() {
   const [search, setSearch] = useState('')
   const [segment, setSegment] = useState<'all' | 'inactive' | 'balance_due' | 'vip'>('all')
+  const [tagFilter, setTagFilter] = useState<string | 'all'>('all')
   const [formOpen, setFormOpen] = useState(false)
 
   const { data: customers, refetch, isLoading } = useQuery({
@@ -43,7 +44,10 @@ export function ClientsListPage() {
     },
   })
 
+  const allTags = [...new Set((customers ?? []).flatMap((c) => c.tags))].sort()
+
   const filtered = (customers ?? []).filter((c) => {
+    if (tagFilter !== 'all' && !c.tags.includes(tagFilter)) return false
     if (segment === 'all') return true
     const s = stats?.get(c.id)
     if (!s) return false
@@ -90,6 +94,25 @@ export function ClientsListPage() {
             </button>
           ))}
         </div>
+        {allTags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1">
+            <button
+              onClick={() => setTagFilter('all')}
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tagFilter === 'all' ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-500 dark:bg-stone-800 dark:text-stone-400'}`}
+            >
+              Toutes étiquettes
+            </button>
+            {allTags.map((t) => (
+              <button
+                key={t}
+                onClick={() => setTagFilter(t)}
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tagFilter === t ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-500 dark:bg-stone-800 dark:text-stone-400'}`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card overflow-x-auto">
@@ -99,6 +122,7 @@ export function ClientsListPage() {
               <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Téléphone</th>
               <th className="px-4 py-3">Segment</th>
+              <th className="px-4 py-3">Étiquettes</th>
               <th className="px-4 py-3 text-right">Total dépensé</th>
               <th className="px-4 py-3 text-right">Solde dû</th>
               <th className="px-4 py-3">Dernier achat</th>
@@ -119,6 +143,13 @@ export function ClientsListPage() {
                   <td className="px-4 py-3">
                     {s && <span className={`badge ${VIP_STYLES[s.vip_tier]}`}>{VIP_LABELS[s.vip_tier]}</span>}
                   </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {c.tags.map((t) => (
+                        <span key={t} className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">{t}</span>
+                      ))}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-right">{formatCurrency(s?.lifetime_value ?? 0)}</td>
                   <td className="px-4 py-3 text-right">
                     <span className={s?.balance_due ? 'font-medium text-red-600 dark:text-red-400' : 'text-slate-400'}>
@@ -130,7 +161,7 @@ export function ClientsListPage() {
               )
             })}
             {!isLoading && filtered.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">Aucun client trouvé.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Aucun client trouvé.</td></tr>
             )}
           </tbody>
         </table>

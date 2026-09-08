@@ -30,6 +30,7 @@ import { CreditsListPage } from '@/pages/credits/CreditsListPage'
 import { CreditDetailPage } from '@/pages/credits/CreditDetailPage'
 import { StatisticsPage } from '@/pages/statistics/StatisticsPage'
 import { AppointmentsPage } from '@/pages/appointments/AppointmentsPage'
+import { FollowUpsPage } from '@/pages/crm/FollowUpsPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 
@@ -48,6 +49,7 @@ function App() {
           <Route path="/clients/:id" element={<ClientDetailPage />} />
           <Route path="/prescriptions" element={<PrescriptionsListPage />} />
           <Route path="/appointments" element={<AppointmentsPage />} />
+          <Route path="/follow-ups" element={<FollowUpsPage />} />
           <Route path="/products" element={<ProductsListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/suppliers" element={<SuppliersListPage />} />

@@ -2,19 +2,29 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/format'
-import { Plus, Phone, Mail, MapPin, Pencil, ShoppingCart } from 'lucide-react'
+import { Plus, Phone, Mail, MapPin, Pencil, ShoppingCart, Calendar, PhoneCall, MessageCircle } from 'lucide-react'
 import { PrescriptionFormModal } from '@/components/prescriptions/PrescriptionFormModal'
 import { ClientFormModal } from '@/components/clients/ClientFormModal'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import type { CustomerNoteType } from '@/types/database'
 
 const VIP_LABELS: Record<string, string> = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', vip: 'VIP' }
 
+const NOTE_TYPE_LABELS: Record<CustomerNoteType, string> = {
+  appel: 'Appel', visite: 'Visite', email: 'Email', whatsapp: 'WhatsApp', sms: 'SMS', autre: 'Autre',
+}
+
 export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [tab, setTab] = useState<'info' | 'prescriptions' | 'history'>('info')
+  const { profile } = useAuth()
+  const [tab, setTab] = useState<'info' | 'prescriptions' | 'history' | 'suivi'>('info')
   const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
+  const [noteType, setNoteType] = useState<CustomerNoteType>('appel')
+  const [noteText, setNoteText] = useState('')
+  const [savingNote, setSavingNote] = useState(false)
 
   const { data: customer, refetch: refetchCustomer } = useQuery({
     queryKey: ['customer', id],
@@ -56,6 +66,43 @@ export function ClientDetailPage() {
     enabled: !!id,
   })
 
+  const { data: notes, refetch: refetchNotes } = useQuery({
+    queryKey: ['customer-notes', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customer_notes')
+        .select('*, profiles(first_name, last_name)')
+        .eq('customer_id', id!)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data as (typeof data[number] & { profiles: { first_name: string; last_name: string } | null })[]
+    },
+    enabled: !!id,
+  })
+
+  const { data: appointments } = useQuery({
+    queryKey: ['customer-appointments', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('appointments').select('*').eq('customer_id', id!).order('scheduled_at', { ascending: false }).limit(5)
+      if (error) throw error
+      return data
+    },
+    enabled: !!id,
+  })
+
+  const addNote = async () => {
+    if (!profile || !id || !noteText.trim()) return
+    setSavingNote(true)
+    const { error } = await supabase.from('customer_notes').insert({
+      customer_id: id, note: noteText.trim(), type: noteType, created_by: profile.id,
+    })
+    setSavingNote(false)
+    if (!error) {
+      setNoteText('')
+      refetchNotes()
+    }
+  }
+
   if (!customer) return <p className="text-slate-400">Chargement…</p>
 
   return (
@@ -84,6 +131,7 @@ export function ClientDetailPage() {
       <div className="flex gap-1 border-b border-sand-200 dark:border-stone-800">
         {[
           { key: 'info', label: 'Informations' },
+          { key: 'suivi', label: `Suivi (${notes?.length ?? 0})` },
           { key: 'prescriptions', label: `Ordonnances (${prescriptions?.length ?? 0})` },
           { key: 'history', label: `Historique (${sales?.length ?? 0})` },
         ].map((t) => (
@@ -107,12 +155,82 @@ export function ClientDetailPage() {
           <InfoRow icon={MapPin} label="Adresse" value={customer.address} />
           <InfoRow label="Date de naissance" value={formatDate(customer.birth_date)} />
           <InfoRow label="Client depuis" value={formatDate(customer.created_at)} />
+          {customer.tags.length > 0 && (
+            <div className="flex items-center gap-3 text-sm">
+              <span className="w-32 text-slate-400">Étiquettes</span>
+              <div className="flex flex-wrap gap-1">
+                {customer.tags.map((t) => (
+                  <span key={t} className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">{t}</span>
+                ))}
+              </div>
+            </div>
+          )}
           {customer.notes && (
             <div className="border-t border-slate-100 pt-3 dark:border-stone-800">
               <div className="text-xs font-medium text-slate-400">Notes</div>
               <p className="mt-1 text-sm text-slate-700 dark:text-stone-300">{customer.notes}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {tab === 'suivi' && (
+        <div className="space-y-4">
+          <div className="card space-y-3 p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold">Prochains rendez-vous</h2>
+              <Link to="/appointments" className="text-xs text-brand-700 hover:underline dark:text-brand-400">Voir tout</Link>
+            </div>
+            {(appointments ?? []).length === 0 && <p className="text-sm text-slate-400">Aucun rendez-vous enregistré.</p>}
+            {(appointments ?? []).map((a) => (
+              <div key={a.id} className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-2 text-slate-700 dark:text-stone-200"><Calendar size={14} className="text-slate-400" /> {formatDateTime(a.scheduled_at)} {a.reason && `— ${a.reason}`}</span>
+                <StatusBadge status={a.status} />
+              </div>
+            ))}
+          </div>
+
+          <div className="card space-y-3 p-4">
+            <h2 className="text-sm font-semibold">Ajouter une interaction</h2>
+            <div className="flex flex-wrap gap-2">
+              {(Object.keys(NOTE_TYPE_LABELS) as CustomerNoteType[]).map((t) => (
+                <button
+                  key={t} type="button" onClick={() => setNoteType(t)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium ${noteType === t ? 'bg-brand-700 text-white' : 'bg-sand-100 text-slate-600 dark:bg-stone-800 dark:text-stone-300'}`}
+                >
+                  {NOTE_TYPE_LABELS[t]}
+                </button>
+              ))}
+            </div>
+            <textarea
+              className="input" rows={2} placeholder="Ce qui a été dit, convenu, à relancer…"
+              value={noteText} onChange={(e) => setNoteText(e.target.value)}
+            />
+            <div className="flex justify-end">
+              <button onClick={addNote} disabled={savingNote || !noteText.trim()} className="btn-primary">
+                {savingNote ? 'Enregistrement…' : 'Ajouter'}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {(notes ?? []).map((n) => (
+              <div key={n.id} className="card flex items-start gap-3 p-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sand-100 text-slate-500 dark:bg-stone-800 dark:text-stone-400">
+                  {n.type === 'appel' ? <PhoneCall size={14} /> : n.type === 'whatsapp' || n.type === 'sms' ? <MessageCircle size={14} /> : <Calendar size={14} />}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-slate-500">{NOTE_TYPE_LABELS[n.type]}</span>
+                    <span className="text-xs text-slate-400">{formatDateTime(n.created_at)}</span>
+                  </div>
+                  <p className="mt-1 text-sm text-slate-700 dark:text-stone-200">{n.note}</p>
+                  {n.profiles && <p className="mt-1 text-xs text-slate-400">Par {n.profiles.first_name} {n.profiles.last_name}</p>}
+                </div>
+              </div>
+            ))}
+            {(notes ?? []).length === 0 && <p className="py-8 text-center text-sm text-slate-400">Aucune interaction enregistrée.</p>}
+          </div>
         </div>
       )}
 

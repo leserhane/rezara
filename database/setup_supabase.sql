@@ -304,9 +304,12 @@ create table customer_notes (
   id uuid primary key default gen_random_uuid(),
   customer_id uuid not null references customers(id) on delete cascade,
   note text not null,
+  type text not null default 'autre' check (type in ('appel', 'visite', 'email', 'whatsapp', 'sms', 'autre')),
   created_by uuid references profiles(id) on delete set null,
   created_at timestamptz not null default now()
 );
+
+create index idx_customer_notes_customer_created on customer_notes(customer_id, created_at desc);
 
 create table prescriptions (
   id uuid primary key default gen_random_uuid(),

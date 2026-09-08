@@ -154,10 +154,13 @@ export type Customer = {
   updated_at: string
 }
 
+export type CustomerNoteType = 'appel' | 'visite' | 'email' | 'whatsapp' | 'sms' | 'autre'
+
 export type CustomerNote = {
   id: string
   customer_id: string
   note: string
+  type: CustomerNoteType
   created_by: string | null
   created_at: string
 }
@@ -683,7 +686,7 @@ export type Database = {
       payment_methods: TableDef<PaymentMethod, Partial<PaymentMethod>>
       expense_categories: TableDef<ExpenseCategory, Partial<ExpenseCategory> & { name: string }>
       customers: TableDef<Customer, Partial<Customer> & { store_id: string; first_name: string; last_name: string }>
-      customer_notes: TableDef<CustomerNote, Partial<CustomerNote> & { customer_id: string; note: string }>
+      customer_notes: TableDef<CustomerNote, Partial<CustomerNote> & { customer_id: string; note: string }, Partial<CustomerNote>, FkTo<'profiles', 'created_by'>>
       prescriptions: TableDef<Prescription, Partial<Prescription> & { customer_id: string }, Partial<Prescription>, FkTo<'customers', 'customer_id'>>
       products: TableDef<Product, Partial<Product> & { store_id: string; type: ProductType; sku: string; name: string }>
       frame_details: TableDef<FrameDetails, Partial<FrameDetails> & { product_id: string }>

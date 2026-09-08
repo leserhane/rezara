@@ -6,10 +6,11 @@ import { StatCard } from '@/components/ui/StatCard'
 import { formatCurrency } from '@/lib/format'
 import {
   Wallet, ShoppingCart, TrendingUp, Percent, PackageX, Users, AlertTriangle,
-  Wrench, CreditCard, CalendarClock, Banknote, ClipboardList,
+  Wrench, CreditCard, CalendarClock, Banknote, ClipboardList, ListChecks,
 } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Link } from 'react-router-dom'
+import { fetchUpcomingBirthdays, fetchUnfollowedNoShows, fetchInactiveCustomers, fetchStaleProspects } from '@/lib/crmFollowUps'
 
 type Period = 'today' | 'week' | 'month' | 'year'
 
@@ -98,6 +99,16 @@ export function DashboardPage() {
         .order('due_date')
       if (error) throw error
       return data
+    },
+  })
+
+  const crmFollowUpsQuery = useQuery({
+    queryKey: ['dashboard-crm-follow-ups'],
+    queryFn: async () => {
+      const [birthdays, noShows, inactive, prospects] = await Promise.all([
+        fetchUpcomingBirthdays(), fetchUnfollowedNoShows(), fetchInactiveCustomers(), fetchStaleProspects(),
+      ])
+      return birthdays.length + noShows.length + inactive.length + prospects.length
     },
   })
 
@@ -235,6 +246,12 @@ export function DashboardPage() {
           label="Chèques à échéance (7j)" value={String(chequesDueSoon.length)} icon={Banknote}
           accent={chequesOverdue.length ? 'negative' : chequesDueSoon.length ? 'warning' : 'default'}
         />
+        <Link to="/follow-ups">
+          <StatCard
+            label="Suivis CRM" value={String(crmFollowUpsQuery.data ?? 0)} icon={ListChecks}
+            accent={crmFollowUpsQuery.data ? 'warning' : 'default'}
+          />
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
