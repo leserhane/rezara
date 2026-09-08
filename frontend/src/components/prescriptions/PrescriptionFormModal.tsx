@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Modal } from '@/components/ui/Modal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -21,6 +22,16 @@ export function PrescriptionFormModal({
   customerId: string
 }) {
   const { profile } = useAuth()
+
+  const { data: knownDoctors } = useQuery({
+    queryKey: ['known-doctor-names'],
+    queryFn: async () => {
+      const { data } = await supabase.from('prescriptions').select('doctor_name').not('doctor_name', 'is', null)
+      return [...new Set((data ?? []).map((p) => p.doctor_name!.trim()).filter(Boolean))].sort()
+    },
+    enabled: open,
+  })
+
   const [od, setOd] = useState<Record<string, string>>({})
   const [og, setOg] = useState<Record<string, string>>({})
   const [odBase, setOdBase] = useState('')
@@ -87,7 +98,13 @@ export function PrescriptionFormModal({
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div><label className="label">Médecin</label><input className="input" value={doctorName} onChange={(e) => setDoctorName(e.target.value)} /></div>
+          <div>
+            <label className="label">Médecin</label>
+            <input className="input" list="doctor-names" value={doctorName} onChange={(e) => setDoctorName(e.target.value)} />
+            <datalist id="doctor-names">
+              {(knownDoctors ?? []).map((d) => <option key={d} value={d} />)}
+            </datalist>
+          </div>
           <div><label className="label">Date</label><input type="date" className="input" value={prescriptionDate} onChange={(e) => setPrescriptionDate(e.target.value)} /></div>
           <div><label className="label">Valide jusqu'au</label><input type="date" className="input" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></div>
         </div>

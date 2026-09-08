@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/format'
 import { StatCard } from '@/components/ui/StatCard'
-import { TrendingUp, ShoppingCart, Percent, Users } from 'lucide-react'
+import { TrendingUp, ShoppingCart, Percent, Users, Stethoscope } from 'lucide-react'
 
 const COLOR_CA = '#2a78d6'
 const COLOR_MARGE = '#eb6834'
@@ -56,6 +56,18 @@ export function StatisticsPage() {
     queryFn: async () => (await supabase.from('v_customer_stats').select('*')).data ?? [],
   })
 
+  // All-time, not scoped to the period selector above — a doctor's
+  // referral volume is a cumulative reputation figure, not something
+  // that resets every 30 days.
+  const { data: prescriptions } = useQuery({
+    queryKey: ['stats-prescriptions'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('prescriptions').select('doctor_name, customer_id').not('doctor_name', 'is', null)
+      if (error) throw error
+      return data
+    },
+  })
+
   const dailySeries = useMemo(() => {
     const byDay = new Map<string, { date: string; ca: number; marge: number }>()
     for (const s of sales ?? []) {
@@ -92,6 +104,22 @@ export function StatisticsPage() {
     }
     return Array.from(map.values()).sort((a, b) => b.ca - a.ca)
   }, [sales, profiles])
+
+  const topDoctors = useMemo(() => {
+    const byDoctor = new Map<string, { name: string; prescriptionCount: number; patients: Set<string> }>()
+    for (const p of prescriptions ?? []) {
+      const name = p.doctor_name!.trim()
+      if (!name) continue
+      const entry = byDoctor.get(name) ?? { name, prescriptionCount: 0, patients: new Set<string>() }
+      entry.prescriptionCount += 1
+      entry.patients.add(p.customer_id)
+      byDoctor.set(name, entry)
+    }
+    return Array.from(byDoctor.values())
+      .map((d) => ({ name: d.name, prescriptionCount: d.prescriptionCount, patientCount: d.patients.size }))
+      .sort((a, b) => b.prescriptionCount - a.prescriptionCount)
+      .slice(0, 10)
+  }, [prescriptions])
 
   const totalCa = (sales ?? []).reduce((sum, s) => sum + s.total_ttc, 0)
   const totalMargin = (sales ?? []).reduce((sum, s) => sum + (s.margin_amount ?? 0), 0)
@@ -174,6 +202,32 @@ export function StatisticsPage() {
             ))}
             {byOptician.length === 0 && <p className="py-8 text-center text-sm text-slate-400">Aucune donnée sur cette période.</p>}
           </div>
+        </div>
+      </div>
+
+      <div className="card p-4">
+        <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><Stethoscope size={16} /> Médecins prescripteurs</h2>
+        <p className="mb-4 text-xs text-slate-400">Classement par nombre d'ordonnances, toutes périodes confondues.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">
+              <tr>
+                <th className="py-2 pr-4">Médecin</th>
+                <th className="py-2 pr-4 text-right">Ordonnances</th>
+                <th className="py-2 text-right">Patients</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
+              {topDoctors.map((d) => (
+                <tr key={d.name}>
+                  <td className="py-2 pr-4 font-medium text-slate-700 dark:text-stone-200">{d.name}</td>
+                  <td className="py-2 pr-4 text-right">{d.prescriptionCount}</td>
+                  <td className="py-2 text-right text-slate-500">{d.patientCount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {topDoctors.length === 0 && <p className="py-8 text-center text-sm text-slate-400">Aucune ordonnance avec médecin renseigné.</p>}
         </div>
       </div>
     </div>
