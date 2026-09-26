@@ -112,6 +112,14 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
 }
 
 function UsersTab() {
+  const isLocalEdition = typeof window !== 'undefined' && !!(window as unknown as { __local?: unknown }).__local
+  const [newFirstName, setNewFirstName] = useState('')
+  const [newLastName, setNewLastName] = useState('')
+  const [newRole, setNewRole] = useState<'opticien' | 'admin'>('opticien')
+  const [newPassword, setNewPassword] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
+
   const { data: users, refetch } = useQuery({
     queryKey: ['profiles-all'],
     queryFn: async () => (await supabase.from('profiles').select('*').order('created_at')).data as Profile[],
@@ -126,11 +134,49 @@ function UsersTab() {
     refetch()
   }
 
+  const createProfile = async () => {
+    if (!newFirstName.trim() || !newLastName.trim()) return
+    if (newRole === 'admin' && !newPassword.trim()) { setCreateError('Un mot de passe est requis pour un profil administrateur.'); return }
+    setCreating(true)
+    setCreateError(null)
+    const { error } = await window.__local.createProfile({
+      first_name: newFirstName.trim(), last_name: newLastName.trim(),
+      role_key: newRole, password: newRole === 'admin' ? newPassword : null,
+    })
+    setCreating(false)
+    if (error) { setCreateError(error.message); return }
+    setNewFirstName(''); setNewLastName(''); setNewPassword(''); setNewRole('opticien')
+    refetch()
+  }
+
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-400">
-        Pour créer un nouvel utilisateur, invitez-le depuis le tableau de bord Supabase (Authentication → Users), puis assignez-lui un rôle ici.
-      </div>
+      {isLocalEdition ? (
+        <div className="card space-y-3 p-4">
+          <h2 className="text-sm font-semibold">Nouveau profil</h2>
+          {createError && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{createError}</div>}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
+            <input className="input" placeholder="Prénom" value={newFirstName} onChange={(e) => setNewFirstName(e.target.value)} />
+            <input className="input" placeholder="Nom" value={newLastName} onChange={(e) => setNewLastName(e.target.value)} />
+            <select className="input" value={newRole} onChange={(e) => setNewRole(e.target.value as 'opticien' | 'admin')}>
+              <option value="opticien">Opticien</option>
+              <option value="admin">Administrateur</option>
+            </select>
+            {newRole === 'admin' ? (
+              <input type="password" className="input" placeholder="Mot de passe" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            ) : (
+              <div className="flex items-center text-xs text-slate-400">Aucun mot de passe — l'opticien choisira simplement son nom.</div>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <button onClick={createProfile} disabled={creating} className="btn-primary">{creating ? 'Création…' : 'Créer le profil'}</button>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-400">
+          Pour créer un nouvel utilisateur, invitez-le depuis le tableau de bord Supabase (Authentication → Users), puis assignez-lui un rôle ici.
+        </div>
+      )}
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="border-b border-sand-200 text-left text-xs uppercase text-slate-400 dark:border-stone-800">

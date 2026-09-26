@@ -1,14 +1,43 @@
-const { app, BrowserWindow, Menu, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu } = require('electron')
 const path = require('path')
+const { initDb, getDb } = require('./db')
+const { runQuery } = require('./db/queryEngine')
+const { callRpc, getActiveUser } = require('./db/rpcs')
+const auth = require('./db/auth')
 
-// The desktop app is a thin native shell around the live site rather than
-// a bundled copy of the frontend: this app ships fixes and features to
-// production near-daily, and Supabase access always needs the internet
-// anyway, so there is nothing to gain from a frozen local copy — only the
-// downside of every user needing a new installer for every change. This
-// way the .exe never goes stale; only the shell itself (this file) would
-// ever need a new build, and that changes rarely.
-const APP_URL = process.env.OPTIMUM_APP_URL || 'https://optimumoptic.com/dashboard/'
+// The local edition: all data lives in a SQLite file under the OS user
+// data directory (see db/index.js), never touching the internet. This is
+// a deliberately different product from the desktop shell that points at
+// optimumoptic.com — that cloud-backed, multi-device edition stays
+// exactly as it is; this one is for a single till that needs to keep
+// working with zero connectivity and zero shared login.
+
+function registerIpcHandlers() {
+  const db = getDb()
+
+  ipcMain.handle('db:query', (_event, descriptor) => runQuery(db, descriptor))
+  ipcMain.handle('db:rpc', (_event, name, args) => callRpc(db, name, args))
+
+  ipcMain.handle('auth:listProfiles', () => auth.listProfiles(db))
+  ipcMain.handle('auth:pickOptician', (_event, id) => {
+    try { return { data: auth.pickOptician(db, id), error: null } }
+    catch (e) { return { data: null, error: { message: e.message } } }
+  })
+  ipcMain.handle('auth:adminLogin', (_event, id, password) => {
+    try { return { data: auth.adminLogin(db, id, password), error: null } }
+    catch (e) { return { data: null, error: { message: e.message } } }
+  })
+  ipcMain.handle('auth:createProfile', (_event, payload) => {
+    try { return { data: auth.createProfile(db, payload), error: null } }
+    catch (e) { return { data: null, error: { message: e.message } } }
+  })
+  ipcMain.handle('auth:signOut', () => { auth.signOut(); return { error: null } })
+  ipcMain.handle('auth:getActiveProfile', () => {
+    const id = getActiveUser()
+    if (!id) return null
+    return auth.toProfileShape(db.prepare('SELECT * FROM profiles WHERE id = ?').get(id))
+  })
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -20,66 +49,21 @@ function createWindow() {
     backgroundColor: '#fdfbf7',
     autoHideMenuBar: true,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true,
+      sandbox: false, // the preload script needs Node's ipcRenderer; no remote content is ever loaded so this stays safe
     },
   })
 
   win.setMenuBarVisibility(false)
-  win.loadURL(APP_URL)
-
-  // Links to another origin (e.g. a "mailto:" or an external reference)
-  // open in the user's regular browser instead of hijacking the app
-  // window — the app itself only ever needs to show optimumoptic.com.
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
-    return { action: 'deny' }
-  })
-  win.webContents.on('will-navigate', (event, url) => {
-    if (!url.startsWith(APP_URL) && !url.includes('optimumoptic.com')) {
-      event.preventDefault()
-      shell.openExternal(url)
-    }
-  })
-
-  // A plain "site can't be reached" is a dead end for a store employee —
-  // give them a one-click way to try again once their connection is back,
-  // matching the same "explain what's wrong, offer a way out" approach
-  // used throughout the app itself (e.g. the crash screen's reload button).
-  win.webContents.on('did-fail-load', (_event, errorCode, _errorDescription, validatedURL) => {
-    if (errorCode === -3) return // ERR_ABORTED: a normal navigation cancel, not a real failure
-    win.loadURL(
-      'data:text/html;charset=utf-8,' +
-        encodeURIComponent(`
-        <!doctype html>
-        <html lang="fr">
-        <head><meta charset="utf-8" />
-          <style>
-            body { font-family: system-ui, sans-serif; background: #d9c8ae; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-            .card { background: white; border-radius: 12px; padding: 32px; max-width: 380px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-            h1 { color: #6b1f2a; font-size: 18px; margin: 0 0 12px; }
-            p { color: #555; font-size: 14px; }
-            button { margin-top: 16px; background: #6b1f2a; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 14px; cursor: pointer; }
-            button:hover { background: #551821; }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <h1>Connexion impossible</h1>
-            <p>Optimum Optic a besoin d'une connexion internet pour fonctionner. Vérifiez votre connexion puis réessayez.</p>
-            <button onclick="location.href='${APP_URL}'">Réessayer</button>
-          </div>
-        </body>
-        </html>
-      `)
-    )
-  })
-
+  win.loadFile(path.join(__dirname, 'app', 'index.html'))
   return win
 }
 
 app.whenReady().then(() => {
+  initDb()
+  registerIpcHandlers()
   Menu.setApplicationMenu(null)
   createWindow()
 

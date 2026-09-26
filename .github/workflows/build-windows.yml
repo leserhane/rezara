@@ -2,16 +2,19 @@ name: Build Windows installer
 
 # Building the .exe needs to happen on an actual Windows machine (the
 # NSIS installer step isn't reliably cross-buildable from Linux without
-# Wine), so this uses GitHub's free windows-latest runner instead. The
-# desktop shell just points at the live site (see desktop/main.js), so
-# this workflow only needs to run again when the shell itself changes —
-# every other app update ships instantly to existing installs with no
-# rebuild needed.
+# Wine), so this uses GitHub's free windows-latest runner instead.
+#
+# This is the fully offline local edition: it bundles its own SQLite
+# database (desktop/db) and a build of the shared frontend in "desktop"
+# mode (see frontend/vite.config.ts), so it needs rebuilding whenever
+# either the desktop shell/backend OR the shared frontend changes — unlike
+# the cloud site, which ships instantly with no rebuild.
 on:
   push:
     branches: [main]
     paths:
       - 'desktop/**'
+      - 'frontend/**'
       - '.github/workflows/build-windows.yml'
   workflow_dispatch: {}
 
@@ -30,6 +33,10 @@ jobs:
 
       - run: npm ci
 
+      # Builds frontend/ with --mode desktop (local SQLite data client,
+      # local auth, name-picker login) and copies the output into
+      # desktop/app, then rebuilds better-sqlite3's native addon against
+      # Electron's ABI (not Node's) before electron-builder packages it.
       - run: npm run dist:win
 
       - uses: actions/upload-artifact@v4

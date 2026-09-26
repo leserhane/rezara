@@ -1,2 +1,5 @@
 node_modules
 release
+# Built by `npm run build:desktop` in frontend/ and copied here by the
+# build:app script below — never hand-edited, never committed.
+app

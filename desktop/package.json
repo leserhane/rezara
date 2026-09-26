@@ -1,16 +1,23 @@
 {
   "name": "optimum-optic-desktop",
   "version": "1.0.0",
-  "description": "Optimum Optic ERP - application de bureau (Windows)",
+  "description": "Optimum Optic ERP - application de bureau, edition locale (Windows)",
   "main": "main.js",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win"
+    "build:app": "node scripts/build-app.js",
+    "rebuild:native": "electron-rebuild -f -w better-sqlite3",
+    "dist:win": "npm run build:app && npm run rebuild:native && electron-builder --win"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "electron": "^32.0.0",
-    "electron-builder": "^25.0.0"
+    "electron-builder": "^25.0.0",
+    "@electron/rebuild": "^3.6.0"
   },
   "build": {
     "appId": "com.optimumoptic.erp",
@@ -20,7 +27,13 @@
     },
     "files": [
       "main.js",
-      "build/icon.ico"
+      "preload.js",
+      "build/icon.ico",
+      "db/**/*.js",
+      "app/**/*"
+    ],
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**"
     ],
     "win": {
       "target": ["nsis"],
