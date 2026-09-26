@@ -9,6 +9,55 @@
 type Filter = { col: string; op: string; value?: unknown }
 type QueryResult<T = unknown> = { data: T; error: { message: string } | null; count?: number }
 
+// Opticians aren't accounts — there's no persistent "logged in optician"
+// session. While the app is in the unattributed "Opticien" shell (see
+// LocalAuthContext.enterOpticianShell), profile.id holds this sentinel
+// placeholder instead of a real profile id. LocalAuthContext registers
+// opticianGate.request with a function that opens the scrolling
+// name-picker modal and resolves with the chosen profile (or null if
+// cancelled) — every single time a create-action needs to know who's
+// actually doing it, fresh, with no memory between actions.
+export const UNPICKED_OPTICIAN_ID = '00000000-0000-0000-0000-000000000000'
+
+interface PickedProfile { id: string; store_id: string; max_discount_percent: number }
+
+export const opticianGate: {
+  active: boolean
+  request: (() => Promise<PickedProfile | null>) | null
+} = { active: false, request: null }
+
+// RPCs excluded from the automatic "pick an optician, run, revert" gate:
+// authorize_discount_override doesn't use the active user at all (it
+// checks an admin's own password), and create_sale needs its own gate in
+// NewSalePage.tsx so it can check the *picked* optician's discount limit
+// before submitting (and reuse that same pick across a retry after an
+// admin override), rather than picking blind and finding out after. Pages
+// that resolve their own pick this way call window.__local.rpc(...)
+// directly for any follow-up RPC of the same action (see NewSalePage's
+// record_cheque_payment, NewQuotePage's update_quote_discount) so it isn't
+// asked a second time by this generic wrapper.
+const RPC_GATE_EXCLUDED = new Set(['authorize_discount_override', 'create_sale'])
+
+function containsUnpickedId(values: unknown): boolean {
+  if (Array.isArray(values)) return values.some(containsUnpickedId)
+  if (values && typeof values === 'object') return Object.values(values as Record<string, unknown>).some((v) => v === UNPICKED_OPTICIAN_ID)
+  return values === UNPICKED_OPTICIAN_ID
+}
+
+// Replaces the sentinel anywhere it appears in an insert/update payload
+// with the just-picked optician's real id.
+function substituteUnpickedId(values: unknown, realId: string): unknown {
+  if (Array.isArray(values)) return values.map((v) => substituteUnpickedId(v, realId))
+  if (values && typeof values === 'object') {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(values as Record<string, unknown>)) {
+      out[k] = v === UNPICKED_OPTICIAN_ID ? realId : v
+    }
+    return out
+  }
+  return values
+}
+
 declare global {
   interface Window {
     __local: {
@@ -74,7 +123,24 @@ class LocalQueryBuilder implements PromiseLike<QueryResult> {
     onfulfilled?: ((value: QueryResult) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ): PromiseLike<TResult1 | TResult2> {
-    return window.__local.query(this.d).then(onfulfilled, onrejected)
+    return this.execute().then(onfulfilled, onrejected)
+  }
+
+  private async execute(): Promise<QueryResult> {
+    // Any insert/update whose payload still carries the "no optician
+    // picked yet" sentinel (i.e. a page just used profile.id/store_id as
+    // normal, without resolving its own pick first) needs a name before it
+    // can go out — this covers every create-action automatically, with no
+    // per-table list to keep in sync. A page that already resolved its own
+    // pick (NewSalePage, NewQuotePage) builds its payload with the real id
+    // from the start, so its payload never contains the sentinel and this
+    // never fires for it.
+    if (opticianGate.active && (this.d.action === 'insert' || this.d.action === 'update') && containsUnpickedId(this.d.values)) {
+      const picked = opticianGate.request ? await opticianGate.request() : null
+      if (!picked) return { data: null, error: { message: "Sélection de l'opticien annulée." } }
+      this.d.values = substituteUnpickedId(this.d.values, picked.id)
+    }
+    return window.__local.query(this.d)
   }
 }
 
@@ -82,7 +148,15 @@ export const supabase = {
   from(table: string) {
     return new LocalQueryBuilder(table)
   },
-  rpc(name: string, args?: Record<string, unknown>) {
+  async rpc(name: string, args?: Record<string, unknown>) {
+    if (opticianGate.active && !RPC_GATE_EXCLUDED.has(name)) {
+      const picked = opticianGate.request ? await opticianGate.request() : null
+      if (!picked) return { data: null, error: { message: "Sélection de l'opticien annulée." } }
+      await window.__local.pickOptician(picked.id)
+      const result = await window.__local.rpc(name, args ?? {})
+      await window.__local.signOut()
+      return result
+    }
     return window.__local.rpc(name, args ?? {})
   },
   // No realtime push in the local edition (single process, single

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/LocalAuthContext'
-import { Lock, User } from 'lucide-react'
+import { Lock, Users } from 'lucide-react'
 
 interface ProfileOption {
   id: string
@@ -10,21 +10,25 @@ interface ProfileOption {
   role_key: 'admin' | 'opticien'
 }
 
-// Local-edition replacement for '@/pages/auth/LoginPage': no email or
-// password for an optician — just their name, added once by the admin.
-// Only the admin's own tile asks for a password, matching how the
-// account was set up at install time.
+// Local-edition replacement for '@/pages/auth/LoginPage'. Opticians aren't
+// accounts, so there's nothing to log in as here — "Opticien" just opens
+// the app (unattributed; the scrolling name list only shows up later, at
+// the moment of an actual sale/client/ordonnance/etc — see
+// LocalAuthContext's requestOpticianForAction/opticianGate). Only "Admin"
+// is a real account, password-protected, matching how it was set up at
+// install time.
 export function LoginPage() {
-  const { session, pickOptician, loginAsAdmin } = useAuth()
+  const { session, enterOpticianShell, loginAsAdmin } = useAuth()
   const location = useLocation()
-  const [profiles, setProfiles] = useState<ProfileOption[]>([])
+  const [adminProfiles, setAdminProfiles] = useState<ProfileOption[]>([])
+  const [screen, setScreen] = useState<'choose' | 'admin-pick' | 'admin-password'>('choose')
   const [adminId, setAdminId] = useState<string | null>(null)
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    window.__local.listProfiles().then((rows) => setProfiles(rows as ProfileOption[]))
+    window.__local.listProfiles().then((rows) => setAdminProfiles((rows as ProfileOption[]).filter((p) => p.role_key === 'admin')))
   }, [])
 
   if (session) {
@@ -32,13 +36,10 @@ export function LoginPage() {
     return <Navigate to={from} replace />
   }
 
-  const choose = async (p: ProfileOption) => {
+  const chooseAdmin = () => {
     setError(null)
-    if (p.role_key === 'admin') { setAdminId(p.id); return }
-    setSubmitting(true)
-    const { error } = await pickOptician(p.id)
-    setSubmitting(false)
-    if (error) setError(error)
+    if (adminProfiles.length === 1) { setAdminId(adminProfiles[0].id); setScreen('admin-password') }
+    else setScreen('admin-pick')
   }
 
   const submitAdminPassword = async (e: React.FormEvent) => {
@@ -65,13 +66,55 @@ export function LoginPage() {
             </svg>
           </div>
           <h1 className="text-lg font-semibold text-brand-700 dark:text-white">Optimum Optic</h1>
-          <p className="text-sm text-sand-700 dark:text-stone-400">Qui travaille aujourd'hui ?</p>
+          <p className="text-sm text-sand-700 dark:text-stone-400">
+            {screen === 'choose' ? 'Comment souhaitez-vous continuer ?' : 'Connexion administrateur'}
+          </p>
         </div>
 
         <div className="card space-y-3 border-t-4 border-t-brand-700 p-6">
           {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-400">{error}</div>}
 
-          {adminId ? (
+          {screen === 'choose' && (
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={enterOpticianShell}
+                className="flex flex-col items-center gap-2 rounded-lg border border-sand-200 p-5 text-center hover:bg-sand-50 dark:border-stone-700 dark:hover:bg-stone-800"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+                  <Users size={20} />
+                </div>
+                <span className="text-sm font-medium text-slate-900 dark:text-white">Opticien</span>
+              </button>
+              <button
+                onClick={chooseAdmin}
+                className="flex flex-col items-center gap-2 rounded-lg border border-sand-200 p-5 text-center hover:bg-sand-50 dark:border-stone-700 dark:hover:bg-stone-800"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+                  <Lock size={20} />
+                </div>
+                <span className="text-sm font-medium text-slate-900 dark:text-white">Admin</span>
+              </button>
+            </div>
+          )}
+
+          {screen === 'admin-pick' && (
+            <div className="space-y-2">
+              {adminProfiles.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => { setAdminId(p.id); setScreen('admin-password') }}
+                  className="flex w-full items-center gap-3 rounded-lg border border-sand-200 p-3 text-left hover:bg-sand-50 dark:border-stone-700 dark:hover:bg-stone-800"
+                >
+                  <Lock size={16} className="text-brand-700 dark:text-brand-400" />
+                  <span className="text-sm font-medium text-slate-900 dark:text-white">{p.first_name} {p.last_name}</span>
+                </button>
+              ))}
+              {adminProfiles.length === 0 && <p className="py-4 text-center text-sm text-slate-400">Aucun compte administrateur.</p>}
+              <button onClick={() => setScreen('choose')} className="btn-secondary w-full">Retour</button>
+            </div>
+          )}
+
+          {screen === 'admin-password' && (
             <form onSubmit={submitAdminPassword} className="space-y-3">
               <p className="text-sm text-slate-500">Mot de passe administrateur</p>
               <input
@@ -79,27 +122,16 @@ export function LoginPage() {
                 value={password} onChange={(e) => setPassword(e.target.value)}
               />
               <div className="flex gap-2">
-                <button type="button" onClick={() => { setAdminId(null); setPassword(''); setError(null) }} className="btn-secondary flex-1">Retour</button>
+                <button
+                  type="button"
+                  onClick={() => { setScreen('choose'); setAdminId(null); setPassword(''); setError(null) }}
+                  className="btn-secondary flex-1"
+                >
+                  Retour
+                </button>
                 <button type="submit" disabled={submitting} className="btn-primary flex-1">{submitting ? 'Connexion…' : 'Se connecter'}</button>
               </div>
             </form>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-              {profiles.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => choose(p)}
-                  disabled={submitting}
-                  className="flex flex-col items-center gap-2 rounded-lg border border-sand-200 p-4 text-center hover:bg-sand-50 disabled:opacity-50 dark:border-stone-700 dark:hover:bg-stone-800"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
-                    {p.role_key === 'admin' ? <Lock size={18} /> : <User size={18} />}
-                  </div>
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">{p.first_name} {p.last_name}</span>
-                </button>
-              ))}
-              {profiles.length === 0 && <p className="col-span-2 py-6 text-center text-sm text-slate-400">Aucun profil. Contactez un administrateur.</p>}
-            </div>
           )}
         </div>
       </div>

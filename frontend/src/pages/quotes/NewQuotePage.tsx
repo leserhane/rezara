@@ -15,7 +15,7 @@ interface CartLine {
 }
 
 export function NewQuotePage() {
-  const { profile } = useAuth()
+  const { profile, isOpticianShell, requestOpticianForAction, activateOptician, deactivateOptician } = useAuth()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const preselectedCustomer = params.get('customer')
@@ -103,10 +103,20 @@ export function NewQuotePage() {
     setSubmitting(true)
     setError(null)
 
+    // Opticians aren't accounts — ask who's actually making this devis
+    // once, up front, and reuse that pick for every write below instead of
+    // being asked again for update_quote_discount a moment later.
+    let acting = profile
+    if (isOpticianShell) {
+      const picked = await requestOpticianForAction()
+      if (!picked) { setSubmitting(false); return }
+      acting = picked
+    }
+
     const { data: quote, error: quoteError } = await supabase
       .from('quotes')
       .insert({
-        store_id: profile.store_id, customer_id: customer.id, optician_id: profile.id,
+        store_id: acting.store_id, customer_id: customer.id, optician_id: acting.id,
         status: 'brouillon', valid_until: validUntil || null, notes: notes || null,
       })
       .select()
@@ -137,7 +147,11 @@ export function NewQuotePage() {
     }
 
     if (Number(cartDiscount) > 0) {
-      await supabase.rpc('update_quote_discount', { p_quote_id: quote.id, p_discount_amount: totals.cartDiscountHt })
+      if (isOpticianShell) await activateOptician(acting.id)
+      // Called directly, bypassing the automatic gate — already attributed
+      // to `acting` above, and this is still the same devis-creation action.
+      await window.__local.rpc('update_quote_discount', { p_quote_id: quote.id, p_discount_amount: totals.cartDiscountHt })
+      if (isOpticianShell) await deactivateOptician()
     }
 
     setSubmitting(false)

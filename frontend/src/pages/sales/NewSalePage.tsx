@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/format'
 import { uid } from '@/lib/uid'
-import type { Customer, Prescription, ProductWithVisibility, PaymentMethod } from '@/types/database'
+import type { Customer, Prescription, ProductWithVisibility, PaymentMethod, Profile } from '@/types/database'
 
 interface CartLine {
   key: string
@@ -26,7 +26,7 @@ interface ChequeLine {
 const emptyChequeLine = (): ChequeLine => ({ key: uid(), amount: '', due_date: '', cheque_number: '', bank_name: '' })
 
 export function NewSalePage() {
-  const { profile, isAdmin } = useAuth()
+  const { profile, isAdmin, isOpticianShell, requestOpticianForAction, activateOptician, deactivateOptician } = useAuth()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const preselectedCustomer = params.get('customer')
@@ -50,6 +50,12 @@ export function NewSalePage() {
   const [adminPassword, setAdminPassword] = useState('')
   const [authorizedBy, setAuthorizedBy] = useState<string | null>(null)
   const [authError, setAuthError] = useState<string | null>(null)
+  // Opticians aren't accounts — which one is actually making this sale is
+  // asked (via the name picker) only once we're sure the sale is going
+  // ahead, then reused across a retry after an admin discount override so
+  // the same in-flight sale doesn't ask twice; it's forgotten again as
+  // soon as this sale is done, so the next one asks fresh.
+  const [actingOptician, setActingOptician] = useState<Profile | null>(null)
 
   const { data: paymentMethods } = useQuery({
     queryKey: ['payment-methods'],
@@ -172,7 +178,23 @@ export function NewSalePage() {
 
   const confirmSale = async () => {
     if (!customer || cart.length === 0) return
-    if (exceedsLimit && !authorizedBy) {
+
+    // Opticians aren't accounts — figure out who's actually making this
+    // sale before checking their discount limit, not after. Once picked
+    // it's kept in state so a retry (after an admin override) doesn't ask
+    // again for the same in-flight sale; it's reset once the sale is done
+    // either way, so the next sale asks fresh.
+    let acting = actingOptician
+    if (isOpticianShell && !acting) {
+      acting = await requestOpticianForAction()
+      if (!acting) return
+      setActingOptician(acting)
+    }
+    const effectiveProfile = isOpticianShell ? acting : profile
+    if (!effectiveProfile) return
+
+    const exceeds = !isAdmin && totals.discountPercent > effectiveProfile.max_discount_percent
+    if (exceeds && !authorizedBy) {
       setAuthModal(true)
       return
     }
@@ -183,55 +205,67 @@ export function NewSalePage() {
     setSubmitting(true)
     setError(null)
 
-    // A cheque payment plan is recorded via a dedicated RPC that needs an
-    // existing sale, so the sale itself is always created with no deposit
-    // in that case, and the cheques are attached right after.
-    const { data, error } = await supabase.rpc('create_sale', {
-      p_customer_id: customer.id,
-      p_items: cart.map((l, idx) => ({
-        product_id: l.product.id,
-        item_role: l.product.type,
-        quantity: l.quantity,
-        discount_amount: totals.lines[idx].discountHt,
-      })),
-      p_prescription_id: prescriptionId || null,
-      p_cart_discount_amount: totals.cartDiscountHt,
-      p_deposit_amount: isCheque ? 0 : deposit > 0 ? deposit : 0,
-      p_payment_method_id: isCheque ? null : deposit > 0 ? paymentMethodId || null : null,
-      p_cash_register_id: openRegisterId,
-      p_discount_authorized_by: authorizedBy,
-    })
-
-    if (error) {
-      setSubmitting(false)
-      setError(error.message)
-      return
-    }
-
-    if (isCheque && chequeTotal > 0) {
-      const { error: chequeError } = await supabase.rpc('record_cheque_payment', {
-        p_sale_id: data.id,
-        p_cheques: cheques.map((c) => ({
-          amount: Number(c.amount), due_date: c.due_date,
-          cheque_number: c.cheque_number || null, bank_name: c.bank_name || null,
+    if (isOpticianShell) await activateOptician(effectiveProfile.id)
+    try {
+      // A cheque payment plan is recorded via a dedicated RPC that needs an
+      // existing sale, so the sale itself is always created with no deposit
+      // in that case, and the cheques are attached right after.
+      const { data, error } = await supabase.rpc('create_sale', {
+        p_customer_id: customer.id,
+        p_items: cart.map((l, idx) => ({
+          product_id: l.product.id,
+          item_role: l.product.type,
+          quantity: l.quantity,
+          discount_amount: totals.lines[idx].discountHt,
         })),
+        p_prescription_id: prescriptionId || null,
+        p_cart_discount_amount: totals.cartDiscountHt,
+        p_deposit_amount: isCheque ? 0 : deposit > 0 ? deposit : 0,
+        p_payment_method_id: isCheque ? null : deposit > 0 ? paymentMethodId || null : null,
         p_cash_register_id: openRegisterId,
+        p_discount_authorized_by: authorizedBy,
       })
-      setSubmitting(false)
-      if (chequeError) {
-        setError(`Vente créée, mais l'enregistrement des chèques a échoué : ${chequeError.message}. Vous pouvez réessayer depuis la fiche de la vente.`)
-        navigate(`/sales/${data.id}`)
+
+      if (error) {
+        setSubmitting(false)
+        setError(error.message)
         return
       }
-    } else {
-      setSubmitting(false)
-    }
 
-    // A sale that includes a lens goes straight to the technical order
-    // sheet — the optician fills it in as part of making the sale, not as
-    // an easy-to-miss button discovered later on the sale's detail page.
-    const hasLens = cart.some((l) => l.product.type === 'verre')
-    navigate(hasLens ? `/sales/${data.id}/lens-sheet` : `/sales/${data.id}`)
+      if (isCheque && chequeTotal > 0) {
+        // Called directly (bypassing localSupabase's automatic optician
+        // gate) — the optician for this sale was already picked and
+        // activated above, and recording its cheques is still the same
+        // action, not a second one that should ask again.
+        const { error: chequeError } = await window.__local.rpc('record_cheque_payment', {
+          p_sale_id: data.id,
+          p_cheques: cheques.map((c) => ({
+            amount: Number(c.amount), due_date: c.due_date,
+            cheque_number: c.cheque_number || null, bank_name: c.bank_name || null,
+          })),
+          p_cash_register_id: openRegisterId,
+        })
+        setSubmitting(false)
+        if (chequeError) {
+          setError(`Vente créée, mais l'enregistrement des chèques a échoué : ${chequeError.message}. Vous pouvez réessayer depuis la fiche de la vente.`)
+          navigate(`/sales/${data.id}`)
+          return
+        }
+      } else {
+        setSubmitting(false)
+      }
+
+      // A sale that includes a lens goes straight to the technical order
+      // sheet — the optician fills it in as part of making the sale, not as
+      // an easy-to-miss button discovered later on the sale's detail page.
+      const hasLens = cart.some((l) => l.product.type === 'verre')
+      navigate(hasLens ? `/sales/${data.id}/lens-sheet` : `/sales/${data.id}`)
+    } finally {
+      if (isOpticianShell) {
+        await deactivateOptician()
+        setActingOptician(null)
+      }
+    }
   }
 
   return (

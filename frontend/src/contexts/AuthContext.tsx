@@ -13,6 +13,16 @@ interface AuthState {
   signOut: () => Promise<void>
   requestPasswordReset: (email: string) => Promise<{ error: string | null }>
   refreshProfile: () => Promise<void>
+  // Local-edition-only concepts (see LocalAuthContext): every account here
+  // is already a real, individually logged-in Supabase user, so there's no
+  // "unattributed shell" to pick a name out of — isOpticianShell is always
+  // false and requestOpticianForAction just hands back the caller's own
+  // profile, so shared pages (NewSalePage, NewQuotePage) behave exactly as
+  // before with no local-edition-specific branch ever taken.
+  isOpticianShell: boolean
+  requestOpticianForAction: () => Promise<Profile | null>
+  activateOptician: (id: string) => Promise<void>
+  deactivateOptician: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
@@ -81,6 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session?.user) await loadProfile(session.user.id)
   }, [session, loadProfile])
 
+  const requestOpticianForAction = useCallback(async () => profile, [profile])
+  const activateOptician = useCallback(async () => {}, [])
+  const deactivateOptician = useCallback(async () => {}, [])
+
   return (
     <AuthContext.Provider
       value={{
@@ -93,6 +107,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         requestPasswordReset,
         refreshProfile,
+        isOpticianShell: false,
+        requestOpticianForAction,
+        activateOptician,
+        deactivateOptician,
       }}
     >
       {children}
