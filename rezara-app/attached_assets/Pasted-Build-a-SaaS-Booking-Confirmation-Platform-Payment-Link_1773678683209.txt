@@ -1,0 +1,385 @@
+Build a SaaS Booking Confirmation Platform (Payment Link Based)
+
+You are a senior full-stack engineer building a production-ready SaaS platform.
+
+Create a modern web application that allows businesses (restaurants, salons, clinics, consultants, service providers) to confirm reservations using a payment link.
+
+The system works like Stripe payment links but for booking confirmations.
+
+The business defines the reservation, not the customer.
+
+The customer only receives a confirmation link and pays a deposit.
+
+Core Product Concept
+
+Businesses often receive booking requests via:
+
+• Phone
+• WhatsApp
+• Instagram DM
+
+After discussing with the customer, the business decides the reservation details.
+
+The platform allows the business to:
+
+Create a reservation manually
+
+Generate a unique payment confirmation link
+
+Send that link to the customer
+
+Customer opens the link and pays the deposit
+
+Booking becomes confirmed automatically
+
+The customer cannot choose the appointment time.
+
+All booking details are predefined by the business.
+
+Example Use Case
+
+Customer messages restaurant:
+
+"Table for 4 on Saturday?"
+
+Restaurant checks availability.
+
+Restaurant creates reservation in dashboard:
+
+Customer: Khalil
+Date: March 30
+Time: 20:00
+Guests: 4
+Deposit: 50 MAD
+
+Platform generates link:
+
+reza.com/reservation/k30034
+
+Restaurant sends link via WhatsApp.
+
+Customer opens page and pays deposit.
+
+Reservation becomes confirmed.
+
+Required Features
+1 Business Accounts
+
+Businesses must be able to:
+
+• Sign up
+• Log in
+• Create a profile
+• Access a private dashboard
+
+Business profile fields:
+
+business_name
+
+logo
+
+phone_number
+
+address
+
+description
+
+Authentication should use Supabase Auth.
+
+2 Business Dashboard
+
+Create a modern dashboard UI with the following sections:
+
+Dashboard
+Reservations
+Calendar
+Payments
+Settings
+
+Dashboard shows:
+
+• total bookings
+• pending confirmations
+• confirmed reservations
+• revenue from deposits
+
+3 Create Reservation
+
+Businesses can manually create a reservation.
+
+Fields:
+
+Customer name
+Customer phone
+Date
+Time
+Number of guests
+Deposit amount
+Notes (optional)
+
+Example:
+
+Customer: Khalil
+Date: 30/03/2026
+Time: 20:00
+Guests: 4
+Deposit: 50 MAD
+
+After submission the system creates a reservation record.
+
+Status = Pending Payment
+
+4 Payment Link Generation
+
+After reservation creation the platform generates a unique secure link.
+
+Example:
+
+reza.com/reservation/k30034
+
+The link page shows:
+
+Business branding
+Reservation details
+Deposit amount
+
+The business can share the link via:
+
+WhatsApp
+SMS
+Email
+
+Include a "Copy Link" button.
+
+5 Customer Reservation Page
+
+When a customer opens the link they see:
+
+Business name
+Business logo
+Reservation details
+
+Example display:
+
+Restaurant Le Serhane
+
+Reservation Details
+
+Date: March 30
+Time: 20:00
+Guests: 4 people
+Deposit required: 50 MAD
+
+Large button:
+
+Confirm reservation by paying deposit
+
+The page must be mobile-first.
+
+6 Stripe Payment Integration
+
+Integrate Stripe Checkout.
+
+When payment succeeds:
+
+• reservation status → CONFIRMED
+• payment record saved
+• reservation appears confirmed in dashboard
+
+Use Stripe webhooks to update reservation status.
+
+7 WhatsApp Confirmation
+
+After payment success send WhatsApp messages.
+
+Customer receives:
+
+"Your reservation at [Business Name] for [Date] at [Time] for [Guests] people is confirmed."
+
+Business receives:
+
+"Reservation confirmed by [Customer Name]."
+
+Use WhatsApp API integration (Twilio or Meta API).
+
+8 Calendar Blocking
+
+When a reservation becomes confirmed:
+
+• the time slot is blocked in the business calendar
+
+Calendar view must allow businesses to see:
+
+Daily view
+Weekly view
+Upcoming reservations
+
+9 Reservation Management
+
+Businesses must be able to:
+
+View reservations
+Edit reservations
+Cancel reservations
+Mark reservations as completed
+
+Reservation statuses:
+
+Pending Payment
+Confirmed
+Cancelled
+Completed
+
+10 Platform Admin Panel
+
+Create an admin panel for the platform owner.
+
+Admin can:
+
+View all businesses
+View all reservations
+View all payments
+Manage subscription plans
+Manage business branding templates
+
+Technical Stack
+
+Use a modern SaaS stack compatible with Replit deployment.
+
+Frontend:
+
+Next.js
+TailwindCSS
+ShadCN UI components
+
+Backend:
+
+Node.js
+Express API
+
+Database:
+
+PostgreSQL
+
+Auth and backend services:
+
+Supabase
+
+Payments:
+
+Stripe API
+
+Messaging:
+
+WhatsApp API (Twilio or Meta)
+
+Deployment:
+
+Replit
+
+Database Schema
+
+Users
+
+id
+email
+password
+role
+
+Businesses
+
+id
+user_id
+name
+logo
+phone
+address
+description
+
+Reservations
+
+id
+business_id
+customer_name
+customer_phone
+date
+time
+guests
+deposit_amount
+status
+
+Payments
+
+id
+reservation_id
+amount
+payment_status
+
+API Endpoints
+
+Create REST API routes:
+
+POST /auth/signup
+POST /auth/login
+
+POST /reservations/create
+GET /reservations/business/:id
+GET /reservation/:reservationId
+
+POST /payments/create-checkout-session
+
+POST /stripe/webhook
+
+GET /dashboard/stats
+
+UI Requirements
+
+Design a clean modern SaaS interface.
+
+Use:
+
+Tailwind
+ShadCN
+Modern SaaS layout
+
+Dashboard layout:
+
+Sidebar navigation
+Top header
+Analytics cards
+Tables for reservations
+
+UX Goal
+
+Customer flow must take less than 20 seconds.
+
+Flow:
+
+Open link
+Review reservation
+Pay deposit
+Receive confirmation
+
+Generate Full MVP
+
+Generate:
+
+Complete frontend interface
+Backend API
+Database schema
+Stripe payment integration
+Reservation link generator
+Customer reservation page
+Business dashboard
+Admin dashboard
+
+Structure the project with:
+
+frontend
+backend
+components
+pages
+api
+database
+
+Make the app fully runnable inside Replit.

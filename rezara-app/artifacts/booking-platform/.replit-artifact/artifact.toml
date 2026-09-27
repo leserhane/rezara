@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Booking Confirmation Platform"
+version = "1.0.0"
+id = "artifacts/booking-platform"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 24348
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/booking-platform run dev"
+
+[services.env]
+PORT = "24348"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/booking-platform", "run", "build"]
+publicDir = "artifacts/booking-platform/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

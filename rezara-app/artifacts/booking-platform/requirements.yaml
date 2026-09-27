@@ -1,0 +1,21 @@
+packages:
+  "framer-motion": "Smooth page transitions and micro-interactions"
+  "recharts": "Beautiful data visualizations for the dashboard"
+  "date-fns": "Robust date formatting and manipulation"
+  "react-hook-form": "Performant and flexible form state management"
+  "@hookform/resolvers": "Zod schema validation integration for forms"
+  "zod": "Type-safe schema validation"
+  "react-day-picker": "Date picker calendar component dependency"
+
+images:
+  - path: "artifacts/booking-platform/public/images/auth-bg.png"
+    description: "Clean, abstract, modern SaaS background in soft blues, indigos, and white. Geometric glassmorphism shapes, subtle gradients, very professional and premium feel."
+    aspect_ratio: "16:9"
+  - path: "artifacts/booking-platform/public/images/empty-state.png"
+    description: "Minimalist 3D illustration of a floating calendar and checkmark on a pristine white background. Soft studio lighting, premium SaaS aesthetic."
+    aspect_ratio: "1:1"
+
+notes:
+  - Uses @workspace/replit-auth-web for authentication as specified
+  - Uses @workspace/api-client-react for all API interactions
+  - The public payment page /r/:linkId fetches by linkId, bypassing auth

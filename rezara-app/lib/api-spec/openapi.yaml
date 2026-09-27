@@ -1,0 +1,911 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Booking Confirmation Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: businesses
+    description: Business profile operations
+  - name: reservations
+    description: Reservation management
+  - name: payments
+    description: Payment operations
+  - name: storage
+    description: Object storage upload and serving endpoints
+  - name: dashboard
+    description: Dashboard statistics
+  - name: admin
+    description: Admin panel operations
+  - name: capacity
+    description: Capacity slot management
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/user:
+    get:
+      operationId: getCurrentAuthUser
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /businesses/me:
+    get:
+      operationId: getMyBusiness
+      tags: [businesses]
+      summary: Get current user's business profile
+      responses:
+        "200":
+          description: Business profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: No business found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: upsertBusiness
+      tags: [businesses]
+      summary: Create or update business profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertBusinessBody"
+      responses:
+        "200":
+          description: Business saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+
+  /reservations:
+    get:
+      operationId: getReservations
+      tags: [reservations]
+      summary: List reservations for the current business
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending_payment, confirmed, cancelled, completed, expired]
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of reservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reservation"
+    post:
+      operationId: createReservation
+      tags: [reservations]
+      summary: Create a new reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReservationBody"
+      responses:
+        "201":
+          description: Reservation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+
+  /reservations/{reservationId}:
+    get:
+      operationId: getReservation
+      tags: [reservations]
+      summary: Get a reservation by ID (public, for customer payment page)
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservation with business info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReservationWithBusiness"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateReservation
+      tags: [reservations]
+      summary: Update a reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReservationBody"
+      responses:
+        "200":
+          description: Reservation updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+    delete:
+      operationId: cancelReservation
+      tags: [reservations]
+      summary: Cancel a reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservation cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+
+  /reservations/{reservationId}/complete:
+    post:
+      operationId: completeReservation
+      tags: [reservations]
+      summary: Mark reservation as completed
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservation completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+
+  /reservations/{reservationId}/status:
+    patch:
+      operationId: changeReservationStatus
+      tags: [reservations]
+      summary: Change the status of a reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeReservationStatusBody"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+
+  /payments/paypal/config:
+    get:
+      operationId: getPayPalConfig
+      tags: [payments]
+      summary: Get PayPal client configuration for the frontend
+      responses:
+        "200":
+          description: PayPal config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayPalConfig"
+
+  /payments/paypal/create-order:
+    post:
+      operationId: createPayPalOrder
+      tags: [payments]
+      summary: Create a PayPal order for a reservation deposit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePayPalOrderBody"
+      responses:
+        "200":
+          description: PayPal order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayPalOrderResponse"
+
+  /payments/paypal/capture-order:
+    post:
+      operationId: capturePayPalOrder
+      tags: [payments]
+      summary: Capture an approved PayPal order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CapturePayPalOrderBody"
+      responses:
+        "200":
+          description: Payment captured successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /payments/history:
+    get:
+      operationId: getPaymentHistory
+      tags: [payments]
+      summary: Get payment history for current business
+      responses:
+        "200":
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard statistics for current business
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [dashboard]
+      summary: Get recent payment notifications for current business
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationItem"
+
+  /capacity:
+    get:
+      operationId: getCapacitySlots
+      tags: [capacity]
+      summary: Get capacity slots for current business (optionally filtered by date)
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+          description: Filter by date (YYYY-MM-DD)
+      responses:
+        "200":
+          description: List of capacity slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CapacitySlot"
+    post:
+      operationId: upsertCapacitySlot
+      tags: [capacity]
+      summary: Create or update a capacity slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertCapacitySlotBody"
+      responses:
+        "200":
+          description: Created or updated capacity slot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapacitySlot"
+
+  /capacity/{id}:
+    delete:
+      operationId: deleteCapacitySlot
+      tags: [capacity]
+      summary: Delete a capacity slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                required: [success]
+
+  /admin/businesses:
+    get:
+      operationId: adminGetBusinesses
+      tags: [admin]
+      summary: Admin - get all businesses
+      responses:
+        "200":
+          description: All businesses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
+
+  /admin/reservations:
+    get:
+      operationId: adminGetReservations
+      tags: [admin]
+      summary: Admin - get all reservations
+      responses:
+        "200":
+          description: All reservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReservationWithBusiness"
+
+  /admin/payments:
+    get:
+      operationId: adminGetPayments
+      tags: [admin]
+      summary: Admin - get all payments
+      responses:
+        "200":
+          description: All payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+
+  /storage/uploads/request-url:
+    post:
+      tags: [storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadUrlRequest'
+      responses:
+        '200':
+          description: Presigned upload URL generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadUrlResponse'
+        '400':
+          description: Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to generate upload URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /storage/objects/{objectPath}:
+    get:
+      tags: [storage]
+      operationId: getStorageObject
+      summary: Serve an uploaded object
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Object content
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UploadUrlRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: number
+        contentType:
+          type: string
+      required:
+        - name
+        - size
+        - contentType
+
+    UploadUrlResponse:
+      type: object
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+      required:
+        - uploadURL
+        - objectPath
+
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+
+    AuthUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profileImage:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [user, admin]
+      required:
+        - id
+        - email
+        - role
+
+    Business:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: string
+        name:
+          type: string
+        logo:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - userId
+        - name
+        - createdAt
+
+    UpsertBusinessBody:
+      type: object
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+      required:
+        - name
+
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+        businessId:
+          type: integer
+        linkId:
+          type: string
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+          nullable: true
+        date:
+          type: string
+        time:
+          type: string
+        guests:
+          type: integer
+        depositAmount:
+          type: number
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [pending_payment, confirmed, cancelled, completed, expired]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - businessId
+        - linkId
+        - customerName
+        - date
+        - time
+        - guests
+        - depositAmount
+        - status
+        - createdAt
+        - updatedAt
+
+    ReservationWithBusiness:
+      allOf:
+        - $ref: "#/components/schemas/Reservation"
+        - type: object
+          properties:
+            business:
+              $ref: "#/components/schemas/Business"
+          required:
+            - business
+
+    CreateReservationBody:
+      type: object
+      properties:
+        linkId:
+          type: string
+          description: Optional client-generated link ID (10-char alphanumeric). Server generates one if omitted.
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+          nullable: true
+        date:
+          type: string
+        time:
+          type: string
+        guests:
+          type: integer
+        depositAmount:
+          type: number
+        notes:
+          type: string
+          nullable: true
+      required:
+        - customerName
+        - date
+        - time
+        - guests
+        - depositAmount
+
+    UpdateReservationBody:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+          nullable: true
+        date:
+          type: string
+        time:
+          type: string
+        guests:
+          type: integer
+        depositAmount:
+          type: number
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [pending_payment, confirmed, cancelled, completed, expired]
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        reservationId:
+          type: integer
+        businessId:
+          type: integer
+        amount:
+          type: number
+        currency:
+          type: string
+        paymentStatus:
+          type: string
+          enum: [pending, paid, failed, refunded]
+        paypalOrderId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        customerName:
+          type: string
+          nullable: true
+        reservationDate:
+          type: string
+          nullable: true
+      required:
+        - id
+        - reservationId
+        - businessId
+        - amount
+        - currency
+        - paymentStatus
+        - createdAt
+
+    PayPalConfig:
+      type: object
+      properties:
+        clientId:
+          type: string
+        mode:
+          type: string
+      required:
+        - clientId
+        - mode
+
+    CreatePayPalOrderBody:
+      type: object
+      properties:
+        linkId:
+          type: string
+      required:
+        - linkId
+
+    PayPalOrderResponse:
+      type: object
+      properties:
+        orderId:
+          type: string
+      required:
+        - orderId
+
+    ChangeReservationStatusBody:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending_payment, confirmed, cancelled, completed, expired]
+      required:
+        - status
+
+    CapturePayPalOrderBody:
+      type: object
+      properties:
+        orderId:
+          type: string
+        linkId:
+          type: string
+      required:
+        - orderId
+        - linkId
+
+    CapacitySlot:
+      type: object
+      properties:
+        id:
+          type: integer
+        businessId:
+          type: integer
+        date:
+          type: string
+        startTime:
+          type: string
+          nullable: true
+        durationHours:
+          type: integer
+          nullable: true
+        maxCapacity:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - businessId
+        - date
+        - maxCapacity
+        - createdAt
+        - updatedAt
+
+    UpsertCapacitySlotBody:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        startTime:
+          type: string
+          nullable: true
+        durationHours:
+          type: integer
+          nullable: true
+        maxCapacity:
+          type: integer
+      required:
+        - date
+        - maxCapacity
+
+    NotificationItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        reservationId:
+          type: integer
+        customerName:
+          type: string
+        amount:
+          type: number
+        paidAt:
+          type: string
+      required:
+        - id
+        - reservationId
+        - customerName
+        - amount
+        - paidAt
+
+    DashboardStats:
+      type: object
+      properties:
+        totalReservations:
+          type: integer
+        pendingPayment:
+          type: integer
+        confirmed:
+          type: integer
+        completed:
+          type: integer
+        cancelled:
+          type: integer
+        totalRevenue:
+          type: number
+        recentReservations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reservation"
+      required:
+        - totalReservations
+        - pendingPayment
+        - confirmed
+        - completed
+        - cancelled
+        - totalRevenue
+        - recentReservations
