@@ -1,155 +1,233 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCreateReservation } from "@workspace/api-client-react";
-import { useLocation } from "wouter";
+import {
+  useCreateReservation,
+  useGetReservations,
+  useGetCapacitySlots,
+  getGetCapacitySlotsQueryKey,
+  getGetReservationsQueryKey,
+  getGetDashboardStatsQueryKey,
+} from "@workspace/api-client-react";
+import { useLocation, useSearch, Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save, MessageCircle } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowLeft, Loader2, MessageCircle, Minus, Plus, AlertTriangle, Users } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getGetReservationsQueryKey, getGetDashboardStatsQueryKey } from "@workspace/api-client-react";
-import { useState, useEffect, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { nanoid } from "nanoid";
 import { useTranslation } from "react-i18next";
-import { usePublicBaseUrl } from "@/hooks/use-public-base-url";
+import { useAppConfig } from "@/hooks/use-public-base-url";
+import { formatDate, formatMoney, localDateString, whatsappUrl } from "@/lib/format";
+import { addDays } from "date-fns";
+import { cn } from "@/lib/utils";
+import { apiErrorMessage } from "@/lib/errors";
 
-function getLocalToday(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-const TODAY = getLocalToday();
-
-const TIME_SLOTS = (() => {
-  const slots: string[] = [];
-  for (let h = 0; h < 24; h++) {
-    for (const m of [0, 15, 30, 45]) {
-      slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-    }
-  }
-  return slots;
-})();
-
-const schema = z.object({
-  customerName: z.string().min(2, "Name is required"),
-  customerPhone: z.string().optional(),
-  date: z.string().min(1, "Date is required").refine((d) => d >= getLocalToday(), "Cannot select a past date"),
-  time: z.string().min(1, "Time is required"),
-  guests: z.coerce.number().min(1, "At least 1 guest required"),
-  depositAmount: z.coerce.number().min(1, "Deposit must be > 0"),
-  notes: z.string().optional(),
-});
-
-type FormData = z.infer<typeof schema>;
-
-function formatPhoneForWhatsApp(phone: string): string {
-  return phone.replace(/[^\d+]/g, "").replace(/^\+/, "");
-}
+const DEPOSIT_PRESETS = [50, 100, 200, 500];
 
 export default function NewReservation() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
+  const search = useSearch();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const createMutation = useCreateReservation();
   const [autoWhatsApp, setAutoWhatsApp] = useState(true);
-  const [hasPhone, setHasPhone] = useState(false);
-  const publicBaseUrl = usePublicBaseUrl();
-  const publicBaseUrlRef = useRef(publicBaseUrl);
-  publicBaseUrlRef.current = publicBaseUrl;
+  const { publicBaseUrl, reservationExpiryMinutes } = useAppConfig();
+  const configRef = useRef({ publicBaseUrl, reservationExpiryMinutes });
+  configRef.current = { publicBaseUrl, reservationExpiryMinutes };
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
+  const today = localDateString();
+  const tomorrow = localDateString(addDays(new Date(), 1));
+  const prefillDate = new URLSearchParams(search).get("date");
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        customerName: z.string().trim().min(2, t("newReservation.nameRequired")),
+        customerPhone: z.string().optional(),
+        date: z
+          .string()
+          .min(1, t("newReservation.dateRequired"))
+          .refine((d) => d >= localDateString(), t("newReservation.datePast")),
+        time: z.string().regex(/^\d{2}:\d{2}$/, t("newReservation.timeRequired")),
+        guests: z.coerce.number().int().min(1, t("newReservation.guestsMin")),
+        depositAmount: z.coerce.number().positive(t("newReservation.depositMin")),
+        notes: z.string().optional(),
+      }),
+    [t],
+  );
+  type FormData = z.infer<typeof schema>;
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { guests: 2, depositAmount: 50 },
+    defaultValues: {
+      guests: 2,
+      depositAmount: 50,
+      date: prefillDate && prefillDate >= today ? prefillDate : today,
+      time: "",
+    },
   });
 
   const watchedPhone = watch("customerPhone");
+  const watchedDate = watch("date");
+  const watchedTime = watch("time");
+  const watchedGuests = Number(watch("guests")) || 0;
+  const watchedDeposit = Number(watch("depositAmount")) || 0;
+  const hasPhone = !!watchedPhone && watchedPhone.replace(/\D/g, "").length >= 8;
+  const willOpenWhatsApp = autoWhatsApp && hasPhone;
 
-  useEffect(() => {
-    setHasPhone(!!watchedPhone && watchedPhone.trim().length > 3);
-  }, [watchedPhone]);
+  // Capacity check: soft warning only — the owner knows their venue best.
+  const { data: reservations } = useGetReservations();
+  const { data: slots = [] } = useGetCapacitySlots(
+    { date: watchedDate },
+    { query: { queryKey: getGetCapacitySlotsQueryKey({ date: watchedDate }), enabled: !!watchedDate } },
+  );
+  const capacity = useMemo(() => {
+    const active = (reservations ?? []).filter(
+      (r) => r.date === watchedDate && (r.status === "confirmed" || r.status === "pending_payment"),
+    );
+    const bookedDay = active.reduce((s, r) => s + r.guests, 0);
+    const daySlot = slots.find((s) => !s.startTime);
+    let slotInfo: { booked: number; max: number; label: string } | null = null;
+    if (watchedTime) {
+      const slot = slots.find((s) => {
+        if (!s.startTime) return false;
+        const start = parseInt(s.startTime, 10);
+        const end = start + (s.durationHours ?? 1);
+        const h = parseInt(watchedTime, 10);
+        return h >= start && h < end;
+      });
+      if (slot?.startTime) {
+        const start = parseInt(slot.startTime, 10);
+        const end = start + (slot.durationHours ?? 1);
+        const booked = active
+          .filter((r) => {
+            const h = parseInt(r.time, 10);
+            return h >= start && h < end;
+          })
+          .reduce((s, r) => s + r.guests, 0);
+        slotInfo = {
+          booked,
+          max: slot.maxCapacity,
+          label: `${slot.startTime}–${String(end).padStart(2, "0")}:00`,
+        };
+      }
+    }
+    return { bookedDay, dayMax: daySlot?.maxCapacity ?? null, slotInfo };
+  }, [reservations, slots, watchedDate, watchedTime]);
+
+  const dayOver = capacity.dayMax !== null && capacity.bookedDay + watchedGuests > capacity.dayMax;
+  const slotOver = !!capacity.slotInfo && capacity.slotInfo.booked + watchedGuests > capacity.slotInfo.max;
 
   const onSubmit = async (data: FormData) => {
-    const shouldWhatsApp = autoWhatsApp && hasPhone && !!data.customerPhone;
+    const shouldWhatsApp = willOpenWhatsApp && !!data.customerPhone;
 
-    // Generate linkId client-side so we can build the WhatsApp URL
-    // BEFORE any async work — this is the only way to bypass popup blockers.
-    const linkId = nanoid(10);
-    const publicLink = `${publicBaseUrlRef.current}/r/${linkId}`;
+    // Generate linkId client-side so we can build the WhatsApp URL BEFORE any
+    // async work — opening a window after an await gets popup-blocked.
+    const linkId = nanoid(12);
+    const publicLink = `${configRef.current.publicBaseUrl}/r/${linkId}`;
 
     if (shouldWhatsApp && data.customerPhone) {
       const message = t("newReservation.waMessage", {
-        name: data.customerName,
-        date: data.date,
+        name: data.customerName.trim(),
+        date: formatDate(data.date, "EEEE d MMMM"),
         time: data.time,
-        amount: data.depositAmount,
+        amount: formatMoney(data.depositAmount),
         link: publicLink,
+        minutes: configRef.current.reservationExpiryMinutes,
       });
-      const cleaned = formatPhoneForWhatsApp(data.customerPhone);
-      const waUrl = `https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`;
-      // Synchronous — runs inside the click event, always allowed by browsers
-      window.open(waUrl, "_blank");
+      window.open(whatsappUrl(data.customerPhone, message), "_blank", "noopener");
     }
 
     try {
-      // Pass the pre-generated linkId so server uses the same one
-      const res = await createMutation.mutateAsync({ data: { ...data, linkId } });
+      const res = await createMutation.mutateAsync({
+        data: { ...data, customerName: data.customerName.trim(), linkId },
+      });
       queryClient.invalidateQueries({ queryKey: getGetReservationsQueryKey() });
       queryClient.invalidateQueries({ queryKey: getGetDashboardStatsQueryKey() });
 
       toast({
         title: t("newReservation.toastCreated"),
-        description: shouldWhatsApp
-          ? t("newReservation.toastWhatsapp")
-          : t("newReservation.toastManual"),
+        description: shouldWhatsApp ? t("newReservation.toastWhatsapp") : t("newReservation.toastManual"),
       });
 
-      setLocation(`/reservations/${res.id}`);
-    } catch (error: any) {
+      // Land on the details page with the share panel front and centre.
+      setLocation(`/reservations/${res.id}?created=1`);
+    } catch (error) {
       toast({
         variant: "destructive",
         title: t("newReservation.toastError"),
-        description: error.message || t("newReservation.toastErrorMsg"),
+        description: shouldWhatsApp
+          ? t("newReservation.toastErrorWhatsapp")
+          : apiErrorMessage(error, t("newReservation.toastErrorMsg")),
       });
     }
   };
 
+  const fieldError = (msg?: string) =>
+    msg ? (
+      <p role="alert" className="text-sm text-destructive">
+        {msg}
+      </p>
+    ) : null;
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="max-w-2xl mx-auto space-y-5">
+      <div className="flex items-center gap-3">
         <Link href="/reservations">
-          <Button variant="outline" size="icon" className="rounded-xl">
-            <ArrowLeft className="w-5 h-5" />
+          <Button variant="outline" size="icon" className="rounded-xl shrink-0" aria-label={t("common.back")}>
+            <ArrowLeft className="w-5 h-5 rtl:rotate-180" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold font-display text-foreground">{t("newReservation.title")}</h1>
-          <p className="text-muted-foreground mt-1">{t("newReservation.subtitle")}</p>
+          <h1 className="text-2xl md:text-3xl font-bold font-display text-foreground">{t("newReservation.title")}</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">{t("newReservation.subtitle")}</p>
         </div>
       </div>
 
-      <div className="bg-card rounded-2xl border border-border shadow-sm p-6 md:p-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+        {/* Who */}
+        <section className="bg-card rounded-2xl border border-border shadow-sm p-5 md:p-6 space-y-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("newReservation.sectionCustomer")}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="text-sm font-semibold">{t("newReservation.customerName")} <span className="text-destructive">*</span></label>
+              <label htmlFor="customerName" className="text-sm font-semibold">
+                {t("newReservation.customerName")} <span className="text-destructive">*</span>
+              </label>
               <Input
+                id="customerName"
+                autoComplete="off"
+                autoFocus
                 {...register("customerName")}
                 placeholder={t("newReservation.customerNamePlaceholder")}
+                aria-invalid={!!errors.customerName}
                 className="h-12 rounded-xl subtle-ring"
               />
-              {errors.customerName && <p className="text-sm text-destructive">{errors.customerName.message}</p>}
+              {fieldError(errors.customerName?.message)}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold">{t("newReservation.whatsapp")}</label>
+              <label htmlFor="customerPhone" className="text-sm font-semibold">
+                {t("newReservation.whatsapp")}
+              </label>
               <Input
+                id="customerPhone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="off"
+                dir="ltr"
                 {...register("customerPhone")}
                 placeholder="+212 6XX XXX XXX"
                 className="h-12 rounded-xl subtle-ring"
@@ -157,110 +235,251 @@ export default function NewReservation() {
               <p className="text-xs text-muted-foreground">{t("newReservation.whatsappHint")}</p>
             </div>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-border">
-            <div className="space-y-2 lg:col-span-2">
-              <label className="text-sm font-semibold">{t("newReservation.date")} <span className="text-destructive">*</span></label>
+        {/* When */}
+        <section className="bg-card rounded-2xl border border-border shadow-sm p-5 md:p-6 space-y-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("newReservation.sectionWhen")}
+          </h2>
+
+          <div className="space-y-2">
+            <label htmlFor="date" className="text-sm font-semibold">
+              {t("newReservation.date")} <span className="text-destructive">*</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: today, label: t("common.today") },
+                { value: tomorrow, label: t("common.tomorrow") },
+              ].map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => setValue("date", c.value, { shouldValidate: true })}
+                  aria-pressed={watchedDate === c.value}
+                  className={cn(
+                    "h-10 px-4 rounded-xl border text-sm font-medium transition-colors",
+                    watchedDate === c.value
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background border-border hover:border-primary/40",
+                  )}
+                >
+                  {c.label}
+                </button>
+              ))}
               <Input
+                id="date"
                 type="date"
-                min={TODAY}
+                min={today}
                 {...register("date")}
+                aria-invalid={!!errors.date}
+                className="h-10 rounded-xl subtle-ring w-auto flex-1 min-w-[10rem]"
+              />
+            </div>
+            {watchedDate && !errors.date && (
+              <p className="text-xs text-muted-foreground capitalize">{formatDate(watchedDate, "EEEE d MMMM yyyy")}</p>
+            )}
+            {fieldError(errors.date?.message)}
+          </div>
+
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label htmlFor="time" className="text-sm font-semibold">
+                {t("newReservation.time")} <span className="text-destructive">*</span>
+              </label>
+              <Input
+                id="time"
+                type="time"
+                step={900}
+                dir="ltr"
+                {...register("time")}
+                aria-invalid={!!errors.time}
                 className="h-12 rounded-xl subtle-ring"
               />
-              {errors.date && <p className="text-sm text-destructive">{errors.date.message}</p>}
+              {fieldError(errors.time?.message)}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold">{t("newReservation.time")} <span className="text-destructive">*</span></label>
-              <Select onValueChange={(v) => setValue("time", v, { shouldValidate: true })}>
-                <SelectTrigger className="h-12 rounded-xl subtle-ring">
-                  <SelectValue placeholder="-- : --" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  {TIME_SLOTS.map((slot) => (
-                    <SelectItem key={slot} value={slot}>{slot}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.time && <p className="text-sm text-destructive">{errors.time.message}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold">{t("newReservation.guests")} <span className="text-destructive">*</span></label>
-              <Input type="number" min="1" {...register("guests")} className="h-12 rounded-xl subtle-ring" />
-              {errors.guests && <p className="text-sm text-destructive">{errors.guests.message}</p>}
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-border space-y-6">
-            <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-              <div className="space-y-2 max-w-sm">
-                <label className="text-sm font-semibold text-primary-foreground/80">
-                  {t("newReservation.depositAmount")} <span className="text-destructive">*</span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-muted-foreground">MAD</span>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    {...register("depositAmount")}
-                    className="h-14 pl-16 text-xl font-bold rounded-xl border-primary/20 focus:ring-primary/30"
-                  />
-                </div>
-                {errors.depositAmount && <p className="text-sm text-destructive">{errors.depositAmount.message}</p>}
-                <p className="text-xs text-muted-foreground mt-2">{t("newReservation.depositHint")}</p>
+              <label htmlFor="guests" className="text-sm font-semibold">
+                {t("newReservation.guests")} <span className="text-destructive">*</span>
+              </label>
+              <div className="flex items-center h-12 rounded-xl border border-input bg-background overflow-hidden">
+                <button
+                  type="button"
+                  aria-label={t("newReservation.fewerGuests")}
+                  onClick={() => setValue("guests", Math.max(1, watchedGuests - 1), { shouldValidate: true })}
+                  className="w-11 h-full flex items-center justify-center text-muted-foreground hover:bg-muted disabled:opacity-40"
+                  disabled={watchedGuests <= 1}
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <input
+                  id="guests"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  {...register("guests")}
+                  className="flex-1 min-w-0 h-full text-center font-semibold bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  aria-label={t("newReservation.moreGuests")}
+                  onClick={() => setValue("guests", watchedGuests + 1, { shouldValidate: true })}
+                  className="w-11 h-full flex items-center justify-center text-muted-foreground hover:bg-muted"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold">{t("newReservation.notes")}</label>
-              <Textarea
-                {...register("notes")}
-                placeholder={t("newReservation.notesPlaceholder")}
-                className="min-h-[100px] rounded-xl subtle-ring"
-              />
+              {fieldError(errors.guests?.message)}
             </div>
           </div>
 
-          {/* WhatsApp toggle — only shown when a phone number is entered */}
-          <div className={`pt-4 border-t border-border transition-opacity duration-200 ${!hasPhone ? "opacity-40 pointer-events-none" : ""}`}>
-            <div className="flex items-center justify-between bg-[#25D366]/10 border border-[#25D366]/30 rounded-2xl p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#25D366] flex items-center justify-center shadow-sm">
-                  <MessageCircle className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm">{t("newReservation.waToggle")}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {hasPhone
-                      ? t("newReservation.waToggleOn")
-                      : t("newReservation.waToggleOff")}
-                  </p>
-                </div>
-              </div>
-              <Switch
-                checked={autoWhatsApp && hasPhone}
-                onCheckedChange={setAutoWhatsApp}
-                disabled={!hasPhone}
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-6 border-t border-border">
-            <Button
-              type="submit"
-              size="lg"
-              className="rounded-xl px-8 shadow-lg shadow-primary/25"
-              disabled={createMutation.isPending}
+          {(capacity.dayMax !== null || capacity.slotInfo) && (
+            <div
+              className={cn(
+                "flex items-start gap-3 rounded-xl border p-3 text-sm",
+                dayOver || slotOver
+                  ? "border-amber-300 bg-amber-50 text-amber-900"
+                  : "border-border bg-muted/40 text-muted-foreground",
+              )}
             >
-              {createMutation.isPending
-                ? <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                : <Save className="w-5 h-5 mr-2" />}
-              {autoWhatsApp && hasPhone ? t("newReservation.saveWhatsapp") : t("newReservation.save")}
-            </Button>
+              {dayOver || slotOver ? (
+                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
+              ) : (
+                <Users className="w-4 h-4 mt-0.5 shrink-0" />
+              )}
+              <div className="space-y-0.5">
+                {capacity.dayMax !== null && (
+                  <p>
+                    {t("newReservation.capacityDay", {
+                      booked: capacity.bookedDay,
+                      max: capacity.dayMax,
+                    })}
+                  </p>
+                )}
+                {capacity.slotInfo && (
+                  <p>
+                    {t("newReservation.capacitySlot", {
+                      slot: capacity.slotInfo.label,
+                      booked: capacity.slotInfo.booked,
+                      max: capacity.slotInfo.max,
+                    })}
+                  </p>
+                )}
+                {(dayOver || slotOver) && <p className="font-medium">{t("newReservation.capacityOver")}</p>}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Deposit */}
+        <section className="bg-card rounded-2xl border border-border shadow-sm p-5 md:p-6 space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="depositAmount" className="text-sm font-semibold">
+              {t("newReservation.depositAmount")} <span className="text-destructive">*</span>
+            </label>
+            <div className="relative max-w-xs">
+              <Input
+                id="depositAmount"
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                min="1"
+                dir="ltr"
+                {...register("depositAmount")}
+                aria-invalid={!!errors.depositAmount}
+                className="h-14 pe-16 text-xl font-bold rounded-xl subtle-ring"
+              />
+              <span className="absolute end-4 top-1/2 -translate-y-1/2 text-base font-bold text-muted-foreground pointer-events-none">
+                MAD
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {DEPOSIT_PRESETS.map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setValue("depositAmount", v, { shouldValidate: true })}
+                  aria-pressed={watchedDeposit === v}
+                  className={cn(
+                    "h-9 px-3.5 rounded-full border text-sm font-medium transition-colors",
+                    watchedDeposit === v
+                      ? "bg-primary/10 text-primary border-primary/40"
+                      : "bg-background border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {formatMoney(v)}
+                </button>
+              ))}
+            </div>
+            {fieldError(errors.depositAmount?.message)}
+            <p className="text-xs text-muted-foreground">
+              {t("newReservation.depositHint", { minutes: reservationExpiryMinutes })}
+            </p>
           </div>
-        </form>
-      </div>
+
+          <div className="space-y-2 pt-4 border-t border-border">
+            <label htmlFor="notes" className="text-sm font-semibold">
+              {t("newReservation.notes")}
+            </label>
+            <Textarea
+              id="notes"
+              {...register("notes")}
+              placeholder={t("newReservation.notesPlaceholder")}
+              className="min-h-[88px] rounded-xl subtle-ring"
+            />
+            <p className="text-xs text-muted-foreground">{t("newReservation.notesHint")}</p>
+          </div>
+        </section>
+
+        {/* Send */}
+        <section
+          className={cn(
+            "flex items-center justify-between gap-4 rounded-2xl border p-4 md:p-5 transition-colors",
+            hasPhone ? "bg-[#25D366]/10 border-[#25D366]/30" : "bg-muted/40 border-border",
+          )}
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                hasPhone ? "bg-[#25D366]" : "bg-muted-foreground/30",
+              )}
+            >
+              <MessageCircle className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <label htmlFor="auto-wa" className="font-semibold text-sm block">
+                {t("newReservation.waToggle")}
+              </label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {hasPhone ? t("newReservation.waToggleOn") : t("newReservation.waToggleOff")}
+              </p>
+            </div>
+          </div>
+          <Switch id="auto-wa" checked={willOpenWhatsApp} onCheckedChange={setAutoWhatsApp} disabled={!hasPhone} />
+        </section>
+
+        {/* Sticky on phones so the primary action is always reachable */}
+        <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:static z-30 -mx-4 px-4 py-3 md:p-0 md:mx-0 bg-background/95 backdrop-blur md:bg-transparent border-t border-border md:border-0">
+          <Button
+            type="submit"
+            size="lg"
+            className={cn(
+              "w-full md:w-auto md:float-end rounded-xl px-8 h-12 shadow-lg gap-2",
+              willOpenWhatsApp && "bg-[#1fa855] hover:bg-[#1a9149] shadow-green-600/20",
+            )}
+            disabled={createMutation.isPending}
+          >
+            {createMutation.isPending ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : willOpenWhatsApp ? (
+              <MessageCircle className="w-5 h-5" />
+            ) : null}
+            {willOpenWhatsApp ? t("newReservation.saveWhatsapp") : t("newReservation.save")}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

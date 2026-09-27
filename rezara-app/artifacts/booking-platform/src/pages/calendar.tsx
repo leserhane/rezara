@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useGetReservations,
   useGetCapacitySlots,
@@ -8,7 +8,6 @@ import {
 } from "@workspace/api-client-react";
 import type { CapacitySlot } from "@workspace/api-client-react";
 import {
-  format,
   isSameDay,
   startOfMonth,
   endOfMonth,
@@ -26,8 +25,13 @@ import {
   Plus,
   Trash2,
   Loader2,
-  Settings2,
+  CalendarPlus,
 } from "lucide-react";
+import { ReservationRow } from "@/components/reservation-row";
+import { statusDotClass } from "@/components/status-badge";
+import { formatDate as format, localDateString, weekStartsOn } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import type { Reservation } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
@@ -52,15 +56,53 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
   return `${h}:00`;
 });
 
+function DayReservations({ day, reservations }: { day: Date; reservations: Reservation[] }) {
+  const { t } = useTranslation();
+  const dateStr = localDateString(day);
+  const isPastDay = dateStr < localDateString();
+  const guests = reservations
+    .filter((r) => r.status === "confirmed" || r.status === "pending_payment")
+    .reduce((s, r) => s + r.guests, 0);
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-semibold text-sm text-foreground">
+          {t("calendar.bookingsCount", { count: reservations.length })}
+          {guests > 0 && <span className="text-muted-foreground font-normal"> · {t("common.guestCount", { count: guests })}</span>}
+        </span>
+        {!isPastDay && (
+          <Link href={`/reservations/new?date=${dateStr}`}>
+            <Button size="sm" className="rounded-xl gap-1.5 text-xs">
+              <CalendarPlus className="w-3.5 h-3.5" />
+              {t("calendar.newOnDay")}
+            </Button>
+          </Link>
+        )}
+      </div>
+      {reservations.length === 0 ? (
+        <div className="text-center py-5 text-sm text-muted-foreground bg-muted/30 rounded-2xl border border-dashed border-border">
+          {t("calendar.noBookings")}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-border divide-y divide-border overflow-hidden -mx-1">
+          {[...reservations]
+            .sort((a, b) => a.time.localeCompare(b.time))
+            .map((r) => (
+              <ReservationRow key={r.id} reservation={r} />
+            ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CapacityPanel({
   day,
-  onClose,
 }: {
   day: Date;
-  onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const dateStr = format(day, "yyyy-MM-dd");
+  const dateStr = localDateString(day);
   const qc = useQueryClient();
 
   const { data: slots = [], isLoading } = useGetCapacitySlots(
@@ -74,9 +116,11 @@ function CapacityPanel({
   const allDaySlot = slots.find((s) => !s.startTime);
   const timeSlots = slots.filter((s) => !!s.startTime);
 
-  const [allDayCapacity, setAllDayCapacity] = useState<string>(
-    () => allDaySlot?.maxCapacity?.toString() ?? ""
-  );
+  const [allDayCapacity, setAllDayCapacity] = useState<string>("");
+  // Slots load after mount; show the saved limit once it arrives.
+  useEffect(() => {
+    setAllDayCapacity(allDaySlot?.maxCapacity?.toString() ?? "");
+  }, [allDaySlot?.id, allDaySlot?.maxCapacity]);
   const [savingAllDay, setSavingAllDay] = useState(false);
 
   const [newSlot, setNewSlot] = useState({
@@ -345,51 +389,49 @@ export default function CalendarView() {
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart);
-  const endDate = endOfWeek(monthEnd);
+  const wso = weekStartsOn();
+  const startDate = startOfWeek(monthStart, { weekStartsOn: wso });
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: wso });
   const days = eachDayOfInterval({ start: startDate, end: endDate });
+  const weekdayLabels = days.slice(0, 7).map((d) => format(d, "EEEEEE"));
+  const isThisMonth = isSameDay(startOfMonth(new Date()), monthStart);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-display text-foreground">{t("calendar.title")}</h1>
-          <p className="text-muted-foreground mt-1">
-            {t("calendar.subtitle")}
-          </p>
+          <h1 className="text-2xl md:text-3xl font-bold font-display text-foreground">{t("calendar.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("calendar.subtitle")}</p>
         </div>
       </div>
 
-      <div className="bg-card rounded-3xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-3xl border border-border shadow-sm p-3 sm:p-6">
         {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold font-display">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 px-1">
+          <h2 className="text-xl sm:text-2xl font-bold font-display capitalize">
             {format(currentMonth, "MMMM yyyy")}
           </h2>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={prevMonth} className="rounded-xl">
-              <ChevronLeft className="w-5 h-5" />
+            {!isThisMonth && (
+              <Button variant="outline" onClick={() => setCurrentMonth(new Date())} className="rounded-xl h-10 px-3 text-sm">
+                {t("common.today")}
+              </Button>
+            )}
+            <Button variant="outline" size="icon" onClick={prevMonth} className="rounded-xl" aria-label={t("calendar.prevMonth")}>
+              <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
             </Button>
-            <Button variant="outline" size="icon" onClick={nextMonth} className="rounded-xl">
-              <ChevronRight className="w-5 h-5" />
+            <Button variant="outline" size="icon" onClick={nextMonth} className="rounded-xl" aria-label={t("calendar.nextMonth")}>
+              <ChevronRight className="w-5 h-5 rtl:rotate-180" />
             </Button>
           </div>
         </div>
 
         {/* Days of week */}
-        <div className="grid grid-cols-7 mb-4">
-          {[
-            t("calendar.days.sun"),
-            t("calendar.days.mon"),
-            t("calendar.days.tue"),
-            t("calendar.days.wed"),
-            t("calendar.days.thu"),
-            t("calendar.days.fri"),
-            t("calendar.days.sat"),
-          ].map((d) => (
+        <div className="grid grid-cols-7 mb-2">
+          {weekdayLabels.map((d, i) => (
             <div
-              key={d}
-              className="text-center font-semibold text-sm text-muted-foreground uppercase tracking-wider"
+              key={i}
+              className="text-center font-semibold text-xs sm:text-sm text-muted-foreground uppercase tracking-wider"
             >
               {d}
             </div>
@@ -397,112 +439,136 @@ export default function CalendarView() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-7 gap-2 md:gap-3">
-          {days.map((day, i) => {
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">
+          {days.map((day) => {
             const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
-            const dayReservations =
-              reservations?.filter((r) => isSameDay(new Date(r.date), day)) || [];
+            const dateStr = localDateString(day);
+            const dayReservations = (reservations ?? [])
+              .filter((r) => r.date === dateStr && r.status !== "cancelled" && r.status !== "expired")
+              .sort((a, b) => a.time.localeCompare(b.time));
             const isToday = isSameDay(day, new Date());
-            const dateStr = format(day, "yyyy-MM-dd");
 
             const dayCapSlots = allCapacitySlots.filter((s) => s.date === dateStr);
             const allDayCap = dayCapSlots.find((s) => !s.startTime);
             const timeSlotCount = dayCapSlots.filter((s) => !!s.startTime).length;
+            const bookedGuests = dayReservations
+              .filter((r) => r.status === "confirmed" || r.status === "pending_payment")
+              .reduce((s, r) => s + r.guests, 0);
+            const full = !!allDayCap && bookedGuests >= allDayCap.maxCapacity;
 
             return (
-              <div
-                key={i}
-                onClick={() => isCurrentMonth && setSelectedDay(day)}
-                className={`min-h-[100px] md:min-h-[120px] rounded-2xl p-2 border transition-all ${
+              <button
+                type="button"
+                key={dateStr}
+                onClick={() => setSelectedDay(day)}
+                aria-label={`${format(day, "PPPP")} — ${t("calendar.bookingsCount", { count: dayReservations.length })}`}
+                className={cn(
+                  "min-h-[64px] sm:min-h-[100px] md:min-h-[116px] rounded-xl sm:rounded-2xl p-1 sm:p-2 border text-start transition-all flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isCurrentMonth
-                    ? "bg-background border-border cursor-pointer hover:border-primary/40 hover:shadow-sm"
-                    : "bg-muted/30 border-transparent opacity-40"
-                } ${isToday ? "ring-2 ring-primary border-transparent" : ""}`}
+                    ? "bg-background border-border hover:border-primary/40 hover:shadow-sm"
+                    : "bg-muted/30 border-transparent text-muted-foreground/60",
+                  isToday && "ring-2 ring-primary border-transparent",
+                )}
               >
-                <div className="flex items-start justify-between mb-1">
-                  <div
-                    className={`font-semibold text-sm w-7 h-7 flex items-center justify-center rounded-full ${
-                      isToday ? "bg-primary text-white" : ""
-                    }`}
+                <div className="flex items-start justify-between w-full mb-1">
+                  <span
+                    className={cn(
+                      "font-semibold text-xs sm:text-sm w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full",
+                      isToday && "bg-primary text-primary-foreground",
+                    )}
                   >
                     {format(day, "d")}
-                  </div>
+                  </span>
                   {isCurrentMonth && (allDayCap || timeSlotCount > 0) && (
-                    <div className="flex items-center gap-0.5 mt-0.5">
-                      <Users className="w-3 h-3 text-[#00C896]" />
-                      <span className="text-[10px] font-semibold text-[#00C896] leading-none">
-                        {allDayCap
-                          ? allDayCap.maxCapacity
-                          : `${timeSlotCount}t`}
-                      </span>
-                    </div>
+                    <span
+                      className={cn(
+                        "hidden sm:inline-flex items-center gap-0.5 mt-0.5 text-[10px] font-semibold leading-none",
+                        full ? "text-red-600" : "text-primary",
+                      )}
+                      title={t("calendar.capacitySet")}
+                    >
+                      <Users className="w-3 h-3" />
+                      {allDayCap ? `${bookedGuests}/${allDayCap.maxCapacity}` : timeSlotCount}
+                    </span>
                   )}
                 </div>
 
-                <div className="space-y-1">
+                {/* Phones: dots. Larger screens: time + name chips. */}
+                <div className="flex flex-wrap gap-0.5 sm:hidden px-0.5">
+                  {dayReservations.slice(0, 4).map((res) => (
+                    <span key={res.id} className={cn("w-1.5 h-1.5 rounded-full", statusDotClass(res.status))} />
+                  ))}
+                  {dayReservations.length > 4 && <span className="text-[9px] leading-none text-muted-foreground">+</span>}
+                </div>
+                <div className="hidden sm:block space-y-1 w-full">
                   {dayReservations.slice(0, 2).map((res) => (
-                    <Link key={res.id} href={`/reservations/${res.id}`}>
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className={`text-xs px-1.5 py-0.5 rounded-md truncate cursor-pointer hover:opacity-80 font-medium ${
-                          res.status === "confirmed"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : res.status === "pending_payment"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-slate-100 text-slate-800"
-                        }`}
-                      >
-                        {res.time} {res.customerName}
-                      </div>
-                    </Link>
+                    <div
+                      key={res.id}
+                      className={cn(
+                        "text-xs px-1.5 py-0.5 rounded-md truncate font-medium",
+                        res.status === "confirmed"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : res.status === "pending_payment"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-slate-100 text-slate-700",
+                      )}
+                    >
+                      <span dir="ltr">{res.time}</span> {res.customerName}
+                    </div>
                   ))}
                   {dayReservations.length > 2 && (
-                    <div className="text-[10px] text-muted-foreground font-medium pl-1">
+                    <div className="text-[10px] text-muted-foreground font-medium ps-1">
                       {t("calendar.moreCount", { n: dayReservations.length - 2 })}
                     </div>
                   )}
-                  {isCurrentMonth && dayCapSlots.length === 0 && (
-                    <div className="mt-1 hidden group-hover:flex items-center gap-1">
-                      <Settings2 className="w-3 h-3 text-muted-foreground/50" />
-                    </div>
-                  )}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Capacity legend */}
-      <div className="flex items-center gap-4 text-xs text-muted-foreground px-1">
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground px-1">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
           {t("calendar.confirmedLegend")}
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-amber-400" />
+          <div className="w-3 h-3 rounded-full bg-amber-500" />
           {t("calendar.pendingPaymentLegend")}
         </div>
         <div className="flex items-center gap-1.5">
-          <Users className="w-3 h-3 text-[#00C896]" />
-          {t("calendar.capacitySet")}
+          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          {t("status.completed")}
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Users className="w-3 h-3 text-primary" />
+          {t("calendar.capacityLegend")}
         </div>
       </div>
 
       {/* Day capacity sheet */}
       <Sheet open={!!selectedDay} onOpenChange={(open) => !open && setSelectedDay(null)}>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-          <SheetHeader className="mb-6">
-            <SheetTitle className="text-xl font-bold font-display">
-              {selectedDay ? format(selectedDay, "EEEE, MMMM d") : ""}
+          <SheetHeader className="mb-5 text-start">
+            <SheetTitle className="text-xl font-bold font-display capitalize">
+              {selectedDay ? format(selectedDay, "EEEE d MMMM") : ""}
             </SheetTitle>
-            <p className="text-sm text-muted-foreground">
-              {t("calendar.manageCapacity")}
-            </p>
           </SheetHeader>
 
           {selectedDay && (
-            <CapacityPanel day={selectedDay} onClose={() => setSelectedDay(null)} />
+            <div className="space-y-7">
+              <DayReservations
+                day={selectedDay}
+                reservations={(reservations ?? []).filter((r) => r.date === localDateString(selectedDay))}
+              />
+              <div className="border-t border-border pt-6">
+                <p className="text-sm font-bold mb-1">{t("calendar.capacityTitle")}</p>
+                <p className="text-xs text-muted-foreground mb-5">{t("calendar.manageCapacity")}</p>
+                <CapacityPanel key={localDateString(selectedDay)} day={selectedDay} />
+              </div>
+            </div>
           )}
         </SheetContent>
       </Sheet>

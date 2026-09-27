@@ -1,46 +1,54 @@
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 const LANGUAGES = [
-  { code: "en", countryCode: "gb", label: "EN" },
-  { code: "fr", countryCode: "fr", label: "FR" },
-  { code: "ar", countryCode: "ma", label: "AR" },
+  { code: "en", label: "EN", name: "English" },
+  { code: "fr", label: "FR", name: "Français" },
+  { code: "ar", label: "ع", name: "العربية" },
 ] as const;
 
-export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+export function setLanguage(code: string) {
+  // Persist the choice and flip text direction for Arabic.
+  try {
+    localStorage.setItem("rezara_lang", code);
+  } catch {
+    /* private mode — the choice just won't persist */
+  }
+  document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
+  document.documentElement.lang = code;
+}
+
+export function LanguageSwitcher({ className }: { className?: string }) {
+  const { i18n, t } = useTranslation();
 
   const handleChange = (code: string) => {
     i18n.changeLanguage(code);
-    localStorage.setItem("rezara_lang", code);
-    document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
-    document.documentElement.lang = code;
+    setLanguage(code);
   };
 
   return (
-    <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 border border-border">
-      {LANGUAGES.map(({ code, countryCode, label }) => {
+    <div
+      role="radiogroup"
+      aria-label={t("common.language")}
+      className={cn("inline-flex items-center gap-0.5 bg-muted/70 rounded-xl p-1 border border-border", className)}
+    >
+      {LANGUAGES.map(({ code, label, name }) => {
         const active = i18n.language === code;
         return (
           <button
             key={code}
+            type="button"
+            role="radio"
+            aria-checked={active}
             onClick={() => handleChange(code)}
-            title={label}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold transition-all duration-150 select-none ${
-              active
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            title={name}
+            lang={code}
+            className={cn(
+              "min-w-9 h-7 px-2 rounded-lg text-xs font-semibold transition-all select-none",
+              active ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
           >
-            <img
-              src={`https://flagcdn.com/20x15/${countryCode}.png`}
-              srcSet={`https://flagcdn.com/40x30/${countryCode}.png 2x`}
-              width={20}
-              height={15}
-              alt={label}
-              className="rounded-[2px] object-cover"
-              style={{ display: "block" }}
-            />
-            <span>{label}</span>
+            {label}
           </button>
         );
       })}

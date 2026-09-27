@@ -6,20 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Store, Save, Camera, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Loader2, Save, Camera, X, Eye } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUpload } from "@workspace/object-storage-web";
-
-const schema = z.object({
-  name: z.string().min(2, "Business name is required"),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  description: z.string().optional(),
-  logo: z.string().optional(),
-});
-
-type FormData = z.infer<typeof schema>;
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { apiErrorMessage } from "@/lib/errors";
 
 function LogoUploader({
   currentLogo,
@@ -29,6 +22,7 @@ function LogoUploader({
   onLogoChange: (url: string) => void;
 }) {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string>(currentLogo);
 
@@ -44,12 +38,19 @@ function LogoUploader({
     },
     onError: (err) => {
       console.error("Upload failed", err);
+      setPreview(currentLogo);
+      toast({ variant: "destructive", title: t("settings.uploadFailed") });
     },
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ variant: "destructive", title: t("settings.uploadTooLarge") });
+      e.target.value = "";
+      return;
+    }
     const localPreview = URL.createObjectURL(file);
     setPreview(localPreview);
     await uploadFile(file);
@@ -76,11 +77,12 @@ function LogoUploader({
         onClick={() => fileRef.current?.click()}
         className="relative w-32 h-32 rounded-2xl bg-muted border-2 border-dashed border-border hover:border-primary/40 transition-colors overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         disabled={isUploading}
+        aria-label={preview ? t("settings.changeLogo") : t("settings.uploadLogo")}
       >
         {preview ? (
           <img
             src={preview}
-            alt="Business logo"
+            alt=""
             className="w-full h-full object-cover"
           />
         ) : (
@@ -120,6 +122,21 @@ function LogoUploader({
 export default function Settings() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z.string().trim().min(2, t("settings.nameRequired")),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        description: z.string().max(280, t("settings.descriptionTooLong")).optional(),
+        logo: z.string().optional(),
+      }),
+    [t],
+  );
+  type FormData = z.infer<typeof schema>;
 
   const { data: business, isLoading: isFetching } = useGetMyBusiness({
     query: { queryKey: getGetMyBusinessQueryKey(), retry: false }
@@ -127,11 +144,13 @@ export default function Settings() {
 
   const upsertMutation = useUpsertBusiness();
 
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors, isDirty } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const logoValue = watch("logo") || "";
+  const nameValue = watch("name") || "";
+  const descriptionValue = watch("description") || "";
 
   useEffect(() => {
     if (business) {
@@ -147,16 +166,22 @@ export default function Settings() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await upsertMutation.mutateAsync({ data });
+      const isFirstSave = !business;
+      const saved = await upsertMutation.mutateAsync({ data });
+      // Keep the sidebar, approval gate and dashboard in sync with the new profile.
+      queryClient.setQueryData(getGetMyBusinessQueryKey(), saved);
+      await queryClient.invalidateQueries({ queryKey: getGetMyBusinessQueryKey() });
+      reset(data);
       toast({
         title: t("settings.toastSaved"),
         description: t("settings.toastSavedDesc"),
       });
-    } catch (error: any) {
+      if (isFirstSave) setLocation("/dashboard");
+    } catch (error) {
       toast({
         variant: "destructive",
         title: t("settings.toastError"),
-        description: error.message || t("settings.toastErrorMsg"),
+        description: apiErrorMessage(error, t("settings.toastErrorMsg")),
       });
     }
   };
@@ -166,11 +191,19 @@ export default function Settings() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="grid lg:grid-cols-[1fr_18rem] gap-6 items-start">
+      <div className="space-y-6 min-w-0">
       <div>
-        <h1 className="text-3xl font-bold font-display text-foreground">{t("settings.title")}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold font-display text-foreground">{t("settings.title")}</h1>
         <p className="text-muted-foreground mt-1">{t("settings.subtitle")}</p>
       </div>
+
+      {!business && (
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm">
+          <p className="font-semibold">{t("settings.firstTimeTitle")}</p>
+          <p className="text-muted-foreground mt-0.5">{t("settings.firstTimeBody")}</p>
+        </div>
+      )}
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="p-6 md:p-8">
@@ -184,53 +217,63 @@ export default function Settings() {
 
               <div className="flex-1 space-y-4 w-full">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold">{t("settings.businessName")} <span className="text-destructive">{t("settings.required")}</span></label>
+                  <label htmlFor="biz-name" className="text-sm font-semibold">{t("settings.businessName")} <span className="text-destructive">{t("settings.required")}</span></label>
                   <Input
+                    id="biz-name"
                     {...register("name")}
-                    placeholder="The Great Salon"
+                    placeholder={t("settings.namePlaceholder")}
                     className="h-11 rounded-xl subtle-ring font-bold text-lg"
                   />
                   {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground text-xs">{t("settings.logoUrl")}</label>
+                  <label htmlFor="biz-logo" className="font-semibold text-muted-foreground text-xs">{t("settings.logoUrl")}</label>
                   <Input
+                    id="biz-logo"
+                    dir="ltr"
                     {...register("logo")}
                     placeholder="https://example.com/logo.png"
                     className="h-9 rounded-xl subtle-ring text-sm"
                   />
-                  <p className="text-xs text-muted-foreground">Click the box on the left to upload an image, or paste a URL here.</p>
+                  <p className="text-xs text-muted-foreground">{t("settings.logoHint")}</p>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-border">
               <div className="space-y-2">
-                <label className="text-sm font-semibold">{t("settings.contactPhone")}</label>
+                <label htmlFor="biz-phone" className="text-sm font-semibold">{t("settings.contactPhone")}</label>
                 <Input
+                  id="biz-phone"
+                  type="tel"
+                  dir="ltr"
                   {...register("phone")}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+212 5XX XXX XXX"
                   className="h-11 rounded-xl subtle-ring"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold">{t("settings.address")}</label>
+                <label htmlFor="biz-address" className="text-sm font-semibold">{t("settings.address")}</label>
                 <Input
+                  id="biz-address"
                   {...register("address")}
-                  placeholder="123 Main St, City, ST 12345"
+                  placeholder={t("settings.addressPlaceholder")}
                   className="h-11 rounded-xl subtle-ring"
                 />
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-semibold">{t("settings.description")}</label>
+                <label htmlFor="biz-description" className="text-sm font-semibold">{t("settings.description")}</label>
                 <Textarea
+                  id="biz-description"
                   {...register("description")}
                   placeholder={t("settings.descriptionPlaceholder")}
                   className="min-h-[120px] rounded-xl subtle-ring"
                 />
+                {errors.description && <p className="text-sm text-destructive">{errors.description.message}</p>}
+                <p className="text-xs text-muted-foreground text-end tabular-nums">{descriptionValue.length}/280</p>
               </div>
             </div>
 
@@ -239,7 +282,7 @@ export default function Settings() {
                 type="submit"
                 size="lg"
                 className="rounded-xl px-8 shadow-lg shadow-primary/25"
-                disabled={upsertMutation.isPending}
+                disabled={upsertMutation.isPending || (!!business && !isDirty)}
               >
                 {upsertMutation.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Save className="w-5 h-5 mr-2" />}
                 {business ? t("settings.update") : t("settings.create")}
@@ -248,6 +291,33 @@ export default function Settings() {
           </form>
         </div>
       </div>
+      </div>
+
+      {/* Live preview of the header customers see on the payment page */}
+      <aside className="hidden lg:block sticky top-8">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1.5">
+          <Eye className="w-3.5 h-3.5" /> {t("settings.previewTitle")}
+        </p>
+        <div className="rounded-3xl overflow-hidden border border-border shadow-sm bg-white">
+          <div className="bg-slate-900 px-5 py-7 text-center">
+            {logoValue ? (
+              <img src={logoValue} alt="" className="w-16 h-16 rounded-2xl bg-white p-1 mx-auto mb-3 object-contain" />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl font-bold text-white">{(nameValue || "?")[0]}</span>
+              </div>
+            )}
+            <p className="text-lg font-bold text-white truncate">{nameValue || t("settings.namePlaceholder")}</p>
+            {descriptionValue && <p className="text-slate-300 text-xs mt-1 line-clamp-3">{descriptionValue}</p>}
+          </div>
+          <div className="p-4 space-y-2">
+            <div className="h-9 rounded-xl bg-slate-100" />
+            <div className="h-9 rounded-xl bg-slate-100" />
+            <div className="h-10 rounded-xl bg-amber-300/70" />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">{t("settings.previewHint")}</p>
+      </aside>
     </div>
   );
 }

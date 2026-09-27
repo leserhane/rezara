@@ -1,8 +1,9 @@
-import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PaymentSuccess() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <motion.div 
@@ -19,12 +20,12 @@ export default function PaymentSuccess() {
           <CheckCircle2 className="w-12 h-12 text-emerald-600" />
         </motion.div>
         
-        <h1 className="text-3xl font-black font-display text-gray-900 mb-4">Payment Successful!</h1>
+        <h1 className="text-3xl font-black font-display text-gray-900 mb-4">{t("paymentResult.successTitle")}</h1>
         <p className="text-gray-500 mb-8 leading-relaxed">
-          Your deposit has been securely processed and your reservation is now confirmed. We look forward to seeing you.
+          {t("paymentResult.successBody")}
         </p>
         
-        <p className="text-sm font-medium text-gray-400">You may now close this window.</p>
+        <p className="text-sm font-medium text-gray-400">{t("paymentResult.close")}</p>
       </motion.div>
     </div>
   );

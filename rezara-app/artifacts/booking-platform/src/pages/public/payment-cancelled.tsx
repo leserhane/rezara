@@ -1,9 +1,9 @@
-import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 export default function PaymentCancelled() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <motion.div
@@ -20,12 +20,12 @@ export default function PaymentCancelled() {
           <XCircle className="w-12 h-12 text-red-500" />
         </motion.div>
 
-        <h1 className="text-3xl font-black font-display text-gray-900 mb-4">Payment Cancelled</h1>
+        <h1 className="text-3xl font-black font-display text-gray-900 mb-4">{t("paymentResult.cancelledTitle")}</h1>
         <p className="text-gray-500 mb-8 leading-relaxed">
-          No charge was made. Your reservation is still pending payment. You can return to the payment page to complete your deposit.
+          {t("paymentResult.cancelledBody")}
         </p>
 
-        <p className="text-sm font-medium text-gray-400">Please contact the business if you need assistance.</p>
+        <p className="text-sm font-medium text-gray-400">{t("paymentResult.help")}</p>
       </motion.div>
     </div>
   );

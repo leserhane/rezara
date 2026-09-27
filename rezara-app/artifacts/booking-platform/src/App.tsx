@@ -63,8 +63,9 @@ function Router() {
       <Route path="/payments">
         <ProtectedRoute><BusinessApprovalGate><Payments /></BusinessApprovalGate></ProtectedRoute>
       </Route>
+      {/* Not gated: owners must be able to complete their profile while awaiting approval. */}
       <Route path="/settings">
-        <ProtectedRoute><BusinessApprovalGate><Settings /></BusinessApprovalGate></ProtectedRoute>
+        <ProtectedRoute><Settings /></ProtectedRoute>
       </Route>
       <Route path="/admin">
         <ProtectedRoute><AdminPanel /></ProtectedRoute>
