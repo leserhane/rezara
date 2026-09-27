@@ -1,26 +1,27 @@
 import { db } from "@workspace/db";
 import { reservationsTable } from "@workspace/db/schema";
 import { and, eq, lt } from "drizzle-orm";
-
-const EXPIRY_MINUTES = 15;
+import { RESERVATION_EXPIRY_MINUTES } from "../lib/reservationExpiry";
 
 async function expireOldReservations() {
   try {
-    const cutoff = new Date(Date.now() - EXPIRY_MINUTES * 60 * 1000);
+    const cutoff = new Date(Date.now() - RESERVATION_EXPIRY_MINUTES * 60 * 1000);
 
+    // Measured from updatedAt (not createdAt) so a business can re-activate an
+    // expired link and the customer gets a full new window to pay.
     const expired = await db
       .update(reservationsTable)
       .set({ status: "expired", updatedAt: new Date() })
       .where(
         and(
           eq(reservationsTable.status, "pending_payment"),
-          lt(reservationsTable.createdAt, cutoff)
+          lt(reservationsTable.updatedAt, cutoff)
         )
       )
       .returning({ id: reservationsTable.id });
 
     if (expired.length > 0) {
-      console.log(`[jobs] Expired ${expired.length} reservation(s) older than ${EXPIRY_MINUTES} minutes.`);
+      console.log(`[jobs] Expired ${expired.length} unpaid reservation(s) after ${RESERVATION_EXPIRY_MINUTES} minutes.`);
     }
   } catch (err) {
     console.error("[jobs] Error expiring reservations:", err);
@@ -30,5 +31,5 @@ async function expireOldReservations() {
 export function startExpirationJob() {
   expireOldReservations();
   setInterval(expireOldReservations, 60 * 1000);
-  console.log(`[jobs] Reservation expiration job started (${EXPIRY_MINUTES}min threshold, checks every 60s).`);
+  console.log(`[jobs] Reservation expiration job started (${RESERVATION_EXPIRY_MINUTES}min threshold, checks every 60s).`);
 }

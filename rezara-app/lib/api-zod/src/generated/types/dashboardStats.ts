@@ -15,4 +15,6 @@ export interface DashboardStats {
   cancelled: number;
   totalRevenue: number;
   recentReservations: Reservation[];
+  /** Today's and future reservations that are pending or confirmed, soonest first. */
+  upcomingReservations: Reservation[];
 }

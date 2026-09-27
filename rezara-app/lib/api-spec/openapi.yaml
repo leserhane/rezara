@@ -316,6 +316,13 @@ paths:
       operationId: getDashboardStats
       tags: [dashboard]
       summary: Get dashboard statistics for current business
+      parameters:
+        - in: query
+          name: today
+          required: false
+          description: The caller's local date (YYYY-MM-DD), used to pick upcoming reservations.
+          schema:
+            type: string
       responses:
         "200":
           description: Dashboard statistics
@@ -596,6 +603,12 @@ components:
         description:
           type: string
           nullable: true
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        statusNote:
+          type: string
+          nullable: true
         createdAt:
           type: string
       required:
@@ -603,6 +616,27 @@ components:
         - userId
         - name
         - createdAt
+
+    PublicBusiness:
+      type: object
+      description: The subset of a business profile that is safe to show on the public payment page.
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+      required:
+        - name
 
     UpsertBusinessBody:
       type: object
@@ -652,6 +686,10 @@ components:
         status:
           type: string
           enum: [pending_payment, confirmed, cancelled, completed, expired]
+        expiresAt:
+          type: string
+          nullable: true
+          description: When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.
         createdAt:
           type: string
         updatedAt:
@@ -675,7 +713,7 @@ components:
         - type: object
           properties:
             business:
-              $ref: "#/components/schemas/Business"
+              $ref: "#/components/schemas/PublicBusiness"
           required:
             - business
 
@@ -901,7 +939,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Reservation"
+        upcomingReservations:
+          type: array
+          description: Today's and future reservations that are pending or confirmed, soonest first.
+          items:
+            $ref: "#/components/schemas/Reservation"
       required:
+        - upcomingReservations
         - totalReservations
         - pendingPayment
         - confirmed

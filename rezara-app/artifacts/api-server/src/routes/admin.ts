@@ -4,6 +4,7 @@ import { db } from "@workspace/db";
 import { businessesTable, paymentsTable, reservationsTable, revenueSettlementsTable, usersTable, otpCodesTable } from "@workspace/db/schema";
 import { desc, eq, gt, and, sql } from "drizzle-orm";
 import { z } from "zod";
+import { normalizePhone } from "./auth";
 
 const router: IRouter = Router();
 
@@ -37,7 +38,7 @@ router.get("/admin/revenue", requireAdmin, async (req, res) => {
 
       const confirmedConditions = [
         eq(paymentsTable.businessId, business.id),
-        eq(paymentsTable.paymentStatus, "completed"),
+        eq(paymentsTable.paymentStatus, "paid"),
       ];
       if (sinceDate) {
         confirmedConditions.push(gt(paymentsTable.createdAt, sinceDate));
@@ -54,7 +55,7 @@ router.get("/admin/revenue", requireAdmin, async (req, res) => {
         .where(
           and(
             eq(paymentsTable.businessId, business.id),
-            eq(paymentsTable.paymentStatus, "completed"),
+            eq(paymentsTable.paymentStatus, "paid"),
           )
         );
 
@@ -138,7 +139,7 @@ router.post("/admin/revenue/:businessId/settle", requireAdmin, async (req, res) 
 
   const conditions = [
     eq(paymentsTable.businessId, businessId),
-    eq(paymentsTable.paymentStatus, "completed"),
+    eq(paymentsTable.paymentStatus, "paid"),
   ];
   if (sinceDate) {
     conditions.push(gt(paymentsTable.createdAt, sinceDate));
@@ -262,7 +263,8 @@ router.post("/admin/businesses/:id/generate-otp", requireAdmin, async (req, res)
   const code = String(crypto.randomInt(100000, 1000000));
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-  await db.insert(otpCodesTable).values({ phone, code, expiresAt });
+  // Store under the canonical form: that is what /auth/verify-otp looks up.
+  await db.insert(otpCodesTable).values({ phone: normalizePhone(phone), code, expiresAt });
 
   res.json({ success: true, phone, otpCode: code, expiresIn: "15 minutes" });
 });

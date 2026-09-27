@@ -4,16 +4,27 @@ import { businessesTable, reservationsTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { CreateReservationBody, UpdateReservationBody, GetReservationsQueryParams } from "@workspace/api-zod";
 import { nanoid } from "nanoid";
+import { serializeReservation } from "../lib/reservationExpiry";
 
 const router: IRouter = Router();
 
-function serializeReservation(r: typeof reservationsTable.$inferSelect) {
-  return {
-    ...r,
-    depositAmount: Number(r.depositAmount),
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-  };
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** Returns a user-facing error for invalid reservation fields, or null. */
+function validateReservationFields(data: {
+  date?: string;
+  time?: string;
+  guests?: number;
+  depositAmount?: number;
+}): string | null {
+  if (data.date !== undefined && !DATE_RE.test(data.date)) return "Date must be in YYYY-MM-DD format";
+  if (data.time !== undefined && !TIME_RE.test(data.time)) return "Time must be in HH:MM format";
+  if (data.guests !== undefined && (!Number.isInteger(data.guests) || data.guests < 1)) {
+    return "Guests must be at least 1";
+  }
+  if (data.depositAmount !== undefined && !(data.depositAmount > 0)) return "Deposit must be greater than 0";
+  return null;
 }
 
 async function getBusinessByUserId(userId: string) {
@@ -73,6 +84,19 @@ router.post("/reservations", async (req, res) => {
     return;
   }
 
+  const invalid = validateReservationFields(parsed.data);
+  if (invalid) {
+    res.status(400).json({ error: invalid });
+    return;
+  }
+
+  // The client pre-generates the link ID so it can open WhatsApp synchronously
+  // (popup blockers); only accept URL-safe IDs long enough to be unguessable.
+  if (parsed.data.linkId !== undefined && !/^[A-Za-z0-9_-]{10,32}$/.test(parsed.data.linkId)) {
+    res.status(400).json({ error: "Invalid link ID" });
+    return;
+  }
+
   const linkId = parsed.data.linkId ?? nanoid(10);
 
   const [reservation] = await db
@@ -107,11 +131,20 @@ router.get("/reservations/:reservationId", async (req, res) => {
     return;
   }
 
+  // This endpoint is public (anyone holding the link can call it), so only
+  // return what the customer's payment page needs: no internal notes, no
+  // customer phone, and none of the business's account/approval fields.
+  const { business } = reservation;
   res.json({
     ...serializeReservation(reservation),
+    customerPhone: null,
+    notes: null,
     business: {
-      ...reservation.business,
-      createdAt: reservation.business.createdAt.toISOString(),
+      name: business.name,
+      logo: business.logo,
+      phone: business.phone,
+      address: business.address,
+      description: business.description,
     },
   });
 });
@@ -133,6 +166,12 @@ router.put("/reservations/:reservationId", async (req, res) => {
   const parsed = UpdateReservationBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid request body" });
+    return;
+  }
+
+  const invalid = validateReservationFields(parsed.data);
+  if (invalid) {
+    res.status(400).json({ error: invalid });
     return;
   }
 

@@ -44,6 +44,15 @@ export interface AuthUser {
   role: AuthUserRole;
 }
 
+export type BusinessStatus =
+  (typeof BusinessStatus)[keyof typeof BusinessStatus];
+
+export const BusinessStatus = {
+  pending: "pending",
+  approved: "approved",
+  rejected: "rejected",
+} as const;
+
 export interface Business {
   id: number;
   userId: string;
@@ -52,7 +61,20 @@ export interface Business {
   phone?: string | null;
   address?: string | null;
   description?: string | null;
+  status?: BusinessStatus;
+  statusNote?: string | null;
   createdAt: string;
+}
+
+/**
+ * The subset of a business profile that is safe to show on the public payment page.
+ */
+export interface PublicBusiness {
+  name: string;
+  logo?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  description?: string | null;
 }
 
 export interface UpsertBusinessBody {
@@ -86,12 +108,14 @@ export interface Reservation {
   depositAmount: number;
   notes?: string | null;
   status: ReservationStatus;
+  /** When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment. */
+  expiresAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export type ReservationWithBusiness = Reservation & {
-  business: Business;
+  business: PublicBusiness;
 };
 
 export interface CreateReservationBody {
@@ -219,6 +243,8 @@ export interface DashboardStats {
   cancelled: number;
   totalRevenue: number;
   recentReservations: Reservation[];
+  /** Today's and future reservations that are pending or confirmed, soonest first. */
+  upcomingReservations: Reservation[];
 }
 
 export type GetReservationsParams = {
@@ -236,6 +262,13 @@ export const GetReservationsStatus = {
   completed: "completed",
   expired: "expired",
 } as const;
+
+export type GetDashboardStatsParams = {
+  /**
+   * The caller's local date (YYYY-MM-DD), used to pick upcoming reservations.
+   */
+  today?: string;
+};
 
 export type GetCapacitySlotsParams = {
   /**

@@ -5,17 +5,14 @@
  * Booking Confirmation Platform API
  * OpenAPI spec version: 0.1.0
  */
-import type { BusinessStatus } from "./businessStatus";
 
-export interface Business {
-  id: number;
-  userId: string;
+/**
+ * The subset of a business profile that is safe to show on the public payment page.
+ */
+export interface PublicBusiness {
   name: string;
   logo?: string | null;
   phone?: string | null;
   address?: string | null;
   description?: string | null;
-  status?: BusinessStatus;
-  statusNote?: string | null;
-  createdAt: string;
 }

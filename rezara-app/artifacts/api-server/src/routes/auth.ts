@@ -84,9 +84,44 @@ function generateOtp(): string {
   return String(crypto.randomInt(100000, 1000000));
 }
 
+/**
+ * Canonical form for phone numbers so "+212 6 12 34 56 78", "00212612345678"
+ * and "0612345678" all map to the same account. Moroccan local numbers
+ * (leading 0 + 9 digits) get the +212 prefix since the product targets
+ * Morocco; anything else just has formatting stripped.
+ */
+export function normalizePhone(raw: string): string {
+  let p = raw.trim().replace(/[\s().-]/g, "");
+  if (p.startsWith("00")) p = `+${p.slice(2)}`;
+  if (/^0\d{9}$/.test(p)) p = `+212${p.slice(1)}`;
+  if (/^212\d{9}$/.test(p)) p = `+${p}`;
+  return p;
+}
+
 function isAdminPhone(phone: string): boolean {
-  const adminPhones = (process.env.ADMIN_PHONES ?? "").split(",").map((p) => p.trim());
-  return adminPhones.length > 0 && adminPhones[0] !== "" && adminPhones.includes(phone);
+  const adminPhones = (process.env.ADMIN_PHONES ?? "")
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map(normalizePhone);
+  return adminPhones.includes(phone);
+}
+
+/**
+ * In test mode the OTP is returned in the API response and shown on screen,
+ * which means *anyone* can sign in as any phone number (including admins).
+ * That is only acceptable in development, so it is off in production builds
+ * unless OTP_TEST_MODE=true is set explicitly.
+ */
+const OTP_TEST_MODE =
+  process.env.OTP_TEST_MODE !== undefined
+    ? process.env.OTP_TEST_MODE === "true"
+    : process.env.NODE_ENV !== "production";
+
+if (OTP_TEST_MODE && process.env.NODE_ENV === "production") {
+  console.warn(
+    "[auth] OTP_TEST_MODE is enabled in production: sign-in codes are shown on screen and anyone can log in as any phone number.",
+  );
 }
 
 /* ─── Routes ─── */
@@ -98,7 +133,11 @@ router.post("/auth/send-otp", async (req: Request, res: Response) => {
     return;
   }
 
-  const { phone } = parsed.data;
+  const phone = normalizePhone(parsed.data.phone);
+  if (!/^\+?\d{8,15}$/.test(phone)) {
+    res.status(400).json({ error: "Invalid phone number" });
+    return;
+  }
 
   if (!checkSendLimit(phone)) {
     res.status(429).json({ error: "Too many OTP requests. Please wait before trying again." });
@@ -116,11 +155,13 @@ router.post("/auth/send-otp", async (req: Request, res: Response) => {
 
   await db.insert(otpCodesTable).values({ phone, code, expiresAt });
 
-  const testMode = process.env.OTP_TEST_MODE !== "false";
-
+  // TODO: deliver `code` over WhatsApp/SMS here. Until a provider is wired
+  // up, outside test mode the code must be handed out by an admin
+  // (Admin → Businesses → Generate code).
   res.json({
     success: true,
-    ...(testMode ? { otpCode: code } : {}),
+    delivered: false,
+    ...(OTP_TEST_MODE ? { otpCode: code } : {}),
   });
 });
 
@@ -131,7 +172,9 @@ router.post("/auth/verify-otp", async (req: Request, res: Response) => {
     return;
   }
 
-  const { phone, code } = parsed.data;
+  const { code } = parsed.data;
+  const rawPhone = parsed.data.phone.trim();
+  const phone = normalizePhone(rawPhone);
 
   if (isVerifyLocked(phone)) {
     res.status(429).json({ error: "Too many failed attempts. Please request a new code." });
@@ -177,13 +220,28 @@ router.post("/auth/verify-otp", async (req: Request, res: Response) => {
   // Clear failed-attempt counter on success
   clearVerifyFailures(phone);
 
-  const [existingUser] = await db
+  let [dbUser] = await db
     .select()
     .from(usersTable)
     .where(eq(usersTable.phone, phone))
     .limit(1);
 
-  let dbUser = existingUser;
+  // Accounts created before phone normalization store the number exactly as
+  // typed; find them by the raw input and migrate them to the canonical form.
+  if (!dbUser && rawPhone !== phone) {
+    const [legacyUser] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.phone, rawPhone))
+      .limit(1);
+    if (legacyUser) {
+      [dbUser] = await db
+        .update(usersTable)
+        .set({ phone })
+        .where(eq(usersTable.id, legacyUser.id))
+        .returning();
+    }
+  }
 
   if (!dbUser) {
     const [newUser] = await db

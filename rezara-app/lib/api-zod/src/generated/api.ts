@@ -37,6 +37,8 @@ export const GetMyBusinessResponse = zod.object({
   phone: zod.string().nullish(),
   address: zod.string().nullish(),
   description: zod.string().nullish(),
+  status: zod.enum(["pending", "approved", "rejected"]).optional(),
+  statusNote: zod.string().nullish(),
   createdAt: zod.string(),
 });
 
@@ -59,6 +61,8 @@ export const UpsertBusinessResponse = zod.object({
   phone: zod.string().nullish(),
   address: zod.string().nullish(),
   description: zod.string().nullish(),
+  status: zod.enum(["pending", "approved", "rejected"]).optional(),
+  statusNote: zod.string().nullish(),
   createdAt: zod.string(),
 });
 
@@ -90,6 +94,12 @@ export const GetReservationsResponseItem = zod.object({
     "completed",
     "expired",
   ]),
+  expiresAt: zod
+    .string()
+    .nullish()
+    .describe(
+      "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+    ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
@@ -140,21 +150,28 @@ export const GetReservationResponse = zod
       "completed",
       "expired",
     ]),
+    expiresAt: zod
+      .string()
+      .nullish()
+      .describe(
+        "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+      ),
     createdAt: zod.string(),
     updatedAt: zod.string(),
   })
   .and(
     zod.object({
-      business: zod.object({
-        id: zod.number(),
-        userId: zod.string(),
-        name: zod.string(),
-        logo: zod.string().nullish(),
-        phone: zod.string().nullish(),
-        address: zod.string().nullish(),
-        description: zod.string().nullish(),
-        createdAt: zod.string(),
-      }),
+      business: zod
+        .object({
+          name: zod.string(),
+          logo: zod.string().nullish(),
+          phone: zod.string().nullish(),
+          address: zod.string().nullish(),
+          description: zod.string().nullish(),
+        })
+        .describe(
+          "The subset of a business profile that is safe to show on the public payment page.",
+        ),
     }),
   );
 
@@ -196,6 +213,12 @@ export const UpdateReservationResponse = zod.object({
     "completed",
     "expired",
   ]),
+  expiresAt: zod
+    .string()
+    .nullish()
+    .describe(
+      "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+    ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
@@ -225,6 +248,12 @@ export const CancelReservationResponse = zod.object({
     "completed",
     "expired",
   ]),
+  expiresAt: zod
+    .string()
+    .nullish()
+    .describe(
+      "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+    ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
@@ -254,6 +283,12 @@ export const CompleteReservationResponse = zod.object({
     "completed",
     "expired",
   ]),
+  expiresAt: zod
+    .string()
+    .nullish()
+    .describe(
+      "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+    ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
@@ -293,6 +328,12 @@ export const ChangeReservationStatusResponse = zod.object({
     "completed",
     "expired",
   ]),
+  expiresAt: zod
+    .string()
+    .nullish()
+    .describe(
+      "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+    ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
@@ -350,6 +391,15 @@ export const GetPaymentHistoryResponse = zod.array(
 /**
  * @summary Get dashboard statistics for current business
  */
+export const GetDashboardStatsQueryParams = zod.object({
+  today: zod.coerce
+    .string()
+    .optional()
+    .describe(
+      "The caller's local date (YYYY-MM-DD), used to pick upcoming reservations.",
+    ),
+});
+
 export const GetDashboardStatsResponse = zod.object({
   totalReservations: zod.number(),
   pendingPayment: zod.number(),
@@ -376,10 +426,49 @@ export const GetDashboardStatsResponse = zod.object({
         "completed",
         "expired",
       ]),
+      expiresAt: zod
+        .string()
+        .nullish()
+        .describe(
+          "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+        ),
       createdAt: zod.string(),
       updatedAt: zod.string(),
     }),
   ),
+  upcomingReservations: zod
+    .array(
+      zod.object({
+        id: zod.number(),
+        businessId: zod.number(),
+        linkId: zod.string(),
+        customerName: zod.string(),
+        customerPhone: zod.string().nullish(),
+        date: zod.string(),
+        time: zod.string(),
+        guests: zod.number(),
+        depositAmount: zod.number(),
+        notes: zod.string().nullish(),
+        status: zod.enum([
+          "pending_payment",
+          "confirmed",
+          "cancelled",
+          "completed",
+          "expired",
+        ]),
+        expiresAt: zod
+          .string()
+          .nullish()
+          .describe(
+            "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+          ),
+        createdAt: zod.string(),
+        updatedAt: zod.string(),
+      }),
+    )
+    .describe(
+      "Today's and future reservations that are pending or confirmed, soonest first.",
+    ),
 });
 
 /**
@@ -457,6 +546,8 @@ export const AdminGetBusinessesResponseItem = zod.object({
   phone: zod.string().nullish(),
   address: zod.string().nullish(),
   description: zod.string().nullish(),
+  status: zod.enum(["pending", "approved", "rejected"]).optional(),
+  statusNote: zod.string().nullish(),
   createdAt: zod.string(),
 });
 export const AdminGetBusinessesResponse = zod.array(
@@ -485,21 +576,28 @@ export const AdminGetReservationsResponseItem = zod
       "completed",
       "expired",
     ]),
+    expiresAt: zod
+      .string()
+      .nullish()
+      .describe(
+        "When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment.",
+      ),
     createdAt: zod.string(),
     updatedAt: zod.string(),
   })
   .and(
     zod.object({
-      business: zod.object({
-        id: zod.number(),
-        userId: zod.string(),
-        name: zod.string(),
-        logo: zod.string().nullish(),
-        phone: zod.string().nullish(),
-        address: zod.string().nullish(),
-        description: zod.string().nullish(),
-        createdAt: zod.string(),
-      }),
+      business: zod
+        .object({
+          name: zod.string(),
+          logo: zod.string().nullish(),
+          phone: zod.string().nullish(),
+          address: zod.string().nullish(),
+          description: zod.string().nullish(),
+        })
+        .describe(
+          "The subset of a business profile that is safe to show on the public payment page.",
+        ),
     }),
   );
 export const AdminGetReservationsResponse = zod.array(

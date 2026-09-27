@@ -8,6 +8,11 @@ import router from "./routes";
 
 const app: Express = express();
 
+// The app runs behind Replit's reverse proxy. Without this, req.ip is the
+// proxy's address, so the rate limiter below lumps *every* visitor into one
+// bucket and a handful of busy users lock everyone else out.
+app.set("trust proxy", 1);
+
 const ALLOWED_ORIGIN_RE =
   /^https?:\/\/(localhost(:\d+)?|.*\.replit\.app|.*\.repl\.co|.*\.replit\.dev|.*\.janeway\.replit\.dev)$/;
 
@@ -30,9 +35,22 @@ app.use(
 );
 
 app.use(
+  "/api/auth/",
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 200,
+    max: 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Too many sign-in attempts, please try again later." },
+  }),
+);
+
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    // The dashboard polls notifications every 30s and each screen makes a few
+    // requests, so 200/15min was reachable by a single busy staff member.
+    max: 1000,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "Too many requests, please try again later." },

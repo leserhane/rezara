@@ -153,11 +153,30 @@ router.post("/payments/paypal/capture-order", async (req, res) => {
 
   const { orderId, linkId } = parsed.data;
 
+  // The order must be one we created for *this* reservation. Without this
+  // check, paying a cheap reservation's order and submitting another link ID
+  // would confirm the other (more expensive) reservation.
+  const payment = await db.query.paymentsTable.findFirst({
+    where: eq(paymentsTable.stripeSessionId, orderId),
+    with: { reservation: true },
+  });
+
+  if (!payment || payment.reservation?.linkId !== linkId) {
+    res.status(404).json({ error: "Payment not found for this reservation" });
+    return;
+  }
+
+  if (payment.paymentStatus === "paid") {
+    // Already captured (e.g. the customer double-clicked or retried).
+    res.json({ status: "success" });
+    return;
+  }
+
   try {
     const token = await getPayPalToken();
     const base = getPayPalBase();
 
-    const captureRes = await fetch(`${base}/v2/checkout/orders/${orderId}/capture`, {
+    const captureRes = await fetch(`${base}/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -178,18 +197,14 @@ router.post("/payments/paypal/capture-order", async (req, res) => {
       await db
         .update(paymentsTable)
         .set({ paymentStatus: "paid", stripePaymentIntentId: capture.id })
-        .where(eq(paymentsTable.stripeSessionId, orderId));
+        .where(eq(paymentsTable.id, payment.id));
 
-      const reservation = await db.query.reservationsTable.findFirst({
-        where: eq(reservationsTable.linkId, linkId),
-      });
-
-      if (reservation) {
-        await db
-          .update(reservationsTable)
-          .set({ status: "confirmed", updatedAt: new Date() })
-          .where(eq(reservationsTable.id, reservation.id));
-      }
+      // Confirm even if the link expired while the customer was in the PayPal
+      // window: the money was taken, so the booking must stand.
+      await db
+        .update(reservationsTable)
+        .set({ status: "confirmed", updatedAt: new Date() })
+        .where(eq(reservationsTable.id, payment.reservationId));
 
       res.json({ status: "success" });
     } else {
@@ -226,14 +241,16 @@ router.get("/payments", async (req, res) => {
     payments.map((p) => ({
       id: p.id,
       reservationId: p.reservationId,
+      businessId: p.businessId,
       customerName: p.reservation?.customerName ?? "Unknown",
       amount: Number(p.amount),
       currency: p.currency,
       paymentStatus: p.paymentStatus,
       paypalOrderId: p.stripeSessionId,
       createdAt: p.createdAt.toISOString(),
-      date: p.reservation?.date ?? null,
-      time: p.reservation?.time ?? null,
+      // `reservationDate` is the field name in the OpenAPI spec / client types.
+      reservationDate: p.reservation?.date ?? null,
+      reservationTime: p.reservation?.time ?? null,
     }))
   );
 });

@@ -19,6 +19,8 @@ export interface Reservation {
   depositAmount: number;
   notes?: string | null;
   status: ReservationStatus;
+  /** When an unpaid payment link expires (ISO timestamp). Null unless the status is pending_payment. */
+  expiresAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
