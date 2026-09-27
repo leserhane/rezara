@@ -65,7 +65,6 @@ export default function Dashboard() {
   }
 
   const upcoming = stats?.upcomingReservations ?? [];
-  const recent = stats?.recentReservations ?? [];
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -143,10 +142,10 @@ export default function Dashboard() {
                 {t("dashboard.upcoming")}
               </h2>
               <Link
-                href="/calendar"
+                href="/reservations"
                 className="text-sm font-medium text-primary hover:underline flex items-center gap-1 shrink-0"
               >
-                {t("dashboard.openCalendar")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Link>
             </div>
             {upcoming.length === 0 ? (
@@ -168,24 +167,6 @@ export default function Dashboard() {
             )}
           </section>
 
-          {recent.length > 0 && (
-            <section className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-              <div className="px-4 md:px-6 py-4 border-b border-border flex justify-between items-center gap-4">
-                <h2 className="text-lg md:text-xl font-bold font-display">{t("dashboard.recentReservations")}</h2>
-                <Link
-                  href="/reservations"
-                  className="text-sm font-medium text-primary hover:underline flex items-center gap-1 shrink-0"
-                >
-                  {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-                </Link>
-              </div>
-              <div className="divide-y divide-border">
-                {recent.slice(0, 5).map((r) => (
-                  <ReservationRow key={r.id} reservation={r} />
-                ))}
-              </div>
-            </section>
-          )}
         </>
       )}
     </div>

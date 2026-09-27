@@ -40,7 +40,8 @@ export function formatMoney(amount: number | string, currency = "MAD"): string {
     minimumFractionDigits: Number.isInteger(n) ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(Number.isFinite(n) ? n : 0);
-  return `${value} ${currency.toUpperCase()}`;
+  // Isolate as left-to-right so Arabic text doesn't flip it to "MAD 50".
+  return `\u2066${value} ${currency.toUpperCase()}\u2069`;
 }
 
 /** Week starts on Monday in Morocco/France; keep Sunday for English. */

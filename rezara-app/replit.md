@@ -1,6 +1,6 @@
 # Rezara — SaaS Booking Confirmation Platform
 
-A full-stack platform for businesses (restaurants, salons, clinics) to manage reservations and collect deposits via Stripe.
+A full-stack platform for businesses (restaurants, salons, clinics) to manage reservations and collect deposits via PayPal payment links.
 
 ## Architecture
 
@@ -80,8 +80,13 @@ Payment statuses: `pending` → `paid` | `expired` | `failed` | `refunded`
 | Variable | Required | Description |
 |---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection (auto-provisioned) |
-| `STRIPE_WEBHOOK_SECRET` | Optional | Stripe webhook signature secret (from Stripe dashboard → Webhooks) |
-| `ADMIN_EMAILS` | Optional | Comma-separated admin email addresses |
+| `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` | Yes | PayPal REST app credentials |
+| `PAYPAL_MODE` | Optional | `sandbox` (default) or `live` |
+| `MAD_PER_USD` | Optional | Conversion rate for charging MAD deposits in USD (default 10) |
+| `ADMIN_PHONES` | Optional | Comma-separated admin phone numbers (any format; normalized to +212…) |
+| `PUBLIC_BASE_URL` | Optional | Base URL used in payment links sent to customers |
+| `RESERVATION_EXPIRY_MINUTES` | Optional | How long an unpaid payment link stays valid (default 15). Counted from the last update, so re-activating an expired reservation gives a fresh window |
+| `OTP_TEST_MODE` | Optional | `true` shows sign-in codes on screen. **Defaults to on in development and off in production** — with it on, anyone can sign in as any phone number. Until an SMS/WhatsApp provider is wired into `/auth/send-otp`, production sign-in codes are issued by an admin (Admin → Businesses → Generate code) |
 
 ## Stripe Integration
 

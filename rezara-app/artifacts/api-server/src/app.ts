@@ -34,8 +34,10 @@ app.use(
   }),
 );
 
+// Tighter limit for the OTP endpoints only — /api/auth/user is called on
+// every page load and must not share this budget.
 app.use(
-  "/api/auth/",
+  ["/api/auth/send-otp", "/api/auth/verify-otp"],
   rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 30,

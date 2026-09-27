@@ -156,10 +156,10 @@ export default function NewReservation() {
       queryClient.invalidateQueries({ queryKey: getGetReservationsQueryKey() });
       queryClient.invalidateQueries({ queryKey: getGetDashboardStatsQueryKey() });
 
-      toast({
-        title: t("newReservation.toastCreated"),
-        description: shouldWhatsApp ? t("newReservation.toastWhatsapp") : t("newReservation.toastManual"),
-      });
+      // Without WhatsApp, the details page's "Reservation created" banner says it all.
+      if (shouldWhatsApp) {
+        toast({ title: t("newReservation.toastCreated"), description: t("newReservation.toastWhatsapp") });
+      }
 
       // Land on the details page with the share panel front and centre.
       setLocation(`/reservations/${res.id}?created=1`);
