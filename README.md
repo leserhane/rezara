@@ -11,6 +11,8 @@ This repo has two parts:
   project.
 - **`/frontend`** — the ERP web app: React + TypeScript + Vite + Tailwind
   CSS v4, PWA-installable.
+- **`/se`** — the Studio Event site (optimumoptic.com/se), generated from
+  [`/studio-event`](studio-event/README.md); don't edit `/se` by hand.
 - **`/database`** — the PostgreSQL schema, RLS policies, and business-logic
   functions, designed to run on [Supabase](https://supabase.com)
   (Postgres + Auth + Realtime).

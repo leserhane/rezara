@@ -2,3 +2,4 @@ User-Agent: *
 Allow: /
 
 Sitemap: https://optimumoptic.com/sitemap.xml
+Sitemap: https://optimumoptic.com/se/sitemap.xml

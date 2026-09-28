@@ -4,8 +4,10 @@
 
 export const site = {
   name: "Studio Event",
-  // Production domain, no trailing slash. Used for canonical URLs, sitemap, Open Graph.
-  url: "https://www.studioevent.ma",
+  // Where the site is served, no trailing slash. Used for canonical URLs, sitemap, Open Graph,
+  // and (its path part) for the few root-absolute links: 404 page, manifest.
+  // Currently deployed under the Optimum Optic domain; switch to the own domain when there is one.
+  url: "https://optimumoptic.com/se",
   // TODO: real numbers. `phone` is shown and dialled; `whatsapp` is digits only, country code first.
   phone: "+212 6 00 00 00 00",
   phoneHref: "+212600000000",

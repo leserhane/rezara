@@ -26,7 +26,11 @@ Pages générées : accueil, `location-pioneer-dj/`, `location-sono/`, `location
 
 1. Renseigner les vraies coordonnées dans `site.config.mjs` (le numéro actuel est un exemple), puis `node build.mjs`.
 2. Relire les textes de `content.mjs` (catalogue réellement disponible, conditions de caution, zones).
-3. Déployer `public/` à la racine du domaine (GitHub Pages, Netlify, Cloudflare Pages…). Les liens sont relatifs, mais `404.html` et le manifeste supposent la racine.
+3. Le site est publié sur **optimumoptic.com/se** : GitHub Pages sert la racine de `main`, sans étape de build. Après chaque modification :
+   ```bash
+   cd studio-event && node build.mjs && rm -rf ../se && cp -r public ../se
+   ```
+   puis commit et push sur `main`. Pour passer sur un domaine propre, changer `url` dans `site.config.mjs` (le chemin de base en découle) et déployer `public/` à la racine.
 4. Créer la **fiche Google Business Profile** avec exactement le même nom, téléphone et adresse, et la lier au site : c'est le premier levier pour apparaître en tête dans Google Maps à Rabat.
 5. Déclarer le site dans **Google Search Console** et y soumettre `sitemap.xml`.
 6. Ajouter de vraies photos d'événements (brand book : basse lumière, une source forte, jamais de stock) : elles améliorent la conversion et le référencement image.

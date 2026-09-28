@@ -8,6 +8,8 @@ import { zones, catalog, packs, events, cities, services, homeFaq } from "./cont
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "public");
 const today = new Date().toISOString().slice(0, 10);
+// Path the site is served under ("/" on its own domain, "/se/" on optimumoptic.com).
+const base = new URL(site.url + "/").pathname;
 
 // ------------------------------------------------------------------ helpers
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -498,9 +500,9 @@ ${ctaBand(r, `Un événement à ${c.name}&nbsp;?`)}`,
 
 // ------------------------------------------------------------------ 404, sitemap, robots, manifest
 {
-  const r = "/";
-  const html = `<!doctype html><html lang="fr-MA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page introuvable | ${site.name}</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/logos/app-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/styles.css"></head>
-<body><main id="main" class="hero" style="min-height:100vh"><div class="hero-mark" aria-hidden="true"><img src="/assets/logos/mark-night.svg" alt=""></div><div class="wrap"><div class="hero-copy"><img src="/assets/logos/logo-horizontal-night.svg" alt="${site.name}" width="200" height="24"><p class="eyebrow">Erreur 404</p><h1 class="display-xl">Page<br>introuvable</h1><p class="lead">Cette page n'existe pas ou a été déplacée.</p><div class="btn-row"><a class="btn btn-primary" href="${r}">Retour à l'accueil</a><a class="btn btn-secondary" href="/contact/">Demander un devis</a></div></div></div></main></body></html>`;
+  const r = base;
+  const html = `<!doctype html><html lang="fr-MA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page introuvable | ${site.name}</title><meta name="robots" content="noindex"><link rel="icon" href="${r}assets/logos/app-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="${r}assets/styles.css"></head>
+<body><main id="main" class="hero" style="min-height:100vh"><div class="hero-mark" aria-hidden="true"><img src="${r}assets/logos/mark-night.svg" alt=""></div><div class="wrap"><div class="hero-copy"><img src="${r}assets/logos/logo-horizontal-night.svg" alt="${site.name}" width="200" height="24"><p class="eyebrow">Erreur 404</p><h1 class="display-xl">Page<br>introuvable</h1><p class="lead">Cette page n'existe pas ou a été déplacée.</p><div class="btn-row"><a class="btn btn-primary" href="${r}">Retour à l'accueil</a><a class="btn btn-secondary" href="${r}contact/">Demander un devis</a></div></div></div></main></body></html>`;
   writeFileSync(join(OUT, "404.html"), html);
 }
 
@@ -513,20 +515,21 @@ ${pages.map((p) => `  <url><loc>${abs(p)}</loc><lastmod>${today}</lastmod><prior
 </urlset>
 `
 );
-writeFileSync(join(OUT, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`);
+// Crawlers only read robots.txt at the domain root; under a sub-path the root one must list our sitemap instead.
+if (base === "/") writeFileSync(join(OUT, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`);
 writeFileSync(
   join(OUT, "site.webmanifest"),
   JSON.stringify(
     {
       name: site.name,
       short_name: site.name,
-      start_url: "/",
+      start_url: "./",
       display: "standalone",
       background_color: "#0b0c0f",
       theme_color: "#0b0c0f",
       icons: [
-        { src: "/assets/logos/app-icon.png", sizes: "1024x1024", type: "image/png" },
-        { src: "/assets/logos/app-icon.svg", sizes: "any", type: "image/svg+xml" },
+        { src: "assets/logos/app-icon.png", sizes: "1024x1024", type: "image/png" },
+        { src: "assets/logos/app-icon.svg", sizes: "any", type: "image/svg+xml" },
       ],
     },
     null,
