@@ -65,6 +65,30 @@ export const PRODUCT_PLACEHOLDERS = [
     description: "Translucent champagne acetate in a soft cat-eye silhouette.",
     image: "optical-cateye-champagne.webp",
   },
+  {
+    name: "Wood-Grain Round",
+    category: "Optical",
+    description: "Round frame with a rich wood-grain finish and a slim gunmetal temple.",
+    image: "optical-wood-round.webp",
+  },
+  {
+    name: "Montblanc",
+    category: "Optical",
+    description: "Rectangular half-rim frame in gold-tone metal with black acetate temple tips.",
+    image: "montblanc-rectangle-gold.webp",
+  },
+  {
+    name: "Montblanc",
+    category: "Optical",
+    description: "Rimless rectangle in polished silver-tone metal with black temple tips.",
+    image: "montblanc-rimless-silver.webp",
+  },
+  {
+    name: "Montblanc",
+    category: "Sunglasses",
+    description: "Rimless square sunglasses in silver-tone metal with deep blue lenses.",
+    image: "montblanc-rimless-blue-sun.webp",
+  },
 ];
 
 export function renderProductCards(listEl, products = PRODUCT_PLACEHOLDERS) {
