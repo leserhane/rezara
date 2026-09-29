@@ -89,6 +89,36 @@ export const PRODUCT_PLACEHOLDERS = [
     description: "Rimless square sunglasses in silver-tone metal with deep blue lenses.",
     image: "montblanc-rimless-blue-sun.webp",
   },
+  {
+    name: "Montblanc",
+    category: "Sunglasses",
+    description: "Rimless aviator-inspired frame in gold-tone metal with green lenses.",
+    image: "montblanc-rimless-green-sun.webp",
+  },
+  {
+    name: "Cartier",
+    category: "Sunglasses",
+    description: "Cat-eye silhouette in gold-tone metal with signature pyramid-stud temples.",
+    image: "cartier-cateye-studs.webp",
+  },
+  {
+    name: "Cartier",
+    category: "Sunglasses",
+    description: "Rimless rectangle in silver-tone metal with blue-gradient mirrored lenses.",
+    image: "cartier-rect-blue.webp",
+  },
+  {
+    name: "Cartier",
+    category: "Sunglasses",
+    description: "Octagonal rimless frame in gold-tone metal with wood-effect acetate temples.",
+    image: "cartier-octagon-wood.webp",
+  },
+  {
+    name: "Boss",
+    category: "Sunglasses",
+    description: "Aviator frame in gradient navy acetate with grey gradient lenses.",
+    image: "boss-aviator.webp",
+  },
 ];
 
 export function renderProductCards(listEl, products = PRODUCT_PLACEHOLDERS) {
