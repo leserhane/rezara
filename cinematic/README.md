@@ -11,10 +11,18 @@ for how this repo is organized.
 
 There is no real photographed/rendered sequence yet, so
 `public/frames/frame_001.webp … frame_240.webp` are **generated
-placeholders** — an abstract animation of the brand's interlocked-rings
-mark over a narrative color gradient (dark → champagne beige → burgundy
-→ dark), built by `scripts/generate-frames.mjs`. Deliberately not
-literal product photography — see brief constraints below.
+placeholders** — an original illustration of an eyewear frame in
+exploded view (lenses, temples, bridge and hinges drifting apart) that
+progressively assembles into a complete pair of glasses as the sequence
+plays, over a narrative color gradient (dark → champagne beige →
+burgundy → dark), built by `scripts/generate-frames.mjs`. This is a
+deliberate choice, not a placeholder-photography shortcut: we do not
+scrape or embed real brand product photography from the internet, since
+republishing it here would risk copyright infringement and would imply
+an authorized-reseller relationship with those brands that hasn't been
+confirmed. The exploded/reassembling frame keeps the "decortiquée"
+(deconstructed) concept the brief asked for using only original vector
+art.
 
 **To swap in a real sequence:** replace the 240 files in
 `public/frames/` with the same names (`frame_001.webp` … `frame_240.webp`,
@@ -23,12 +31,22 @@ frame count itself changes (`FRAME_COUNT` in `src/config.js`).
 
 To regenerate the placeholders: `npm run generate-frames`.
 
+## Product cards: real brands/prices, original illustrations
+
+The 7 cards in `src/components/products.js` (Montblanc, David Beckham,
+Cartier, Ray-Ban, Miu Miu, Boss, Guess) use the brand names and prices
+as given by Optimum Optic's owner — real business information, not
+invented. The card artwork, however, is an original parametric
+line-art glasses icon (`glassesIcon()`), not scraped product
+photography, for the same copyright/authorization reasons as the
+cinematic frames above. Swap in real product photos per model whenever
+they're available — nothing else needs to change.
+
 ## Also placeholder: business details
 
-Address, hours, phone, email, Instagram, and product prices in
-`index.html` / `src/components/products.js` are all marked "à
-confirmer" / "à venir" — nothing is invented. Fill in real values when
-they're confirmed.
+Address, hours, phone, email, and Instagram in `index.html` are all
+marked "à confirmer" / "à venir" — nothing is invented. Fill in real
+values when they're confirmed.
 
 ## Architecture
 

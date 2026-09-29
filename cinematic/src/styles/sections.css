@@ -255,10 +255,10 @@
 
 .product-card__image svg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.5;
+  inset: 20%;
+  width: 60%;
+  height: 60%;
+  opacity: 0.85;
 }
 
 .product-card__discover {

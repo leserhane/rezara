@@ -1,7 +1,9 @@
 /**
- * Generates 240 placeholder cinematic frames (abstract brand motion —
- * the interlocked-rings mark, an aperture/iris motif, and a sweeping
- * light band — never literal product photography) as WebP files.
+ * Generates 240 placeholder cinematic frames: an exploded-view optical
+ * frame (temples, rims, bridge, hinges) that assembles into a complete
+ * pair of glasses across the sequence — an original line-art illustration,
+ * never a copied/scraped product photo (see cinematic/README.md for why).
+ * A small interlocked-rings watermark keeps it tied to the brand mark.
  *
  * These exist so the frame-scrubbing engine (FrameLoader/CanvasRenderer/
  * ScrollController) is fully working end to end. Swap them for a real
@@ -110,34 +112,90 @@ function buildSvg(frameNumber) {
   const colorA = colorAt(STOPS_A, t);
   const colorB = colorAt(STOPS_B, t);
   const bgIsLight = relativeLuminance(colorA) > 0.55;
-  const ringStroke = bgIsLight ? "#241a16" : "#f3ead9";
-  const ringFaint = bgIsLight ? "rgba(36,26,22,0.16)" : "rgba(243,234,217,0.16)";
 
   const cx = WIDTH / 2;
   const cy = HEIGHT / 2;
 
-  // The interlocked-rings brand mark: drifts/rotates/scales through the
-  // sequence and resolves into a tight, centered mark by the final frame
-  // (frame 240 mirrors the static logo — "Your Signature").
-  const settle = Math.max(0, (t - 0.82) / 0.18); // 0..1 over the last chapter
-  const scale = lerp(1.5, 0.92, settle) * (1 + 0.05 * Math.sin(t * Math.PI * 2.4));
-  const rotation = t * 130 + Math.sin(t * Math.PI * 3) * 6;
-  const ringR = 150;
-  const ringOffset = lerp(96, 58, settle);
-  const driftX = lerp(-140, 0, settle) + Math.sin(t * Math.PI * 1.6) * 40 * (1 - settle);
-  const driftY = Math.cos(t * Math.PI * 1.3) * 26 * (1 - settle);
+  // Assembly progress: the frame is fully exploded at t=0 and fully
+  // assembled by ~85% through the sequence, then holds together for the
+  // "Your Signature" chapter — parts arriving and resolving into a
+  // finished, confident pair of glasses.
+  const assembleRaw = Math.min(1, t / 0.85);
+  const assemble = assembleRaw * assembleRaw * (3 - 2 * assembleRaw); // smoothstep
+  const explode = 1 - assemble;
 
-  // Aperture/iris motif — abstracts optical precision without a literal
-  // eye or glasses. Peaks through Detail/Fit, recedes elsewhere.
   const { index: chapterIndex, progress: chapterT } = chapterLocalProgress(frameNumber);
+
+  const lensR = 92;
+  const metalStroke = bgIsLight ? "#241a16" : "#f3ead9";
+  const glassTint = bgIsLight ? "rgba(36,26,22,0.05)" : "rgba(243,234,217,0.07)";
+  const hingeAccent = "#b8a98c";
+
+  const lx = cx - 118 - explode * 300;
+  const ly = cy - explode * 210 + Math.sin(t * Math.PI * 2.2) * 4 * explode;
+  const rx = cx + 118 + explode * 300;
+  const ry = cy - explode * 160 + Math.cos(t * Math.PI * 2.1) * 4 * explode;
+
+  const hingeLx = lx - lensR * 0.94;
+  const hingeLy = ly;
+  const hingeRx = rx + lensR * 0.94;
+  const hingeRy = ry;
+
+  const templeBendLx = hingeLx - 90 - explode * 170;
+  const templeBendLy = hingeLy + 6 + explode * 110;
+  const templeEndLx = templeBendLx - 130 - explode * 220;
+  const templeEndLy = templeBendLy + 8 + explode * 170;
+
+  const templeBendRx = hingeRx + 90 + explode * 170;
+  const templeBendRy = hingeRy + 6 + explode * 110;
+  const templeEndRx = templeBendRx + 130 + explode * 220;
+  const templeEndRy = templeBendRy + 8 + explode * 170;
+
+  const bridgeY = cy - 34 - explode * 340;
+  const bridgeSpan = Math.max(4, (rx - lensR) - (lx + lensR)) / 2;
+
+  const glassesGroup = `
+    <g stroke="${metalStroke}" stroke-width="6" fill="none" stroke-linecap="round" opacity="${(0.55 + 0.45 * assemble).toFixed(3)}">
+      <path d="M ${hingeLx.toFixed(1)} ${hingeLy.toFixed(1)} L ${templeBendLx.toFixed(1)} ${templeBendLy.toFixed(1)} L ${templeEndLx.toFixed(1)} ${templeEndLy.toFixed(1)}" />
+      <path d="M ${hingeRx.toFixed(1)} ${hingeRy.toFixed(1)} L ${templeBendRx.toFixed(1)} ${templeBendRy.toFixed(1)} L ${templeEndRx.toFixed(1)} ${templeEndRy.toFixed(1)}" />
+    </g>
+    <path d="M ${(cx - bridgeSpan).toFixed(1)} ${(bridgeY + 14).toFixed(1)} Q ${cx} ${bridgeY.toFixed(1)} ${(cx + bridgeSpan).toFixed(1)} ${(bridgeY + 14).toFixed(1)}"
+      stroke="${metalStroke}" stroke-width="6" fill="none" stroke-linecap="round" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
+    <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${lensR}" fill="${glassTint}" stroke="${metalStroke}" stroke-width="7" opacity="0.95" />
+    <circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${lensR}" fill="${glassTint}" stroke="${metalStroke}" stroke-width="7" opacity="0.95" />
+    <path d="M ${(lx - lensR * 0.4).toFixed(1)} ${(ly - lensR * 0.55).toFixed(1)} A ${lensR * 0.8} ${lensR * 0.8} 0 0 1 ${(lx + lensR * 0.35).toFixed(1)} ${(ly - lensR * 0.68).toFixed(1)}"
+      stroke="#ffffff" stroke-width="2.5" fill="none" opacity="0.18" />
+    <path d="M ${(rx - lensR * 0.4).toFixed(1)} ${(ry - lensR * 0.55).toFixed(1)} A ${lensR * 0.8} ${lensR * 0.8} 0 0 1 ${(rx + lensR * 0.35).toFixed(1)} ${(ry - lensR * 0.68).toFixed(1)}"
+      stroke="#ffffff" stroke-width="2.5" fill="none" opacity="0.18" />
+    <circle cx="${hingeLx.toFixed(1)}" cy="${hingeLy.toFixed(1)}" r="7" fill="${hingeAccent}" opacity="${(0.6 + 0.4 * assemble).toFixed(3)}" />
+    <circle cx="${hingeRx.toFixed(1)}" cy="${hingeRy.toFixed(1)}" r="7" fill="${hingeAccent}" opacity="${(0.6 + 0.4 * assemble).toFixed(3)}" />
+    <circle cx="${hingeLx.toFixed(1)}" cy="${(hingeLy - 10).toFixed(1)}" r="2" fill="${hingeAccent}" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
+    <circle cx="${hingeRx.toFixed(1)}" cy="${(hingeRy - 10).toFixed(1)}" r="2" fill="${hingeAccent}" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
+  `;
+
+  // Small interlocked-rings watermark, corner-anchored, ties the frame
+  // back to the brand mark without competing with the glasses.
+  const markR = 46;
+  const markCx = WIDTH - 150;
+  const markCy = HEIGHT - 130;
+  const brandMark = `
+    <g stroke="${metalStroke}" stroke-width="3.5" fill="none" opacity="0.4">
+      <circle cx="${markCx - 26}" cy="${markCy}" r="${markR}" />
+      <circle cx="${markCx + 26}" cy="${markCy}" r="${markR}" />
+    </g>
+  `;
+
+  // Aperture/iris motif — abstracts optical precision, layered behind the
+  // glasses. Peaks through Detail/Fit, recedes elsewhere.
   const irisPeak = chapterIndex === 2 || chapterIndex === 3;
-  const irisOpacity = (irisPeak ? 0.32 : 0.1) * (0.6 + 0.4 * Math.sin(chapterT * Math.PI));
+  const irisOpacity = (irisPeak ? 0.28 : 0.08) * (0.6 + 0.4 * Math.sin(chapterT * Math.PI));
   const irisBlades = 14;
-  const irisR1 = 210;
-  const irisR2 = 340;
+  const irisR1 = 260;
+  const irisR2 = 400;
+  const irisRotation = t * 90;
   let irisPaths = "";
   for (let i = 0; i < irisBlades; i++) {
-    const a0 = (i / irisBlades) * 360 + rotation * 0.4;
+    const a0 = (i / irisBlades) * 360 + irisRotation;
     const a1 = a0 + 10;
     const rad0 = (a0 * Math.PI) / 180;
     const rad1 = (a1 * Math.PI) / 180;
@@ -147,7 +205,7 @@ function buildSvg(frameNumber) {
     const y1 = cy + Math.sin(rad1) * irisR2;
     irisPaths += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(
       1
-    )}" y2="${y1.toFixed(1)}" stroke="${ringStroke}" stroke-width="2" stroke-linecap="round" opacity="${irisOpacity.toFixed(
+    )}" y2="${y1.toFixed(1)}" stroke="${metalStroke}" stroke-width="2" stroke-linecap="round" opacity="${irisOpacity.toFixed(
       3
     )}" />`;
   }
@@ -178,13 +236,9 @@ function buildSvg(frameNumber) {
 
     <g opacity="0.5">${irisPaths}</g>
 
-    <g transform="translate(${(cx + driftX).toFixed(1)}, ${(cy + driftY).toFixed(
-      1
-    )}) rotate(${rotation.toFixed(1)}) scale(${scale.toFixed(3)})">
-      <circle cx="${-ringOffset}" cy="0" r="${ringR}" fill="none" stroke="${ringStroke}" stroke-width="10" opacity="0.9" />
-      <circle cx="${ringOffset}" cy="0" r="${ringR}" fill="none" stroke="${ringStroke}" stroke-width="10" opacity="0.9" />
-      <circle cx="0" cy="0" r="${ringR * 2.35}" fill="none" stroke="${ringFaint}" stroke-width="1.5" />
-    </g>
+    ${glassesGroup}
+
+    ${brandMark}
 
     <rect x="${sweepX.toFixed(1)}" y="-200" width="${WIDTH * 0.5}" height="${HEIGHT + 400}" fill="url(#sweep)" transform="rotate(12 ${cx} ${cy})" />
 
