@@ -131,27 +131,33 @@ function buildSvg(frameNumber) {
   const glassTint = bgIsLight ? "rgba(36,26,22,0.05)" : "rgba(243,234,217,0.07)";
   const hingeAccent = "#b8a98c";
 
-  const lx = cx - 118 - explode * 300;
-  const ly = cy - explode * 210 + Math.sin(t * Math.PI * 2.2) * 4 * explode;
-  const rx = cx + 118 + explode * 300;
-  const ry = cy - explode * 160 + Math.cos(t * Math.PI * 2.1) * 4 * explode;
+  // Horizontal/vertical travel is kept modest (rather than spanning the
+  // full 1920px canvas) so the exploded parts stay within the safe zone
+  // that survives "object-fit: cover" cropping on portrait phones — a
+  // wider explosion reads well on a 16:9 desktop hero but disappears
+  // entirely off both edges once that same frame is cover-cropped to a
+  // ~9:19 phone screen.
+  const lx = cx - 118 - explode * 170;
+  const ly = cy - explode * 120 + Math.sin(t * Math.PI * 2.2) * 4 * explode;
+  const rx = cx + 118 + explode * 170;
+  const ry = cy - explode * 90 + Math.cos(t * Math.PI * 2.1) * 4 * explode;
 
   const hingeLx = lx - lensR * 0.94;
   const hingeLy = ly;
   const hingeRx = rx + lensR * 0.94;
   const hingeRy = ry;
 
-  const templeBendLx = hingeLx - 90 - explode * 170;
+  const templeBendLx = hingeLx - 60 - explode * 100;
   const templeBendLy = hingeLy + 6 + explode * 110;
-  const templeEndLx = templeBendLx - 130 - explode * 220;
+  const templeEndLx = templeBendLx - 90 - explode * 130;
   const templeEndLy = templeBendLy + 8 + explode * 170;
 
-  const templeBendRx = hingeRx + 90 + explode * 170;
+  const templeBendRx = hingeRx + 60 + explode * 100;
   const templeBendRy = hingeRy + 6 + explode * 110;
-  const templeEndRx = templeBendRx + 130 + explode * 220;
+  const templeEndRx = templeBendRx + 90 + explode * 130;
   const templeEndRy = templeBendRy + 8 + explode * 170;
 
-  const bridgeY = cy - 34 - explode * 340;
+  const bridgeY = cy - 34 - explode * 200;
   const bridgeSpan = Math.max(4, (rx - lensR) - (lx + lensR)) / 2;
 
   const glassesGroup = `
@@ -174,10 +180,13 @@ function buildSvg(frameNumber) {
   `;
 
   // Small interlocked-rings watermark, corner-anchored, ties the frame
-  // back to the brand mark without competing with the glasses.
+  // back to the brand mark without competing with the glasses. Inset well
+  // beyond the 150/130px a naive corner placement would use, so it isn't
+  // cover-cropped away on common non-16:9 boxes (e.g. a 4:3 iPad in
+  // landscape crops ~240px off each side of a 1920-wide source).
   const markR = 46;
-  const markCx = WIDTH - 150;
-  const markCy = HEIGHT - 130;
+  const markCx = WIDTH - 380;
+  const markCy = HEIGHT - 220;
   const brandMark = `
     <g stroke="${metalStroke}" stroke-width="3.5" fill="none" opacity="0.4">
       <circle cx="${markCx - 26}" cy="${markCy}" r="${markR}" />

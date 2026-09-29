@@ -125,3 +125,11 @@ p {
     scroll-behavior: auto !important;
   }
 }
+
+/* Short viewports (landscape phones): the fixed header and the
+   bottom-anchored chapter text both need room in very little height. */
+@media (max-height: 520px) {
+  :root {
+    --header-height: 56px;
+  }
+}

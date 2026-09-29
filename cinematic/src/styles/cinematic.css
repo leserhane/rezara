@@ -215,6 +215,40 @@
   }
 }
 
+/* Short viewports (landscape phones): shrink the chapter text block so
+   it fits between the header and the bottom edge without overlapping. */
+@media (max-height: 520px) {
+  .cinematic-overlay {
+    padding-bottom: 1.1rem;
+  }
+
+  .chapter-root {
+    min-height: 0;
+  }
+
+  .chapter__eyebrow {
+    margin-bottom: 0.5rem;
+  }
+
+  .chapter__heading {
+    font-size: clamp(1.3rem, 4.6vw, 2rem);
+  }
+
+  .chapter__body {
+    margin-top: 0.6rem;
+  }
+
+  .chapter__cta {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .scroll-hint,
+  .cinematic-hud {
+    display: none;
+  }
+}
+
 /* Reduced motion: no scroll-jacked canvas, no crossfades — every
    chapter renders as a normal stacked block, fully visible. */
 .is-reduced-motion .cinematic-track {
