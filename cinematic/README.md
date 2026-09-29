@@ -31,16 +31,19 @@ frame count itself changes (`FRAME_COUNT` in `src/config.js`).
 
 To regenerate the placeholders: `npm run generate-frames`.
 
-## Product cards: real brands/prices, original illustrations
+## Product cards: real photography, supplied by the owner
 
-The 7 cards in `src/components/products.js` (Montblanc, David Beckham,
-Cartier, Ray-Ban, Miu Miu, Boss, Guess) use the brand names and prices
-as given by Optimum Optic's owner — real business information, not
-invented. The card artwork, however, is an original parametric
-line-art glasses icon (`glassesIcon()`), not scraped product
-photography, for the same copyright/authorization reasons as the
-cinematic frames above. Swap in real product photos per model whenever
-they're available — nothing else needs to change.
+The cards in `src/components/products.js` (Miu Miu, David Beckham ×2,
+Dior, Ray-Ban) use real product photography supplied directly by
+Optimum Optic's owner (`public/products/*.webp`), with a short
+descriptive line instead of a price. This is different from scraping
+photos off the web: it's the business owner's own content decision for
+their own store. It only holds up if Optimum Optic actually carries
+these models and has the rights to display this photography (e.g.
+manufacturer/dealer-supplied catalog images, or the store's own
+photos) — swap in a different model's photo any time by replacing its
+file in `public/products/` and updating the `image` field in
+`PRODUCT_PLACEHOLDERS`.
 
 ## Also placeholder: business details
 
