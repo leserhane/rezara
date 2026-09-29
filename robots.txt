@@ -1,4 +1,5 @@
 User-Agent: *
 Allow: /
+Disallow: /hiddenab/
 
 Sitemap: https://optimumoptic.com/sitemap.xml
