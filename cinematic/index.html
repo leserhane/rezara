@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#1a1613" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 140'%3E%3Crect width='200' height='140' fill='%231a1613'/%3E%3Cg fill='none' stroke='%23f4efe6' stroke-width='13'%3E%3Ccircle cx='75' cy='70' r='50'/%3E%3Ccircle cx='122' cy='70' r='50'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 140'%3E%3Crect width='200' height='140' fill='%231a1613'/%3E%3Cg fill='none' stroke='%23f4efe6' stroke-width='5.4'%3E%3Ccircle cx='80' cy='70' r='50'/%3E%3Ccircle cx='141' cy='70' r='50'/%3E%3C/g%3E%3C/svg%3E" />
 <title>Optimum Optic — Le regard qui vous ressemble</title>
 <meta
   name="description"
@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
-  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Jost:wght@300;400;500&display=swap"
   rel="stylesheet"
 />
 
@@ -43,7 +43,13 @@
   <div class="grain-overlay" aria-hidden="true"></div>
 
   <div class="preloader" data-preloader role="status" aria-live="polite">
-    <p class="preloader__mark"><span>Optimum</span><span>Optic</span></p>
+    <div class="preloader__mark">
+      <svg class="brand-mark" viewBox="0 0 100 58" aria-hidden="true" focusable="false">
+        <circle cx="33.5" cy="29" r="27" />
+        <circle cx="66.5" cy="29" r="27" />
+      </svg>
+      <p class="preloader__wordmark"><span>Optimum</span><span>Optic</span></p>
+    </div>
     <div class="preloader__status">
       <p class="preloader__caption">Preparing your view</p>
       <div class="preloader__row">
@@ -56,7 +62,13 @@
   </div>
 
   <header class="site-header">
-    <span class="site-header__brand">Optimum Optic</span>
+    <span class="site-header__brand">
+      <svg class="brand-mark" viewBox="0 0 100 58" aria-hidden="true" focusable="false">
+        <circle cx="33.5" cy="29" r="27" />
+        <circle cx="66.5" cy="29" r="27" />
+      </svg>
+      <span class="site-header__brand-text">Optimum Optic</span>
+    </span>
     <nav class="site-nav" data-nav aria-label="Navigation principale">
       <ul class="site-nav__list">
         <li><a href="#collection">Collections</a></li>
@@ -105,7 +117,13 @@
 
     <section id="store" class="section storefront" aria-labelledby="storefront-heading">
       <p class="section__eyebrow">07 — The Store</p>
-      <h2 class="section__title" id="storefront-heading">Optimum Optic</h2>
+      <h2 class="section__title section__title--brand" id="storefront-heading">
+        <svg class="brand-mark" viewBox="0 0 100 58" aria-hidden="true" focusable="false">
+          <circle cx="33.5" cy="29" r="27" />
+          <circle cx="66.5" cy="29" r="27" />
+        </svg>
+        <span>Optimum Optic</span>
+      </h2>
       <p class="section__lede">Le regard qui vous ressemble.</p>
 
       <div class="storefront__grid">
@@ -179,7 +197,13 @@
   <footer class="site-footer" id="contact">
     <div class="site-footer__top">
       <div>
-        <p class="site-footer__brand">Optimum Optic</p>
+        <p class="site-footer__brand">
+          <svg class="brand-mark" viewBox="0 0 100 58" aria-hidden="true" focusable="false">
+            <circle cx="33.5" cy="29" r="27" />
+            <circle cx="66.5" cy="29" r="27" />
+          </svg>
+          <span>Optimum Optic</span>
+        </p>
         <p class="site-footer__tagline">Le regard qui vous ressemble.</p>
       </div>
       <ul class="site-footer__links">
@@ -188,7 +212,13 @@
         <li><a href="#" data-cursor="link">Instagram (à venir)</a></li>
       </ul>
     </div>
-    <p class="site-footer__bottom">© 2026 Optimum Optic. Prototype — contenu de démonstration.</p>
+    <p class="site-footer__bottom">
+      © 2026 Optimum Optic. Prototype — contenu de démonstration.
+      <span class="site-footer__credit">
+        Site réalisé par
+        <a href="https://www.instagram.com/success.mktgcom" target="_blank" rel="noopener noreferrer" data-cursor="link">Success Marketing &amp; Communication</a>
+      </span>
+    </p>
   </footer>
 
   <script type="module" src="/src/main.js"></script>

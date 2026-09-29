@@ -17,21 +17,37 @@
 }
 
 .preloader__mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.preloader__mark .brand-mark {
+  width: clamp(48px, 10vw, 68px);
+  height: auto;
+  color: var(--color-ivory);
+}
+
+.preloader__wordmark {
   text-align: center;
-  font-family: var(--font-display);
-  font-weight: 500;
+  font-family: var(--font-brand);
+  font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  line-height: 1.15;
+  line-height: 1.3;
   font-size: clamp(1.6rem, 5vw, 2.6rem);
   color: var(--color-ivory);
 }
 
-.preloader__mark span {
+.preloader__wordmark span {
   display: block;
 }
 
-.preloader__mark span:last-child {
+.preloader__wordmark span:last-child {
+  font-size: 0.4em;
+  letter-spacing: 0.5em;
+  margin-top: 0.4em;
   color: var(--color-beige);
 }
 

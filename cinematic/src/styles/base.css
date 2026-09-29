@@ -17,6 +17,11 @@
 
   --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* The real Optimum Optic logotype is a thin, wide-tracked geometric
+     sans (not a serif) — used for every literal brand lockup (header,
+     preloader, footer, the storefront heading). Editorial chapter
+     headings keep --font-display for the cinematic sequence. */
+  --font-brand: "Jost", "Century Gothic", var(--font-body);
 
   --header-height: 84px;
   --gutter: clamp(20px, 5vw, 64px);
@@ -53,6 +58,17 @@ img,
 canvas {
   display: block;
   max-width: 100%;
+}
+
+/* The interlocked-rings mark from the real Optimum Optic logo — reused
+   wherever the wordmark appears. Proportions (center distance and
+   stroke weight relative to radius) are measured from the brand's own
+   logo artwork, not eyeballed. */
+.brand-mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.9;
+  flex-shrink: 0;
 }
 
 a {

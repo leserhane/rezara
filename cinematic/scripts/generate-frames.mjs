@@ -187,10 +187,13 @@ function buildSvg(frameNumber) {
   const markR = 46;
   const markCx = WIDTH - 380;
   const markCy = HEIGHT - 220;
+  // Center-distance and stroke ratios measured from the real logo
+  // artwork (distance = 1.222x radius, stroke = 0.107x radius), so this
+  // reads as the actual mark rather than an approximation of it.
   const brandMark = `
-    <g stroke="${metalStroke}" stroke-width="3.5" fill="none" opacity="0.4">
-      <circle cx="${markCx - 26}" cy="${markCy}" r="${markR}" />
-      <circle cx="${markCx + 26}" cy="${markCy}" r="${markR}" />
+    <g stroke="${metalStroke}" stroke-width="${(markR * 0.107).toFixed(1)}" fill="none" opacity="0.4">
+      <circle cx="${(markCx - markR * 0.611).toFixed(1)}" cy="${markCy}" r="${markR}" />
+      <circle cx="${(markCx + markR * 0.611).toFixed(1)}" cy="${markCy}" r="${markR}" />
     </g>
   `;
 
