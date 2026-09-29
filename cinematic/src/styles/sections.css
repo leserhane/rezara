@@ -73,6 +73,14 @@
   background: linear-gradient(150deg, var(--color-charcoal) 0%, #3a2c22 45%, var(--color-beige) 100%);
 }
 
+.storefront__visual img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .storefront__visual::after {
   content: "";
   position: absolute;
@@ -88,10 +96,14 @@
   position: absolute;
   left: 1.5rem;
   bottom: 1.5rem;
+  z-index: 1;
   font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-ivory);
+  background: rgba(20, 16, 13, 0.6);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
 }
 
 .storefront__info {

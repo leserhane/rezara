@@ -119,6 +119,36 @@ export const PRODUCT_PLACEHOLDERS = [
     description: "Aviator frame in gradient navy acetate with grey gradient lenses.",
     image: "boss-aviator.webp",
   },
+  {
+    name: "Boss",
+    category: "Sunglasses",
+    description: "Aviator frame in black acetate with a gold-tone double bridge and grey lenses.",
+    image: "boss-aviator-2.webp",
+  },
+  {
+    name: "Square Frame",
+    category: "Optical",
+    description: "Square frame in matte black acetate with a slim gold-tone temple accent.",
+    image: "optical-square-black-gold.webp",
+  },
+  {
+    name: "Bleather",
+    category: "Optical",
+    description: "Square frame in glossy black acetate with gold-tone branding on the temple.",
+    image: "bleather-square-black.webp",
+  },
+  {
+    name: "Round Double-Bridge",
+    category: "Optical",
+    description: "Round metal frame with a double bridge and slim black temples.",
+    image: "optical-round-doublebridge.webp",
+  },
+  {
+    name: "Round Gunmetal",
+    category: "Optical",
+    description: "Round semi-rimless frame in gunmetal metal with a browline bridge.",
+    image: "optical-round-gunmetal.webp",
+  },
 ];
 
 export function renderProductCards(listEl, products = PRODUCT_PLACEHOLDERS) {
