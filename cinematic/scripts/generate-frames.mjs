@@ -126,7 +126,17 @@ function buildSvg(frameNumber) {
 
   const { index: chapterIndex, progress: chapterT } = chapterLocalProgress(frameNumber);
 
-  const lensR = 92;
+  // Overall composition scale. "object-fit: cover" scales this frame by
+  // roughly viewport HEIGHT (it's the constraining dimension on anything
+  // narrower than 16:9, which is nearly every device) — and a phone in
+  // portrait has a height comparable to a laptop's, just far less width.
+  // So geometry sized to look right on a 16:9 desktop hero renders at
+  // nearly the same absolute pixel size on a phone, where that same size
+  // eats ~85% of the much narrower screen edge to edge. Scaling the whole
+  // mark down gives it breathing room on every device, not just phones.
+  const S = 0.65;
+
+  const lensR = 92 * S;
   const metalStroke = bgIsLight ? "#241a16" : "#f3ead9";
   const glassTint = bgIsLight ? "rgba(36,26,22,0.05)" : "rgba(243,234,217,0.07)";
   const hingeAccent = "#b8a98c";
@@ -137,46 +147,46 @@ function buildSvg(frameNumber) {
   // wider explosion reads well on a 16:9 desktop hero but disappears
   // entirely off both edges once that same frame is cover-cropped to a
   // ~9:19 phone screen.
-  const lx = cx - 118 - explode * 170;
-  const ly = cy - explode * 120 + Math.sin(t * Math.PI * 2.2) * 4 * explode;
-  const rx = cx + 118 + explode * 170;
-  const ry = cy - explode * 90 + Math.cos(t * Math.PI * 2.1) * 4 * explode;
+  const lx = cx - 118 * S - explode * 170 * S;
+  const ly = cy - explode * 120 * S + Math.sin(t * Math.PI * 2.2) * 4 * S * explode;
+  const rx = cx + 118 * S + explode * 170 * S;
+  const ry = cy - explode * 90 * S + Math.cos(t * Math.PI * 2.1) * 4 * S * explode;
 
   const hingeLx = lx - lensR * 0.94;
   const hingeLy = ly;
   const hingeRx = rx + lensR * 0.94;
   const hingeRy = ry;
 
-  const templeBendLx = hingeLx - 60 - explode * 100;
-  const templeBendLy = hingeLy + 6 + explode * 110;
-  const templeEndLx = templeBendLx - 90 - explode * 130;
-  const templeEndLy = templeBendLy + 8 + explode * 170;
+  const templeBendLx = hingeLx - 60 * S - explode * 100 * S;
+  const templeBendLy = hingeLy + 6 * S + explode * 110 * S;
+  const templeEndLx = templeBendLx - 90 * S - explode * 130 * S;
+  const templeEndLy = templeBendLy + 8 * S + explode * 170 * S;
 
-  const templeBendRx = hingeRx + 60 + explode * 100;
-  const templeBendRy = hingeRy + 6 + explode * 110;
-  const templeEndRx = templeBendRx + 90 + explode * 130;
-  const templeEndRy = templeBendRy + 8 + explode * 170;
+  const templeBendRx = hingeRx + 60 * S + explode * 100 * S;
+  const templeBendRy = hingeRy + 6 * S + explode * 110 * S;
+  const templeEndRx = templeBendRx + 90 * S + explode * 130 * S;
+  const templeEndRy = templeBendRy + 8 * S + explode * 170 * S;
 
-  const bridgeY = cy - 34 - explode * 200;
+  const bridgeY = cy - 34 * S - explode * 200 * S;
   const bridgeSpan = Math.max(4, (rx - lensR) - (lx + lensR)) / 2;
 
   const glassesGroup = `
-    <g stroke="${metalStroke}" stroke-width="6" fill="none" stroke-linecap="round" opacity="${(0.55 + 0.45 * assemble).toFixed(3)}">
+    <g stroke="${metalStroke}" stroke-width="${(6 * S).toFixed(2)}" fill="none" stroke-linecap="round" opacity="${(0.55 + 0.45 * assemble).toFixed(3)}">
       <path d="M ${hingeLx.toFixed(1)} ${hingeLy.toFixed(1)} L ${templeBendLx.toFixed(1)} ${templeBendLy.toFixed(1)} L ${templeEndLx.toFixed(1)} ${templeEndLy.toFixed(1)}" />
       <path d="M ${hingeRx.toFixed(1)} ${hingeRy.toFixed(1)} L ${templeBendRx.toFixed(1)} ${templeBendRy.toFixed(1)} L ${templeEndRx.toFixed(1)} ${templeEndRy.toFixed(1)}" />
     </g>
-    <path d="M ${(cx - bridgeSpan).toFixed(1)} ${(bridgeY + 14).toFixed(1)} Q ${cx} ${bridgeY.toFixed(1)} ${(cx + bridgeSpan).toFixed(1)} ${(bridgeY + 14).toFixed(1)}"
-      stroke="${metalStroke}" stroke-width="6" fill="none" stroke-linecap="round" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
-    <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${lensR}" fill="${glassTint}" stroke="${metalStroke}" stroke-width="7" opacity="0.95" />
-    <circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${lensR}" fill="${glassTint}" stroke="${metalStroke}" stroke-width="7" opacity="0.95" />
+    <path d="M ${(cx - bridgeSpan).toFixed(1)} ${(bridgeY + 14 * S).toFixed(1)} Q ${cx} ${bridgeY.toFixed(1)} ${(cx + bridgeSpan).toFixed(1)} ${(bridgeY + 14 * S).toFixed(1)}"
+      stroke="${metalStroke}" stroke-width="${(6 * S).toFixed(2)}" fill="none" stroke-linecap="round" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
+    <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${lensR.toFixed(1)}" fill="${glassTint}" stroke="${metalStroke}" stroke-width="${(7 * S).toFixed(2)}" opacity="0.95" />
+    <circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${lensR.toFixed(1)}" fill="${glassTint}" stroke="${metalStroke}" stroke-width="${(7 * S).toFixed(2)}" opacity="0.95" />
     <path d="M ${(lx - lensR * 0.4).toFixed(1)} ${(ly - lensR * 0.55).toFixed(1)} A ${lensR * 0.8} ${lensR * 0.8} 0 0 1 ${(lx + lensR * 0.35).toFixed(1)} ${(ly - lensR * 0.68).toFixed(1)}"
-      stroke="#ffffff" stroke-width="2.5" fill="none" opacity="0.18" />
+      stroke="#ffffff" stroke-width="${(2.5 * S).toFixed(2)}" fill="none" opacity="0.18" />
     <path d="M ${(rx - lensR * 0.4).toFixed(1)} ${(ry - lensR * 0.55).toFixed(1)} A ${lensR * 0.8} ${lensR * 0.8} 0 0 1 ${(rx + lensR * 0.35).toFixed(1)} ${(ry - lensR * 0.68).toFixed(1)}"
-      stroke="#ffffff" stroke-width="2.5" fill="none" opacity="0.18" />
-    <circle cx="${hingeLx.toFixed(1)}" cy="${hingeLy.toFixed(1)}" r="7" fill="${hingeAccent}" opacity="${(0.6 + 0.4 * assemble).toFixed(3)}" />
-    <circle cx="${hingeRx.toFixed(1)}" cy="${hingeRy.toFixed(1)}" r="7" fill="${hingeAccent}" opacity="${(0.6 + 0.4 * assemble).toFixed(3)}" />
-    <circle cx="${hingeLx.toFixed(1)}" cy="${(hingeLy - 10).toFixed(1)}" r="2" fill="${hingeAccent}" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
-    <circle cx="${hingeRx.toFixed(1)}" cy="${(hingeRy - 10).toFixed(1)}" r="2" fill="${hingeAccent}" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
+      stroke="#ffffff" stroke-width="${(2.5 * S).toFixed(2)}" fill="none" opacity="0.18" />
+    <circle cx="${hingeLx.toFixed(1)}" cy="${hingeLy.toFixed(1)}" r="${(7 * S).toFixed(2)}" fill="${hingeAccent}" opacity="${(0.6 + 0.4 * assemble).toFixed(3)}" />
+    <circle cx="${hingeRx.toFixed(1)}" cy="${hingeRy.toFixed(1)}" r="${(7 * S).toFixed(2)}" fill="${hingeAccent}" opacity="${(0.6 + 0.4 * assemble).toFixed(3)}" />
+    <circle cx="${hingeLx.toFixed(1)}" cy="${(hingeLy - 10 * S).toFixed(1)}" r="${(2 * S).toFixed(2)}" fill="${hingeAccent}" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
+    <circle cx="${hingeRx.toFixed(1)}" cy="${(hingeRy - 10 * S).toFixed(1)}" r="${(2 * S).toFixed(2)}" fill="${hingeAccent}" opacity="${(0.5 + 0.5 * assemble).toFixed(3)}" />
   `;
 
   // Small interlocked-rings watermark, corner-anchored, ties the frame
