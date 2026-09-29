@@ -1,0 +1,17 @@
+{
+  "name": "optimum-optic-cinematic",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scroll-scrubbed canvas cinematic landing page prototype for Optimum Optic. Zero animation libraries — vanilla JS canvas engine only.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate-frames": "node scripts/generate-frames.mjs"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11",
+    "sharp": "^0.35.5"
+  }
+}
