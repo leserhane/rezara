@@ -1,7 +1,8 @@
 /**
  * Real product photography supplied by Optimum Optic. Use only for models
  * the store actually carries and has the rights to photograph/display —
- * see cinematic/README.md.
+ * see cinematic/README.md. Entries with no visible brand mark in their
+ * photo are labeled by frame style rather than a guessed brand name.
  */
 export const PRODUCT_PLACEHOLDERS = [
   {
@@ -33,6 +34,36 @@ export const PRODUCT_PLACEHOLDERS = [
     category: "Sunglasses",
     description: "The classic Aviator in gold-tone metal with gradient brown lenses.",
     image: "rayban-aviator.webp",
+  },
+  {
+    name: "Ray-Ban",
+    category: "Sunglasses",
+    description: "The Clubmaster in tortoiseshell acetate with gold-tone trim and green lenses.",
+    image: "rayban-clubmaster.webp",
+  },
+  {
+    name: "Ray-Ban",
+    category: "Sunglasses",
+    description: "Oval frame in tortoiseshell acetate with classic rivet detailing.",
+    image: "rayban-oval.webp",
+  },
+  {
+    name: "Rimless Titanium",
+    category: "Optical",
+    description: "Ultra-thin navy titanium frame with a rimless lower edge.",
+    image: "optical-rimless-navy.webp",
+  },
+  {
+    name: "Round Frame",
+    category: "Optical",
+    description: "Matte black round frame with a slim gold-tone temple accent.",
+    image: "optical-round-black.webp",
+  },
+  {
+    name: "Cat-Eye Acetate",
+    category: "Optical",
+    description: "Translucent champagne acetate in a soft cat-eye silhouette.",
+    image: "optical-cateye-champagne.webp",
   },
 ];
 
