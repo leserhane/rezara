@@ -5,3 +5,7 @@ Site vitrine de TitSuit (Studio, AI, Digital, Events). Cette branche contient un
 - `index.html` : page unique (CSS et JS intégrés)
 - `og.png`, `favicon.svg` : image de partage et icône
 - `robots.txt`, `sitemap.xml`, `404.html`
+
+## Déploiement
+
+Cloudflare Workers (projet `titsuit`) publie cette branche à chaque push : branche de production `titsuit-www`, aucune commande de build, commande de déploiement `npx wrangler deploy` (voir `wrangler.jsonc`).
