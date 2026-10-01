@@ -1,6 +1,5 @@
 User-Agent: *
 Allow: /
 Disallow: /hiddenab/
-Disallow: /museum/
 
 Sitemap: https://optimumoptic.com/sitemap.xml
