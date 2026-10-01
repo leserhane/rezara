@@ -398,3 +398,14 @@ HTML += [
 JS += [
  ("souv.rail", "Souvenirs — {n} items", "Articles souvenirs — {n} articles", "التذكارات — {n} منتجات", "Recuerdos — {n} artículos"),
 ]
+
+HTML += [
+ ("shop.seeBooks", "See the books <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Voir les ouvrages <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "اكتشف الإصدارات <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Ver las publicaciones <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>"),
+ ("books.title", "Books", "Ouvrages", "الإصدارات", "Publicaciones"),
+ ("books.lede", "Catalogues, exhibition books and studies published by the Bank Al-Maghrib Museum.", "Catalogues, livres d’exposition et études publiés par le Musée de Bank Al-Maghrib.", "كتالوجات وكتب معارض ودراسات من إصدار متحف بنك المغرب.", "Catálogos, libros de exposición y estudios publicados por el Museo de Bank Al-Maghrib."),
+]
+JS += [
+ ("books.rail", "Books — {n} titles", "Ouvrages — {n} titres", "الإصدارات — {n} عناوين", "Publicaciones — {n} títulos"),
+ ("book.front", "Cover", "Couverture", "الغلاف", "Cubierta"),
+ ("book.back", "Back", "Dos", "الظهر", "Contracubierta"),
+]

@@ -460,6 +460,7 @@
           <p class="shop__num" aria-hidden="true">05</p>
           <h3 data-i18n="shop.5" class="shop__title" lang="fr">Ouvrages</h3>
           <p data-i18n="shop.5.text" class="shop__desc">Catalogues, numismatic studies and art books published by the museum.</p>
+          <a data-i18n="shop.seeBooks" class="text-link shop__link" href="#shop-books">See the books <span aria-hidden="true" class="flip-rtl">→</span></a>
         </li>
       </ul>
 
@@ -512,6 +513,20 @@
         </div>
         <div class="rail shelf__rail">
           <ul class="rail__track" role="list" tabindex="0" data-shelf="souvenirs"></ul>
+          <div class="rail__btns">
+            <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
+            <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shelf" id="shop-books" tabindex="-1">
+        <div class="shelf__head">
+          <h3 data-i18n="books.title" class="shelf__title reveal">Books</h3>
+          <p data-i18n="books.lede" class="shelf__lede reveal" style="--i:1">Catalogues, exhibition books and studies published by the Bank Al-Maghrib Museum.</p>
+        </div>
+        <div class="rail shelf__rail">
+          <ul class="rail__track" role="list" tabindex="0" data-shelf="books"></ul>
           <div class="rail__btns">
             <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
             <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>

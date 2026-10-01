@@ -292,6 +292,17 @@
       </span><span class="coin3d__shadow" aria-hidden="true"></span>`;
   }
 
+  /* 3D book: front cover, back cover, spine and page edges around one image. */
+  function bookMarkup(src, alt, spine) {
+    return `<span class="coin3d__body">
+        <img class="coin3d__face coin3d__face--front" src="${src}" alt="${alt}" draggable="false">
+        <span class="book3d__spine" style="background:${spine}"></span>
+        <span class="book3d__pages"></span>
+        <span class="book3d__top"></span>
+        <span class="coin3d__face coin3d__face--back book3d__back" style="background-color:${spine}"></span>
+      </span><span class="coin3d__shadow" aria-hidden="true"></span>`;
+  }
+
   let coinSpin = null;
   function startCoinSpin(stage) {
     const body = $('.coin3d__body', stage);
@@ -352,10 +363,11 @@
     if (coin) {
       const wrap = document.createElement('div');
       wrap.className = 'coin-viewer';
-      wrap.innerHTML = `<div class="coin3d coin3d--large" tabindex="0" role="img" aria-label="${esc(coin.alt)} ${esc(t('coin.dragHelp'))}">${coinMarkup(esc(coin.front), esc(coin.back), '', 18)}</div>
+      const bk = coin.book;
+      wrap.innerHTML = `<div class="coin3d coin3d--large${bk ? ' book3d' : ''}" tabindex="0" role="img" aria-label="${esc(coin.alt)} ${esc(t('coin.dragHelp'))}"${bk ? ` style="--r:${bk.ratio}"` : ''}>${bk ? bookMarkup(esc(coin.front), '', esc(bk.spine)) : coinMarkup(esc(coin.front), esc(coin.back), '', 18)}</div>
         <div class="coin-viewer__ctrl" role="group" aria-label="${esc(t('coin.side'))}">
-          <button type="button" class="filter" data-face="front" aria-pressed="true">${esc(t('coin.obverse'))}</button>
-          <button type="button" class="filter" data-face="back" aria-pressed="false">${esc(t('coin.reverse'))}</button>
+          <button type="button" class="filter" data-face="front" aria-pressed="true">${esc(t(bk ? 'book.front' : 'coin.obverse'))}</button>
+          <button type="button" class="filter" data-face="back" aria-pressed="false">${esc(t(bk ? 'book.back' : 'coin.reverse'))}</button>
         </div>
         <p class="coin-viewer__hint" aria-hidden="true">${esc(t('coin.drag'))}</p>`;
       lbMedia.append(wrap);
@@ -960,6 +972,7 @@
     { key: 'notes', items: window.BAM_SHOP_NOTES, kind: 'note', title: 'notes.title', rail: 'notes.rail' },
     { key: 'tools', items: window.BAM_SHOP_TOOLS, kind: 'product', title: 'tools.title', rail: 'tools.rail' },
     { key: 'souvenirs', items: window.BAM_SHOP_SOUVENIRS, kind: 'product', title: 'souv.title', rail: 'souv.rail' },
+    { key: 'books', items: window.BAM_SHOP_BOOKS, kind: 'book', title: 'books.title', rail: 'books.rail' },
   ].map((sh) => ({ ...sh, items: Array.isArray(sh.items) ? sh.items : [], el: $(`[data-shelf="${sh.key}"]`) }))
     .filter((sh) => sh.el);
   function renderShelf() {
@@ -969,7 +982,9 @@
       sh.el.innerHTML = sh.items.map((p, i) => {
         const cap = L(p.caption), alt = L(p.alt);
         return `<li class="slot slot--${sh.kind} slot--shop"><button type="button" class="slot__btn" data-shop-item="${i}" data-cursor="${esc(t('a.zoom'))}" aria-label="${esc(t('tl.enlarge', { x: cap || alt }))}">
-            <span class="slot__frame">${p.reverse
+            <span class="slot__frame">${sh.kind === 'book'
+              ? `<span class="coin3d book3d" style="--r:${p.ratio};--d:${(-(i * 3.1) % 16).toFixed(1)}s">${bookMarkup(esc(p.src), esc(alt), esc(p.spine))}</span>`
+              : p.reverse
               ? `<span class="coin3d${sh.kind === 'note' ? ' coin3d--thin' : ''}" style="--d:${(-(i * 3.1) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(alt), sh.kind === 'note' ? 1 : 6)}</span>`
               : `<img${p.cover ? ' class="slot__photo"' : ''} src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
             <p class="slot__cap">${esc(cap)}</p></li>`;
@@ -988,8 +1003,9 @@
       if (!b) return;
       const p = sh.items[Number(b.dataset.shopItem)];
       openLightbox({
-        coin: p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
-        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: sh.kind === 'product' ? (p.cover ? 'photo' : 'photo product') : (p.cover || sh.kind === 'note') ? 'photo' : 'coin' }],
+        coin: sh.kind === 'book' ? { front: p.src, alt: L(p.alt), book: { ratio: p.ratio, spine: p.spine } }
+          : p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
+        figures: (p.reverse || sh.kind === 'book') ? [] : [{ src: p.src, alt: L(p.alt), cls: sh.kind === 'product' ? (p.cover ? 'photo' : 'photo product') : (p.cover || sh.kind === 'note') ? 'photo' : 'coin' }],
         meta: t(sh.title), title: L(p.caption), body: L(p.text), returnTo: b });
     });
   });

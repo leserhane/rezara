@@ -793,3 +793,92 @@ window.BAM_SHOP_SOUVENIRS = [
     "cover": true
   }
 ];
+
+/* Boutique — books shelf. ratio = cover width / height; spine = spine colour. */
+window.BAM_SHOP_BOOKS = [
+  {
+    "src": "assets/boutique/ouvrages/tresors-musee-monnaie.webp",
+    "ratio": 0.8043,
+    "spine": "#a4501d",
+    "alt": {
+      "fr": "Couverture orange du catalogue « Les Trésors du Musée de la Monnaie », ornée de monnaies d’or et d’argent.",
+      "ar": "غلاف برتقالي لكتالوج «كنوز متحف النقود» مزيّن بقطع نقدية ذهبية وفضية.",
+      "en": "Orange cover of the catalogue “Les Trésors du Musée de la Monnaie”, decorated with gold and silver coins.",
+      "es": "Cubierta naranja del catálogo «Les Trésors du Musée de la Monnaie», con monedas de oro y plata."
+    },
+    "caption": {
+      "fr": "Les Trésors du Musée de la Monnaie · Histoire et patrimoine du Maroc · 2006",
+      "ar": "كنوز متحف النقود · تاريخ المغرب وتراثه · 2006",
+      "en": "Les Trésors du Musée de la Monnaie · History and heritage of Morocco · 2006",
+      "es": "Les Trésors du Musée de la Monnaie · Historia y patrimonio de Marruecos · 2006"
+    }
+  },
+  {
+    "src": "assets/boutique/ouvrages/collection-marocaine.webp",
+    "ratio": 0.9244,
+    "spine": "#927a2b",
+    "alt": {
+      "fr": "Couverture dorée gaufrée du livre « Une collection marocaine ».",
+      "ar": "غلاف ذهبي بزخارف بارزة لكتاب «مجموعة مغربية».",
+      "en": "Embossed gold cover of the book “Une collection marocaine”.",
+      "es": "Cubierta dorada en relieve del libro «Une collection marocaine»."
+    },
+    "caption": {
+      "fr": "Une collection marocaine · Regard sur les œuvres du Musée de Bank Al-Maghrib",
+      "ar": "مجموعة مغربية · نظرة على أعمال متحف بنك المغرب",
+      "en": "Une collection marocaine · A look at the works of the Bank Al-Maghrib Museum",
+      "es": "Une collection marocaine · Una mirada a las obras del Museo de Bank Al-Maghrib"
+    }
+  },
+  {
+    "src": "assets/boutique/ouvrages/gharbaoui.webp",
+    "ratio": 0.7114,
+    "spine": "#646451",
+    "alt": {
+      "fr": "Couverture du catalogue de l’exposition Jilali Gharbaoui, du 17 mai au 26 août 2012, avec un détail de peinture et le portrait du peintre.",
+      "ar": "غلاف كتالوج معرض الجيلالي الغرباوي من 17 ماي إلى 26 غشت 2012، مع تفصيل من لوحة وصورة الرسام.",
+      "en": "Cover of the Jilali Gharbaoui exhibition catalogue, 17 May to 26 August 2012, with a painting detail and the painter’s portrait.",
+      "es": "Cubierta del catálogo de la exposición Jilali Gharbaoui, del 17 de mayo al 26 de agosto de 2012, con un detalle de pintura y el retrato del pintor."
+    },
+    "caption": {
+      "fr": "Regards sur l’œuvre de Jilali Gharbaoui (1930–1971) · catalogue d’exposition · 2012",
+      "ar": "نظرات في أعمال الجيلالي الغرباوي (1930–1971) · كتالوج معرض · 2012",
+      "en": "Regards sur l’œuvre de Jilali Gharbaoui (1930–1971) · exhibition catalogue · 2012",
+      "es": "Regards sur l’œuvre de Jilali Gharbaoui (1930-1971) · catálogo de exposición · 2012"
+    }
+  },
+  {
+    "src": "assets/boutique/ouvrages/kacimi.webp",
+    "ratio": 0.7176,
+    "spine": "#1b2a52",
+    "alt": {
+      "fr": "Couverture bleu nuit avec un portrait peint et la signature du peintre Mohammed Kacimi.",
+      "ar": "غلاف أزرق داكن بصورة مرسومة وتوقيع الرسام محمد القاسمي.",
+      "en": "Dark blue cover with a painted portrait and the signature of the painter Mohammed Kacimi.",
+      "es": "Cubierta azul oscuro con un retrato pintado y la firma del pintor Mohammed Kacimi."
+    },
+    "caption": {
+      "fr": "Mohammed Kacimi · catalogue",
+      "ar": "محمد القاسمي · كتالوج",
+      "en": "Mohammed Kacimi · catalogue",
+      "es": "Mohammed Kacimi · catálogo"
+    }
+  },
+  {
+    "src": "assets/boutique/ouvrages/ikken-errance-aissa.webp",
+    "ratio": 0.7767,
+    "spine": "#5b5d5d",
+    "alt": {
+      "fr": "Couverture du livre « Ikken, L’errance d’Aïssa » de Soukaïna Régragui, avec une lune et des signes rouges et bleus.",
+      "ar": "غلاف كتاب «إكّن، تيه عيسى» لسكينة الركراكي، مع قمر ورموز حمراء وزرقاء.",
+      "en": "Cover of “Ikken, L’errance d’Aïssa” by Soukaïna Régragui, with a moon and red and blue signs.",
+      "es": "Cubierta de «Ikken, L’errance d’Aïssa» de Soukaïna Régragui, con una luna y signos rojos y azules."
+    },
+    "caption": {
+      "fr": "Ikken · L’errance d’Aïssa · Soukaïna Régragui",
+      "ar": "إكّن · تيه عيسى · سكينة الركراكي",
+      "en": "Ikken · L’errance d’Aïssa · Soukaïna Régragui",
+      "es": "Ikken · L’errance d’Aïssa · Soukaïna Régragui"
+    }
+  }
+];

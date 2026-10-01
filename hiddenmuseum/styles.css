@@ -1239,3 +1239,32 @@ html.reduce-motion { scroll-behavior: auto; }
 /* Product photos that bring their own backdrop fill the card */
 .slot--product.slot--shop .slot__frame:has(> img.slot__photo) { padding: 0; }
 .slot--product.slot--shop .slot__frame > img.slot__photo { object-fit: cover; mix-blend-mode: normal; }
+
+/* 3D books — cover, spine, page edges and top edge around one image */
+.coin3d.book3d { container-type: inline-size; aspect-ratio: var(--r); height: auto; --t: 9cqw; border-radius: 0; }
+.slot--book.slot--shop { width: clamp(200px, 20vw, 250px); }
+.slot--book.slot--shop .slot__frame { aspect-ratio: 4 / 5; }
+.slot--book .coin3d.book3d { width: calc(min(78%, 92% * var(--r))); }
+.book3d .coin3d__face { object-fit: cover; border-radius: 1px 3px 3px 1px; }
+.book3d .coin3d__face--front { box-shadow: inset 3px 0 6px rgba(0,0,0,.35); }
+.book3d__back { display: block; background-image: linear-gradient(90deg, rgba(0,0,0,.25), rgba(255,255,255,.06) 40%, rgba(0,0,0,.18)); }
+.book3d__spine, .book3d__pages, .book3d__top { position: absolute; display: block; }
+.book3d__spine { top: 0; bottom: 0; left: calc(50% - var(--t) / 2); width: var(--t); transform: rotateY(-90deg) translateZ(50cqw);
+  background-image: linear-gradient(90deg, rgba(0,0,0,.35), rgba(255,255,255,.12) 45%, rgba(0,0,0,.3)); }
+.book3d__pages { top: 1.5%; bottom: 1.5%; left: calc(50% - var(--t) / 2); width: var(--t); transform: rotateY(90deg) translateZ(calc(50cqw - 1px));
+  background: repeating-linear-gradient(90deg, #f1ebdf 0 1px, #d8cfbd 1px 2px); }
+.book3d__top { left: 0; right: 1.5%; top: calc(50% - var(--t) / 2); height: var(--t); transform: rotateX(90deg) translateZ(calc(50cqw / var(--r) - 1px));
+  background: repeating-linear-gradient(0deg, #f1ebdf 0 1px, #d8cfbd 1px 2px); }
+.coin3d--large.book3d { width: calc(min(58vh, 440px) * var(--r)); --t: 8cqw; }
+@media (max-width: 599px) { .coin3d--large.book3d { width: calc(min(50vh, 72vw) * var(--r)); } }
+/* On the shelves, books sway gently instead of turning, so the cover stays readable */
+@keyframes bookSway { 0%, 100% { transform: rotateX(7deg) rotateY(-32deg); } 50% { transform: rotateX(7deg) rotateY(24deg); } }
+@keyframes bookLight { 0%, 100% { filter: brightness(.9); } 50% { filter: brightness(1.06); } }
+.slot .book3d .coin3d__body { animation: bookSway 9s ease-in-out infinite; animation-delay: var(--d, 0s); animation-play-state: paused; }
+.slot .book3d .coin3d__face--front { animation: bookLight 9s ease-in-out infinite; animation-delay: var(--d, 0s); animation-play-state: paused; }
+.slot .book3d .coin3d__face--back, .slot .book3d .coin3d__shadow { animation: none; }
+.slot .book3d.is-spinning .coin3d__body, .slot .book3d.is-spinning .coin3d__face--front { animation-play-state: running; }
+.slot__btn:hover .book3d .coin3d__body, .slot__btn:hover .book3d .coin3d__face--front,
+.slot__btn:focus-visible .book3d .coin3d__body, .slot__btn:focus-visible .book3d .coin3d__face--front { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .slot .book3d .coin3d__body { animation: none !important; transform: rotateX(4deg) rotateY(-20deg); } }
+.reduce-motion .slot .book3d .coin3d__body { animation: none !important; transform: rotateX(4deg) rotateY(-20deg); }
