@@ -1036,6 +1036,18 @@ small { font-size: .78em; color: var(--muted); font-weight: 400; }
 .footer__cols li { color: var(--muted); padding: 5px 0; font-size: .93rem; }
 .footer__cols a { text-decoration: none; color: var(--ink); background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s var(--ease), color .3s; }
 .footer__cols a:hover, .footer__cols a:focus-visible { color: var(--accent); background-size: 100% 1px; }
+.socials li { padding: 4px 0; }
+.footer__cols a.social { display: inline-flex; align-items: center; gap: 12px; background: none; }
+.social__icon {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--line-strong); color: var(--ink);
+  transition: border-color .3s, color .3s, background-color .3s, transform .4s var(--ease);
+}
+.social__icon svg { width: 17px; height: 17px; }
+.social__name { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s var(--ease); }
+.footer__cols a.social:hover .social__icon, .footer__cols a.social:focus-visible .social__icon { border-color: var(--accent); color: var(--accent); background-color: rgba(216,181,106,.08); transform: translateY(-2px); }
+.footer__cols a.social:hover .social__name, .footer__cols a.social:focus-visible .social__name { background-size: 100% 1px; }
+.reduce-motion .social__icon { transition: none; transform: none !important; }
 .motion-toggle {
   margin-top: 18px; min-height: 40px; padding: 0 16px; border-radius: 999px;
   border: 1px solid var(--line-strong); background: none; font-size: .82rem;
