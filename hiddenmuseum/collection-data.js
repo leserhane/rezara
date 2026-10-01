@@ -1010,7 +1010,20 @@ window.BAM_ART = [
           en: 'Since the 1980s, a new generation has explored every medium — painting, photography, installation, video — questioning identity, memory and the city.',
           es: 'Desde los años ochenta, una nueva generación explora todas las técnicas —pintura, fotografía, instalación, vídeo— e interroga la identidad, la memoria y la ciudad.'
         },
-        slots: 4, works: []
+        slots: 4,
+        works: [
+          { src: 'assets/art/contemporains/calligraphie-cercle.webp', ratio: 0.9933, framed: true,
+            title: { fr: 'Sans titre', ar: 'بدون عنوان', en: 'Untitled', es: 'Sin título' }, medium: { fr: 'technique mixte', ar: 'تقنية مختلطة', en: 'mixed media', es: 'técnica mixta' },
+            alt: { fr: 'Tondo couvert d’écritures : au centre, une forme rouge faite de calligraphie arabe dont les bords dessinent deux profils qui se font face ; autour, des signes tifinagh blancs sur fond bleu et vert.', ar: 'لوحة دائرية مغطاة بالكتابة: في الوسط شكل أحمر من الخط العربي ترسم حوافه وجهين جانبيين متقابلين، وحوله رموز تيفيناغ بيضاء على خلفية زرقاء وخضراء.', en: 'A round work covered in writing: in the centre, a red form of Arabic calligraphy whose edges draw two facing profiles; around it, white Tifinagh signs on a blue and green ground.', es: 'Obra circular cubierta de escritura: en el centro, una forma roja de caligrafía árabe cuyos bordes dibujan dos perfiles enfrentados; alrededor, signos tifinagh blancos sobre fondo azul y verde.' } },
+          { src: 'assets/art/contemporains/visage-bleu.webp', ratio: 0.9762,
+            title: { fr: 'Sans titre', ar: 'بدون عنوان', en: 'Untitled', es: 'Sin título' }, medium: { fr: 'technique mixte', ar: 'تقنية مختلطة', en: 'mixed media', es: 'técnica mixta' },
+            alt: { fr: 'Un visage aux yeux clos émerge de l’obscurité, sa peau bleu turquoise recouverte de fins motifs de dentelle et d’arabesques dorés.', ar: 'وجه بعينين مغمضتين يبرز من العتمة، بشرته فيروزية مغطاة بزخارف دقيقة كالدانتيل وأرابيسك ذهبية.', en: 'A face with closed eyes emerges from the dark, its turquoise skin covered in fine golden lace patterns and arabesques.', es: 'Un rostro de ojos cerrados surge de la oscuridad, con la piel turquesa cubierta de finos motivos de encaje y arabescos dorados.' } },
+          { src: 'assets/art/contemporains/essaydi-polyptyque.webp', ratio: 1.1976, framed: true,
+            artist: 'Lalla Essaydi',
+            title: { fr: 'Sans titre', ar: 'بدون عنوان', en: 'Untitled', es: 'Sin título' },
+            medium: { fr: 'photographie, quatre tirages', ar: 'تصوير فوتوغرافي، أربع نسخ مطبوعة', en: 'photography, four prints', es: 'fotografía, cuatro copias' },
+            alt: { fr: 'Quatre photographies : les yeux d’une femme, puis son visage voilé, peau et étoffe couvertes d’écriture arabe tracée au henné.', ar: 'أربع صور: عينا امرأة ثم وجهها المحجوب، وقد غُطّيت البشرة والقماش بكتابة عربية مخطوطة بالحناء.', en: 'Four photographs: a woman’s eyes, then her veiled face, skin and cloth covered in Arabic writing traced in henna.', es: 'Cuatro fotografías: los ojos de una mujer y luego su rostro velado, piel y tela cubiertas de escritura árabe trazada con henna.' } }
+        ]
       }
     ]
   }
