@@ -449,6 +449,7 @@
           <p class="shop__num" aria-hidden="true">04</p>
           <h3 data-i18n="shop.4" class="shop__title" lang="fr">Articles souvenirs</h3>
           <p data-i18n="shop.4.text" class="shop__desc">Objects inspired by the collections, made to be kept and given.</p>
+          <a data-i18n="shop.seeSouvenirs" class="text-link shop__link" href="#shop-souvenirs">See the souvenirs <span aria-hidden="true" class="flip-rtl">→</span></a>
         </li>
         <li class="shop__item reveal" style="--i:4">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -497,6 +498,20 @@
         </div>
         <div class="rail shelf__rail">
           <ul class="rail__track" role="list" tabindex="0" data-shelf="tools"></ul>
+          <div class="rail__btns">
+            <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
+            <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shelf" id="shop-souvenirs" tabindex="-1">
+        <div class="shelf__head">
+          <h3 data-i18n="souv.title" class="shelf__title reveal">Souvenirs</h3>
+          <p data-i18n="souv.lede" class="shelf__lede reveal" style="--i:1">Replicas, mugs, bags and clothing inspired by the coins, banknotes and paintings of the collections.</p>
+        </div>
+        <div class="rail shelf__rail">
+          <ul class="rail__track" role="list" tabindex="0" data-shelf="souvenirs"></ul>
           <div class="rail__btns">
             <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
             <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>

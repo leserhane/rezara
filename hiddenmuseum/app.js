@@ -959,6 +959,7 @@
     { key: 'coins', items: window.BAM_SHOP_COINS, kind: 'coin', title: 'shelf.title', rail: 'shelf.rail' },
     { key: 'notes', items: window.BAM_SHOP_NOTES, kind: 'note', title: 'notes.title', rail: 'notes.rail' },
     { key: 'tools', items: window.BAM_SHOP_TOOLS, kind: 'product', title: 'tools.title', rail: 'tools.rail' },
+    { key: 'souvenirs', items: window.BAM_SHOP_SOUVENIRS, kind: 'product', title: 'souv.title', rail: 'souv.rail' },
   ].map((sh) => ({ ...sh, items: Array.isArray(sh.items) ? sh.items : [], el: $(`[data-shelf="${sh.key}"]`) }))
     .filter((sh) => sh.el);
   function renderShelf() {
@@ -988,7 +989,7 @@
       const p = sh.items[Number(b.dataset.shopItem)];
       openLightbox({
         coin: p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
-        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: sh.kind === 'product' ? 'photo product' : (p.cover || sh.kind === 'note') ? 'photo' : 'coin' }],
+        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: sh.kind === 'product' ? (p.cover ? 'photo' : 'photo product') : (p.cover || sh.kind === 'note') ? 'photo' : 'coin' }],
         meta: t(sh.title), title: L(p.caption), body: L(p.text), returnTo: b });
     });
   });

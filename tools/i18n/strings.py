@@ -389,3 +389,12 @@ HTML += [
 JS += [
  ("tools.rail", "Collector’s tools — {n} items", "Outils pour collectionneurs — {n} articles", "أدوات هواة الجمع — {n} منتجات", "Herramientas para coleccionistas — {n} artículos"),
 ]
+
+HTML += [
+ ("shop.seeSouvenirs", "See the souvenirs <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Voir les souvenirs <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "اكتشف التذكارات <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Ver los recuerdos <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>"),
+ ("souv.title", "Souvenirs", "Articles souvenirs", "التذكارات", "Recuerdos"),
+ ("souv.lede", "Replicas, mugs, bags and clothing inspired by the coins, banknotes and paintings of the collections.", "Répliques, mugs, sacs et vêtements inspirés des pièces, des billets et des peintures des collections.", "نسخ مقلّدة وأكواب وحقائب وملابس مستوحاة من القطع والأوراق النقدية واللوحات في المجموعات.", "Réplicas, tazas, bolsas y ropa inspiradas en las monedas, los billetes y las pinturas de las colecciones."),
+]
+JS += [
+ ("souv.rail", "Souvenirs — {n} items", "Articles souvenirs — {n} articles", "التذكارات — {n} منتجات", "Recuerdos — {n} artículos"),
+]

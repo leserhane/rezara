@@ -713,3 +713,83 @@ window.BAM_SHOP_TOOLS = [
     }
   }
 ];
+
+/* Boutique — souvenirs shelf (product photos). */
+window.BAM_SHOP_SOUVENIRS = [
+  {
+    "src": "assets/boutique/souvenirs/repliques-monnaies.webp",
+    "alt": {
+      "fr": "Trois répliques de monnaies, deux dorées et une argentée à l’étoile à six branches.",
+      "ar": "ثلاث نسخ مقلّدة من قطع نقدية، اثنتان ذهبيتان وواحدة فضية بنجمة سداسية.",
+      "en": "Three replica coins, two gold-coloured and one silver-coloured with a six-pointed star.",
+      "es": "Tres réplicas de monedas, dos doradas y una plateada con una estrella de seis puntas."
+    },
+    "caption": {
+      "fr": "Répliques de monnaies anciennes",
+      "ar": "نسخ مقلّدة من نقود قديمة",
+      "en": "Replicas of historic coins",
+      "es": "Réplicas de monedas antiguas"
+    }
+  },
+  {
+    "src": "assets/boutique/souvenirs/boitiers-monnaies-antiques.webp",
+    "alt": {
+      "fr": "Deux boîtiers ronds ornés de têtes de monnaies antiques, l’un doré, l’autre argenté.",
+      "ar": "علبتان دائريتان مزيّنتان برؤوس من نقود قديمة، إحداهما ذهبية والأخرى فضية.",
+      "en": "Two round cases decorated with heads from ancient coins, one gold, one silver.",
+      "es": "Dos estuches redondos decorados con cabezas de monedas antiguas, uno dorado y otro plateado."
+    },
+    "caption": {
+      "fr": "Boîtiers ronds aux monnaies antiques",
+      "ar": "علب دائرية بزخارف نقود قديمة",
+      "en": "Round cases with ancient coin designs",
+      "es": "Estuches redondos con monedas antiguas"
+    }
+  },
+  {
+    "src": "assets/boutique/souvenirs/mugs.webp",
+    "alt": {
+      "fr": "Deux mugs imprimés d’une peinture de ville marocaine, avec le logo du Musée de Bank Al-Maghrib.",
+      "ar": "كوبان مطبوعان بلوحة لمدينة مغربية مع شعار متحف بنك المغرب.",
+      "en": "Two mugs printed with a painting of a Moroccan city and the Musée de Bank Al-Maghrib logo.",
+      "es": "Dos tazas con una pintura de una ciudad marroquí y el logotipo del Musée de Bank Al-Maghrib."
+    },
+    "caption": {
+      "fr": "Mugs illustrés du musée",
+      "ar": "أكواب مزيّنة برسوم المتحف",
+      "en": "Illustrated museum mugs",
+      "es": "Tazas ilustradas del museo"
+    }
+  },
+  {
+    "src": "assets/boutique/souvenirs/sacs-toile.webp",
+    "alt": {
+      "fr": "Trois sacs en toile aux motifs de billets anciens et de pièces de monnaie.",
+      "ar": "ثلاث حقائب قماشية بزخارف أوراق نقدية قديمة وقطع نقدية.",
+      "en": "Three tote bags with patterns of old banknotes and coins.",
+      "es": "Tres bolsas de tela con motivos de billetes antiguos y monedas."
+    },
+    "caption": {
+      "fr": "Sacs en toile imprimés de billets et de pièces",
+      "ar": "حقائب قماشية مطبوعة بأوراق وقطع نقدية",
+      "en": "Tote bags printed with banknotes and coins",
+      "es": "Bolsas de tela con billetes y monedas"
+    }
+  },
+  {
+    "src": "assets/boutique/souvenirs/tshirt.webp",
+    "alt": {
+      "fr": "T-shirt blanc imprimé d’une peinture orientaliste, posé sur un fond sombre.",
+      "ar": "قميص أبيض مطبوع بلوحة استشراقية على خلفية داكنة.",
+      "en": "White T-shirt printed with an Orientalist painting, laid on a dark background.",
+      "es": "Camiseta blanca con una pintura orientalista, sobre un fondo oscuro."
+    },
+    "caption": {
+      "fr": "T-shirt imprimé d’une peinture",
+      "ar": "قميص مطبوع بلوحة فنية",
+      "en": "T-shirt printed with a painting",
+      "es": "Camiseta con una pintura"
+    },
+    "cover": true
+  }
+];

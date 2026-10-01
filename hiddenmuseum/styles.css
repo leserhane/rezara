@@ -1236,3 +1236,6 @@ html.reduce-motion { scroll-behavior: auto; }
 .slot--product .slot__btn:hover .slot__frame, .slot--product .slot__btn:focus-visible .slot__frame { border-color: var(--accent); }
 .slot--product .slot__btn:hover .slot__frame > img, .slot--product .slot__btn:focus-visible .slot__frame > img { transform: scale(1.05); }
 .lightbox__media img.product { background: #f3efe8; padding: clamp(16px, 3vw, 40px); max-height: 72vh; object-fit: contain; }
+/* Product photos that bring their own backdrop fill the card */
+.slot--product.slot--shop .slot__frame:has(> img.slot__photo) { padding: 0; }
+.slot--product.slot--shop .slot__frame > img.slot__photo { object-fit: cover; mix-blend-mode: normal; }
