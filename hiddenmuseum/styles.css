@@ -1220,3 +1220,5 @@ html.reduce-motion { scroll-behavior: auto; }
 .slot--shop .coin3d { width: 80%; }
 .slot--shop .slot__cap { color: var(--ink); font-size: .84rem; }
 :lang(ar) .shelf__title { line-height: 1.45; font-weight: 500; }
+.slot__frame > img.slot__photo { width: 100%; height: 100%; max-height: none; object-fit: cover; filter: none; }
+.slot__btn:hover .slot__frame > img.slot__photo, .slot__btn:focus-visible .slot__frame > img.slot__photo { transform: scale(1.05); }

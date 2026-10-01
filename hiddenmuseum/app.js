@@ -966,7 +966,7 @@
       return `<li class="slot slot--coin slot--shop"><button type="button" class="slot__btn" data-shop-coin="${i}" data-cursor="${esc(t('a.zoom'))}" aria-label="${esc(t('tl.enlarge', { x: cap || alt }))}">
           <span class="slot__frame">${p.reverse
             ? `<span class="coin3d" style="--d:${(-(i * 3.1) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(alt), 6)}</span>`
-            : `<img src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
+            : `<img${p.cover ? ' class="slot__photo"' : ''} src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
           <p class="slot__cap">${esc(cap)}</p></li>`;
     }).join('');
     $$('.coin3d', shelf).forEach((c) => spinObs.observe(c));
@@ -984,7 +984,7 @@
       const p = shopCoins[Number(b.dataset.shopCoin)];
       openLightbox({
         coin: p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
-        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: 'coin' }],
+        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: p.cover ? 'photo' : 'coin' }],
         meta: t('shelf.title'), title: L(p.caption), body: L(p.text), returnTo: b });
     });
     renderShelf();
