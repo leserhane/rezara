@@ -1012,6 +1012,84 @@
   renderShelf();
 
   /* ------------------------------------------------------------------
+     ARTS COLLECTION — Orientalistes / Marocains (data: BAM_ART)
+     ------------------------------------------------------------------ */
+  const artEl = $('[data-art]');
+  const artParts = Array.isArray(window.BAM_ART) ? window.BAM_ART : [];
+  let artWorks = [];
+  const ART_RATIOS = ['4 / 5', '1 / 1', '3 / 4', '5 / 4', '4 / 5', '3 / 4'];
+  function artGrid(node, label) {
+    const works = node.works || [];
+    const n = Math.max(node.slots || 0, works.length);
+    let html = '';
+    for (let i = 0; i < n; i++) {
+      const w = works[i];
+      if (w && w.src) {
+        const k = artWorks.push({ w, label }) - 1;
+        const cap = [L(w.artist), L(w.title)].filter(Boolean).join(' · ');
+        html += `<li class="art-work"><button type="button" class="art-work__btn" data-art-work="${k}" data-cursor="${esc(t('a.view'))}" aria-label="${esc(t('tl.enlarge', { x: cap || L(w.alt) }))}">
+            <img src="${esc(w.src)}" alt="${esc(L(w.alt))}" loading="lazy"${w.ratio ? ` style="aspect-ratio:${w.ratio}"` : ''}></button>
+            <p class="art-work__cap">${L(w.artist) ? `<strong>${esc(L(w.artist))}</strong>` : ''}${L(w.title) ? `<span>${esc(L(w.title))}</span>` : ''}${L(w.date) ? `<span class="art-work__date">${esc(L(w.date))}</span>` : ''}</p></li>`;
+      } else {
+        html += `<li class="art-work art-work--empty" aria-hidden="true"><span class="art-work__frame" style="aspect-ratio:${ART_RATIOS[i % ART_RATIOS.length]}">
+            <svg class="slot__mark" viewBox="0 0 100 100"><use href="#diamond"/></svg></span>
+            <p class="art-work__cap"><span>${esc(t('art.workSoon'))}</span></p></li>`;
+      }
+    }
+    const filled = works.filter((w) => w && w.src).length;
+    return `<ul class="art-grid" role="list" aria-label="${esc(t('art.works', { label, n: filled, total: n }))}">${html}</ul>`;
+  }
+  function renderArt() {
+    if (!artEl || !artParts.length) return;
+    artWorks = [];
+    const nav = [];
+    const parts = artParts.map((part, pi) => {
+      const title = L(part.title);
+      nav.push(`<li><a href="#art-${esc(part.id)}"><span class="art-nav__num">${ROMAN[pi] || pi + 1}</span>${esc(title)}</a></li>`);
+      let body = '';
+      if (part.groups) {
+        body = part.groups.map((g) => {
+          const gt = L(g.title);
+          nav.push(`<li class="art-nav__sub"><a href="#art-${esc(g.id)}">${esc(gt)}</a></li>`);
+          const inner = g.schools
+            ? `<div class="art-schools">${g.schools.map((sc) => `<div class="art-school" id="art-${esc(sc.id)}">
+                <h5 class="art-school__title">${esc(L(sc.title))}</h5>
+                <p class="art-school__intro">${esc(L(sc.intro))}</p>
+                ${artGrid(sc, `${gt} — ${L(sc.title)}`)}</div>`).join('')}</div>`
+            : artGrid(g, gt);
+          return `<div class="art-group" id="art-${esc(g.id)}">
+              <h4 class="art-group__title">${esc(gt)}</h4>
+              ${g.intro ? `<p class="art-group__intro">${esc(L(g.intro))}</p>` : ''}
+              ${inner}</div>`;
+        }).join('');
+      } else {
+        body = artGrid(part, title);
+      }
+      return `<section class="art-part" id="art-${esc(part.id)}" aria-labelledby="art-${esc(part.id)}-title">
+          <header class="art-part__head">
+            <span class="art-part__num" aria-hidden="true">${ROMAN[pi] || pi + 1}</span>
+            <h3 class="art-part__title" id="art-${esc(part.id)}-title">${esc(title)}</h3>
+            ${part.intro ? `<p class="art-part__intro">${esc(L(part.intro))}</p>` : ''}
+          </header>
+          <div class="art-part__body">${body}</div>
+        </section>`;
+    }).join('');
+    artEl.innerHTML = `<nav class="art-nav" aria-label="${esc(t('art.nav'))}"><ol role="list">${nav.join('')}</ol></nav>${parts}`;
+  }
+  if (artEl) {
+    artEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-art-work]');
+      if (!b) return;
+      const { w, label } = artWorks[Number(b.dataset.artWork)];
+      openLightbox({
+        figures: [{ src: w.src, alt: L(w.alt), cls: 'photo' }],
+        meta: label, title: [L(w.artist), L(w.title)].filter(Boolean).join(' · '),
+        body: [L(w.date), L(w.medium), L(w.text)].filter(Boolean).join(' · '), returnTo: b });
+    });
+    renderArt();
+  }
+
+  /* ------------------------------------------------------------------
      LANGUAGE — flag menu; everything drawn by JS is redrawn on change
      ------------------------------------------------------------------ */
   const langBox = $('[data-lang]');
@@ -1055,6 +1133,7 @@
     if (activePanel > -1) caption.textContent = panels[activePanel].dataset.caption;
     renderTimeline();
     renderShelf();
+    renderArt();
     renderCal();
     updateSummary();
     nextLabel();

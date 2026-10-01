@@ -882,3 +882,94 @@ window.BAM_SHOP_BOOKS = [
     }
   }
 ];
+
+/* ==========================================================================
+   Arts collection — Orientalistes / Marocains (Pionniers, Autodidactes,
+   Contemporains)
+   --------------------------------------------------------------------------
+   Each part (or school) has `slots` (frames shown) and `works`, in order:
+     { src, ratio?, artist, title, date?, medium?, alt }
+   Every text can be { fr, ar, en, es }. Empty slots show "Œuvre à venir".
+   To add a painting: put the image in assets/art/ and add an entry.
+   ========================================================================== */
+window.BAM_ART = [
+  {
+    id: 'orientalistes',
+    title: { fr: 'Orientalistes', ar: 'المستشرقون', en: 'Orientalists', es: 'Orientalistas' },
+    intro: {
+      fr: 'Du XIXe siècle aux années 1930, des peintres venus d’Europe découvrent le Maroc ; Eugène Delacroix y accompagne une mission diplomatique dès 1832. Lumière, paysages, architecture et scènes de la vie quotidienne : un regard venu d’ailleurs, fasciné, qui a durablement marqué l’image du pays.',
+      ar: 'منذ القرن التاسع عشر إلى ثلاثينيات القرن العشرين، اكتشف رسامون قادمون من أوروبا المغرب، وقد رافق أوجين دولاكروا بعثة دبلوماسية إليه منذ سنة 1832. ضوء ومناظر طبيعية وعمارة ومشاهد من الحياة اليومية: نظرة آتية من بعيد، مفتونة، طبعت صورة البلاد طويلاً.',
+      en: 'From the nineteenth century to the 1930s, painters from Europe discovered Morocco; Eugène Delacroix accompanied a diplomatic mission there as early as 1832. Light, landscapes, architecture and scenes of daily life: an outsider’s fascinated gaze that left a lasting mark on the country’s image.',
+      es: 'Del siglo XIX a los años treinta, pintores llegados de Europa descubren Marruecos; Eugène Delacroix acompaña allí una misión diplomática ya en 1832. Luz, paisajes, arquitectura y escenas de la vida cotidiana: una mirada venida de fuera, fascinada, que marcó durante mucho tiempo la imagen del país.'
+    },
+    slots: 6, works: []
+  },
+  {
+    id: 'marocains',
+    title: { fr: 'Marocains', ar: 'الفنانون المغاربة', en: 'Moroccan artists', es: 'Artistas marroquíes' },
+    intro: {
+      fr: 'Au milieu du XXe siècle, les artistes marocains inventent leur propre langage moderne, entre héritage des arts populaires, abstraction et figuration. La collection de Bank Al-Maghrib en suit les grands courants, des pionniers aux créateurs d’aujourd’hui.',
+      ar: 'في منتصف القرن العشرين، ابتكر الفنانون المغاربة لغتهم الحديثة الخاصة، بين إرث الفنون الشعبية والتجريد والتشخيص. وتواكب مجموعة بنك المغرب أبرز تياراتها، من الرواد إلى مبدعي اليوم.',
+      en: 'In the mid-twentieth century, Moroccan artists invented their own modern language, between the heritage of popular arts, abstraction and figuration. The Bank Al-Maghrib collection follows its main currents, from the pioneers to today’s artists.',
+      es: 'A mediados del siglo XX, los artistas marroquíes inventan su propio lenguaje moderno, entre la herencia de las artes populares, la abstracción y la figuración. La colección de Bank Al-Maghrib sigue sus grandes corrientes, de los pioneros a los creadores de hoy.'
+    },
+    groups: [
+      {
+        id: 'pionniers',
+        title: { fr: 'Pionniers', ar: 'الرواد', en: 'Pioneers', es: 'Pioneros' },
+        intro: {
+          fr: 'Les premiers peintres de la modernité marocaine, formés et réunis autour de deux écoles des beaux-arts.',
+          ar: 'أوائل رسامي الحداثة المغربية، الذين تكوّنوا والتفّوا حول مدرستين للفنون الجميلة.',
+          en: 'The first painters of Moroccan modernity, trained and gathered around two schools of fine arts.',
+          es: 'Los primeros pintores de la modernidad marroquí, formados y reunidos en torno a dos escuelas de bellas artes.'
+        },
+        schools: [
+          {
+            id: 'casablanca',
+            title: { fr: 'École de Casablanca', ar: 'مدرسة الدار البيضاء', en: 'Casablanca School', es: 'Escuela de Casablanca' },
+            intro: {
+              fr: 'Dans les années 1960, autour de Farid Belkahia, Mohamed Chabâa et Mohamed Melehi, l’École des beaux-arts de Casablanca renouvelle la peinture en puisant dans les signes, les motifs et les savoir-faire de l’artisanat marocain.',
+              ar: 'في ستينيات القرن العشرين، وحول فريد بلكاهية ومحمد شبعة ومحمد المليحي، جدّدت مدرسة الفنون الجميلة بالدار البيضاء الرسم مستلهمة الرموز والزخارف ومهارات الصناعة التقليدية المغربية.',
+              en: 'In the 1960s, around Farid Belkahia, Mohamed Chabâa and Mohamed Melehi, the Casablanca School of Fine Arts renewed painting by drawing on the signs, patterns and skills of Moroccan craftsmanship.',
+              es: 'En los años sesenta, en torno a Farid Belkahia, Mohamed Chabâa y Mohamed Melehi, la Escuela de Bellas Artes de Casablanca renueva la pintura inspirándose en los signos, los motivos y los oficios de la artesanía marroquí.'
+            },
+            slots: 3, works: []
+          },
+          {
+            id: 'tetouan',
+            title: { fr: 'École de Tétouan', ar: 'مدرسة تطوان', en: 'Tétouan School', es: 'Escuela de Tetuán' },
+            intro: {
+              fr: 'Fondée en 1945 par Mariano Bertuchi, l’École des beaux-arts de Tétouan forme une génération de peintres attachés au dessin, à la figuration et à la lumière du Nord, avant de s’ouvrir à l’abstraction.',
+              ar: 'أسّس ماريانو بيرتوتشي مدرسة الفنون الجميلة بتطوان سنة 1945، فكوّنت جيلاً من الرسامين المتشبّثين بالرسم والتشخيص وضوء الشمال، قبل أن تنفتح على التجريد.',
+              en: 'Founded in 1945 by Mariano Bertuchi, the Tétouan School of Fine Arts trained a generation of painters devoted to drawing, figuration and the light of the North, before opening up to abstraction.',
+              es: 'Fundada en 1945 por Mariano Bertuchi, la Escuela de Bellas Artes de Tetuán forma una generación de pintores apegados al dibujo, la figuración y la luz del Norte, antes de abrirse a la abstracción.'
+            },
+            slots: 3, works: []
+          }
+        ]
+      },
+      {
+        id: 'autodidactes',
+        title: { fr: 'Autodidactes', ar: 'العصاميون', en: 'Self-taught artists', es: 'Autodidactas' },
+        intro: {
+          fr: 'Sans passer par l’école, des artistes comme Chaïbia Talal ou Mohamed Ben Allal développent un univers libre et singulier, souvent qualifié de « naïf », reconnu bien au-delà du Maroc.',
+          ar: 'دون المرور بالمدرسة، طوّر فنانون مثل الشعيبية طلال ومحمد بن علال عوالم حرّة وفريدة، كثيراً ما توصف بـ«الفطرية»، ونالت اعترافاً يتجاوز المغرب بكثير.',
+          en: 'Without formal training, artists such as Chaïbia Talal and Mohamed Ben Allal developed free and singular worlds, often called “naïve”, recognised far beyond Morocco.',
+          es: 'Sin pasar por la escuela, artistas como Chaïbia Talal o Mohamed Ben Allal desarrollan un universo libre y singular, a menudo calificado de «naíf», reconocido mucho más allá de Marruecos.'
+        },
+        slots: 4, works: []
+      },
+      {
+        id: 'contemporains',
+        title: { fr: 'Contemporains', ar: 'المعاصرون', en: 'Contemporary artists', es: 'Contemporáneos' },
+        intro: {
+          fr: 'Depuis les années 1980, une nouvelle génération explore toutes les techniques — peinture, photographie, installation, vidéo — et interroge l’identité, la mémoire et la ville.',
+          ar: 'منذ ثمانينيات القرن العشرين، يستكشف جيل جديد كل التقنيات – الرسم والتصوير الفوتوغرافي والتنصيب والفيديو – ويسائل الهوية والذاكرة والمدينة.',
+          en: 'Since the 1980s, a new generation has explored every medium — painting, photography, installation, video — questioning identity, memory and the city.',
+          es: 'Desde los años ochenta, una nueva generación explora todas las técnicas —pintura, fotografía, instalación, vídeo— e interroga la identidad, la memoria y la ciudad.'
+        },
+        slots: 4, works: []
+      }
+    ]
+  }
+];

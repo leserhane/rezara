@@ -123,10 +123,10 @@ HTML = [
  ("col.tab.art", "Artistique", "Artistique", "الفنون", "Artística"),
  ("col.noscript", "The timeline needs JavaScript to display.", "La frise chronologique nécessite JavaScript.", "يتطلّب الخط الزمني تفعيل JavaScript.", "La cronología necesita JavaScript."),
  ("art.eyebrow", "Collection artistique", "Collection artistique", "المجموعة الفنية", "Colección artística"),
- ("art.lede", "Painting, sculpture and works on paper by Moroccan artists, collected by Bank Al-Maghrib and shown in rotating hangs across the upper galleries.",
-  "Peinture, sculpture et œuvres sur papier d’artistes marocains, réunies par Bank Al-Maghrib et présentées par accrochages successifs dans les galeries supérieures.",
-  "لوحات ومنحوتات وأعمال على الورق لفنانين مغاربة، جمعها بنك المغرب وتُعرض بالتناوب في القاعات العليا.",
-  "Pintura, escultura y obras sobre papel de artistas marroquíes, reunidas por Bank Al-Maghrib y presentadas en montajes rotativos en las galerías superiores."),
+ ("art.lede", "Two ways of seeing Morocco: the European Orientalist painters who discovered it, and the Moroccan artists who invented its modern art, from the pioneers to today.",
+  "Deux regards sur le Maroc : celui des peintres orientalistes européens qui l’ont découvert, et celui des artistes marocains qui ont inventé son art moderne, des pionniers à aujourd’hui.",
+  "نظرتان إلى المغرب: نظرة الرسامين المستشرقين الأوروبيين الذين اكتشفوه، ونظرة الفنانين المغاربة الذين ابتكروا فنه الحديث، من الرواد إلى اليوم.",
+  "Dos miradas sobre Marruecos: la de los pintores orientalistas europeos que lo descubrieron y la de los artistas marroquíes que inventaron su arte moderno, de los pioneros a hoy."),
  ("art.soon", "Photo à venir", "Photo à venir", "الصورة قريباً", "Foto próximamente"),
 
  # boutique
@@ -408,4 +408,10 @@ JS += [
  ("books.rail", "Books — {n} titles", "Ouvrages — {n} titres", "الإصدارات — {n} عناوين", "Publicaciones — {n} títulos"),
  ("book.front", "Cover", "Couverture", "الغلاف", "Cubierta"),
  ("book.back", "Back", "Dos", "الظهر", "Contracubierta"),
+]
+
+JS += [
+ ("art.nav", "Art collection sections", "Parties de la collection artistique", "أقسام المجموعة الفنية", "Partes de la colección artística"),
+ ("art.workSoon", "Work to come", "Œuvre à venir", "عمل قادم", "Obra próximamente"),
+ ("art.works", "{label} — {n} of {total} works available", "{label} — {n} œuvres disponibles sur {total}", "{label} — {n} من أصل {total} أعمال متاحة", "{label} — {n} de {total} obras disponibles"),
 ]
