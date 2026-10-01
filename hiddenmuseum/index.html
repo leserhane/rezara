@@ -288,67 +288,89 @@
     </div>
   </section>
 
-  <!-- ============ 3. COLLECTION HIGHLIGHTS ============ -->
+  <!-- ============ 3. COLLECTIONS ============ -->
+  <!-- Timeline content lives in collection-data.js; add photos and texts there. -->
   <section class="collection section" id="collection" aria-labelledby="collection-title">
     <div class="container">
       <header class="section-head section-head--split">
         <div>
-          <p class="eyebrow reveal">Collection highlights</p>
+          <p class="eyebrow reveal">The collections</p>
           <h2 class="section-title reveal" id="collection-title" style="--i:1">Held up to the <em>light.</em></h2>
         </div>
-        <p class="lede reveal" style="--i:2">A handful of the objects that make the walk through the galleries feel like a walk through time.</p>
+        <p class="lede reveal" style="--i:2">Two collections under one roof: the story of money in Morocco, from the first exchanges to today’s dirham, and the Bank’s collection of Moroccan art.</p>
       </header>
 
-      <ul class="masonry" role="list">
+      <div class="tabs reveal" role="tablist" aria-label="Collections" data-tabs>
+        <button class="tab" type="button" role="tab" id="tab-num" aria-controls="panel-num" aria-selected="true">Numismatique</button>
+        <button class="tab" type="button" role="tab" id="tab-art" aria-controls="panel-art" aria-selected="false" tabindex="-1">Artistique</button>
+      </div>
+
+      <div class="tabpanel" id="panel-num" role="tabpanel" aria-labelledby="tab-num" tabindex="0">
+        <nav class="era-nav" aria-label="Timeline periods" data-era-nav>
+          <ol class="era-nav__list" data-era-list></ol>
+          <span class="era-nav__progress" aria-hidden="true"><span data-era-bar></span></span>
+        </nav>
+        <div class="timeline" data-timeline>
+          <noscript><p class="lede">The timeline needs JavaScript to display.</p></noscript>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-art" role="tabpanel" aria-labelledby="tab-art" tabindex="0" hidden>
+        <div class="art-intro">
+          <p class="eyebrow">Collection artistique</p>
+          <p class="lede">Painting, sculpture and works on paper by Moroccan artists, collected by Bank Al-Maghrib and shown in rotating hangs across the upper galleries.</p>
+        </div>
+        <ul class="masonry" role="list" aria-label="Artworks — photographs coming soon">
         <li class="tile" data-speed="0.06">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/vitrine-1280.webp" alt="A vitrine of five Hassani coins on a lit white panel within a blue wall." loading="lazy" width="1280" height="853">
-            <div class="tile__cap"><p class="tile__meta">Numismatics · Gallery 3</p><h3>The Hassani vitrine</h3></div>
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:4 / 5">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 01</p><h3>Photo à venir</h3></div>
           </div>
         </li>
-        <li class="tile tile--coin" data-speed="-0.04">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/coin3b.webp" alt="Bronze coin reverse reading ‘year 1306’ within a ring of arabesques." loading="lazy" width="242" height="242">
-            <div class="tile__cap"><p class="tile__meta">Bronze · AH 1306</p><h3>Year 1306</h3></div>
+        <li class="tile" data-speed="-0.04">
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:1 / 1">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 02</p><h3>Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="0.03">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/detail1-1100.webp" alt="Gold-ringed blanks piled in warm, low light." loading="lazy" width="1100" height="847">
-            <div class="tile__cap"><p class="tile__meta">Minting · today</p><h3>Blanks in amber</h3></div>
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:3 / 4">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 03</p><h3>Photo à venir</h3></div>
           </div>
         </li>
-        <li class="tile tile--coin" data-speed="0.07">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/coin2b.webp" alt="Darkly patinated coin reverse reading ‘year 1310’." loading="lazy" width="180" height="180">
-            <div class="tile__cap"><p class="tile__meta">AH 1310</p><h3>Night patina</h3></div>
+        <li class="tile" data-speed="0.07">
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:16 / 11">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 04</p><h3>Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="-0.05">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/detail2-1100.webp" alt="Silver-toned blanks overlapping like scales." loading="lazy" width="1100" height="1000">
-            <div class="tile__cap"><p class="tile__meta">Minting · today</p><h3>Cold light</h3></div>
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:4 / 5">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 05</p><h3>Photo à venir</h3></div>
           </div>
         </li>
-        <li class="tile tile--coin" data-speed="0.02">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/coin4a.webp" alt="Bronze coin obverse with the legend ‘struck in Paris’." loading="lazy" width="204" height="204">
-            <div class="tile__cap"><p class="tile__meta">Bronze · Paris</p><h3>The Paris legend</h3></div>
+        <li class="tile" data-speed="0.02">
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:5 / 4">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 06</p><h3>Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="0.05">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/detail3-1100.webp" alt="A stack of gold-ringed blanks, one edge catching the light." loading="lazy" width="1100" height="823">
-            <div class="tile__cap"><p class="tile__meta">Minting · today</p><h3>Edge light</h3></div>
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:3 / 4">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 07</p><h3>Photo à venir</h3></div>
           </div>
         </li>
-        <li class="tile tile--coin" data-speed="-0.03">
-          <div class="tile__inner tilt" data-cursor="View">
-            <img src="assets/coin5b.webp" alt="Small copper-red bronze coin reverse dated 1306." loading="lazy" width="132" height="132">
-            <div class="tile__cap"><p class="tile__meta">Bronze · AH 1306</p><h3>Copper red</h3></div>
+        <li class="tile" data-speed="-0.03">
+          <div class="tile__inner tilt art-slot" style="aspect-ratio:1 / 1">
+            <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
+            <div class="tile__cap"><p class="tile__meta">Œuvre 08</p><h3>Photo à venir</h3></div>
           </div>
         </li>
-      </ul>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -705,6 +727,7 @@
 </dialog>
 
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
+<script src="collection-data.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

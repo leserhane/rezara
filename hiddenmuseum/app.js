@@ -263,35 +263,274 @@
   const lb = $('[data-lightbox]');
   const lbMedia = $('[data-lightbox-media]');
   let lbReturn = null;
+  /* 3D coin: two faces back to back, with stacked silhouette layers for
+     the thickness of the edge. Used in the timeline and the zoom view. */
+  function coinMarkup(front, back, alt, layers, thin) {
+    let edge = '';
+    for (let i = 0; i < layers; i++) {
+      const k = layers === 1 ? 0 : (i / (layers - 1) - 0.5);
+      edge += `<img class="coin3d__edge" src="${front}" alt="" style="--k:${k.toFixed(3)}" draggable="false">`;
+    }
+    return `<span class="coin3d__body">
+        <img class="coin3d__face coin3d__face--front" src="${front}" alt="${alt}" draggable="false">
+        ${edge}
+        <img class="coin3d__face coin3d__face--back" src="${back}" alt="" draggable="false">
+      </span><span class="coin3d__shadow" aria-hidden="true"></span>`;
+  }
+
+  let coinSpin = null;
+  function startCoinSpin(stage) {
+    const body = $('.coin3d__body', stage);
+    const front = $('.coin3d__face--front', stage);
+    const back = $('.coin3d__face--back', stage);
+    const shadow = $('.coin3d__shadow', stage);
+    const btns = $$('[data-face]', stage.parentElement);
+    const st = { angle: -24, vel: 0, target: null, drag: false, lastX: 0, hold: 0, raf: 0 };
+    const auto = () => (reduced() ? 0 : 0.32);
+    const frame = () => {
+      if (st.target !== null) {
+        const d = st.target - st.angle;
+        st.angle = reduced() || Math.abs(d) < 0.2 ? st.target : st.angle + d * 0.1;
+        if (st.angle === st.target) { st.target = null; st.hold = performance.now() + 2600; st.vel = 0; }
+      } else if (!st.drag) {
+        const want = performance.now() < st.hold ? 0 : auto();
+        st.vel += (want - st.vel) * 0.04;
+        st.angle += st.vel;
+      }
+      const c = Math.cos(st.angle * Math.PI / 180);
+      body.style.transform = `rotateX(10deg) rotateY(${st.angle.toFixed(2)}deg)`;
+      front.style.filter = `brightness(${(0.62 + 0.48 * Math.max(0, c)).toFixed(3)})`;
+      back.style.filter = `brightness(${(0.62 + 0.48 * Math.max(0, -c)).toFixed(3)})`;
+      shadow.style.transform = `scaleX(${(0.25 + 0.75 * Math.abs(c)).toFixed(3)})`;
+      btns.forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.face === 'front') === (c >= 0))));
+      st.raf = requestAnimationFrame(frame);
+    };
+    const toFace = (face) => {
+      const base = Math.round(st.angle / 360) * 360;
+      let t = base + (face === 'back' ? 180 : 0);
+      if (Math.abs(t - st.angle) > 180) t += t > st.angle ? -360 : 360;
+      st.target = t;
+    };
+    btns.forEach((b) => b.addEventListener('click', () => toFace(b.dataset.face)));
+    stage.addEventListener('pointerdown', (e) => { st.drag = true; st.target = null; st.lastX = e.clientX; stage.setPointerCapture(e.pointerId); stage.classList.add('is-dragging'); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!st.drag) return;
+      const dx = e.clientX - st.lastX; st.lastX = e.clientX;
+      st.angle += dx * 0.6; st.vel = dx * 0.6;
+    });
+    const end = () => { st.drag = false; st.hold = performance.now() + 1200; stage.classList.remove('is-dragging'); };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+    stage.addEventListener('keydown', (e) => {
+      const step = { ArrowLeft: -30, ArrowRight: 30 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      st.target = (st.target ?? st.angle) + step;
+    });
+    st.raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(st.raf);
+  }
+
+  // figures: [{ src, alt, label, cls }]  ·  coin: { front, back, alt }
+  function openLightbox({ figures = [], coin, meta, title, body, returnTo }) {
+    lbMedia.innerHTML = '';
+    if (coinSpin) { coinSpin(); coinSpin = null; }
+    if (coin) {
+      const wrap = document.createElement('div');
+      wrap.className = 'coin-viewer';
+      wrap.innerHTML = `<div class="coin3d coin3d--large" tabindex="0" role="img" aria-label="${esc(coin.alt)} Drag or use the arrow keys to turn it.">${coinMarkup(esc(coin.front), esc(coin.back), '', 18)}</div>
+        <div class="coin-viewer__ctrl" role="group" aria-label="Show side">
+          <button type="button" class="filter" data-face="front" aria-pressed="true">Obverse</button>
+          <button type="button" class="filter" data-face="back" aria-pressed="false">Reverse</button>
+        </div>
+        <p class="coin-viewer__hint" aria-hidden="true">Drag to turn</p>`;
+      lbMedia.append(wrap);
+      coinSpin = startCoinSpin($('.coin3d', wrap));
+    }
+    figures.forEach(({ src, alt, label, cls }) => {
+      const f = document.createElement('figure');
+      const img = document.createElement('img');
+      img.className = cls; img.src = src; img.alt = alt;
+      f.append(img);
+      if (label) { const c = document.createElement('figcaption'); c.textContent = label; f.append(c); }
+      lbMedia.append(f);
+    });
+    $('[data-lightbox-meta]').textContent = meta || '';
+    $('[data-lightbox-title]').textContent = title || '';
+    $('[data-lightbox-body]').textContent = body || '';
+    lbReturn = returnTo;
+    if (lenis) lenis.stop();
+    if (typeof lb.showModal === 'function') lb.showModal(); else lb.setAttribute('open', '');
+    $('[data-lightbox-close]').focus();
+  }
   $$('[data-zoom]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const card = btn.closest('.story');
       const key = btn.dataset.zoom;
-      lbMedia.innerHTML = '';
-      if (/^\d$/.test(key)) {
-        [['a', 'Obverse'], ['b', 'Reverse']].forEach(([s, label]) => {
-          const f = document.createElement('figure');
-          f.innerHTML = `<img class="coin" src="assets/coin${key}${s}.webp" alt="${label} of the coin, enlarged"><figcaption>${label}</figcaption>`;
-          lbMedia.append(f);
-        });
-      } else {
-        const f = document.createElement('figure');
-        f.innerHTML = `<img class="photo" src="assets/${key}-1100.webp" alt="Coin blanks, enlarged">`;
-        lbMedia.append(f);
-      }
-      $('[data-lightbox-meta]').textContent = $('.story__meta', card).textContent;
-      $('[data-lightbox-title]').textContent = $('.story__title', card).textContent;
-      $('[data-lightbox-body]').textContent = $$('.story__body p:not(.story__meta)', card).map((p) => p.textContent).join(' ');
-      lbReturn = btn;
-      if (lenis) lenis.stop();
-      if (typeof lb.showModal === 'function') lb.showModal(); else lb.setAttribute('open', '');
-      $('[data-lightbox-close]').focus();
+      const isCoin = /^\d$/.test(key);
+      openLightbox({
+        coin: isCoin ? { front: `assets/coin${key}a.webp`, back: `assets/coin${key}b.webp`, alt: 'The coin, shown in 3D with its obverse and reverse.' } : null,
+        figures: isCoin ? [] : [{ src: `assets/${key}-1100.webp`, alt: 'Coin blanks, enlarged', cls: 'photo' }],
+        meta: $('.story__meta', card).textContent,
+        title: $('.story__title', card).textContent,
+        body: $$('.story__body p:not(.story__meta)', card).map((p) => p.textContent).join(' '),
+        returnTo: btn,
+      });
     });
   });
   const closeLb = () => { if (lb.open) lb.close(); };
   $('[data-lightbox-close]').addEventListener('click', closeLb);
   lb.addEventListener('click', (e) => { if (e.target === lb || e.target.classList.contains('lightbox__inner')) closeLb(); });
-  lb.addEventListener('close', () => { if (lenis) lenis.start(); if (lbReturn) lbReturn.focus({ preventScroll: true }); });
+  lb.addEventListener('close', () => { if (coinSpin) { coinSpin(); coinSpin = null; } if (lenis) lenis.start(); if (lbReturn) lbReturn.focus({ preventScroll: true }); });
+
+  /* ------------------------------------------------------------------
+     COLLECTIONS — tabs (Numismatique / Artistique)
+     ------------------------------------------------------------------ */
+  const tabs = $$('[data-tabs] [role="tab"]');
+  function selectTab(tab, focus) {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) tab.focus();
+    if (lenis) lenis.resize();
+    onScroll();
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => selectTab(t));
+    t.addEventListener('keydown', (e) => {
+      const keys = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+      if (!(e.key in keys)) return;
+      e.preventDefault();
+      selectTab(tabs[(keys[e.key] + tabs.length) % tabs.length], true);
+    });
+  });
+
+  /* ------------------------------------------------------------------
+     NUMISMATIC TIMELINE — rendered from collection-data.js
+     ------------------------------------------------------------------ */
+  const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const timelineEl = $('[data-timeline]');
+  const eraList = $('[data-era-list]');
+  const eraBar = $('[data-era-bar]');
+  const phases = Array.isArray(window.BAM_COLLECTION) ? window.BAM_COLLECTION : [];
+
+  function renderGroup(phase, g, gi) {
+    const kind = g.kind || 'coin';
+    const photos = g.photos || [];
+    const descs = g.descriptions || [];
+    const nPhotos = Math.max(g.photoCount || 0, photos.length);
+    const nDescs = Math.max(g.descriptionCount || 0, descs.length);
+    const gid = `${phase.id}-${gi}`;
+    let slots = '';
+    for (let i = 0; i < nPhotos; i++) {
+      const p = photos[i];
+      if (p && p.src) {
+        slots += `<li class="slot slot--${kind}"><button type="button" class="slot__btn" data-photo="${gid}:${i}" data-cursor="Zoom" aria-label="Enlarge: ${esc(p.caption || p.alt || 'photo')}">
+          <span class="slot__frame">${p.reverse
+            ? `<span class="coin3d${kind === 'note' ? ' coin3d--thin' : ''}" style="--d:${(-(i * 2.7) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(p.alt || ''), kind === 'note' ? 1 : 5)}</span>`
+            : `<img src="${esc(p.src)}" alt="${esc(p.alt || '')}" loading="lazy">`}</span></button>
+          <p class="slot__cap">${esc(p.caption || '')}</p></li>`;
+      } else {
+        slots += `<li class="slot slot--${kind} slot--empty" aria-hidden="true"><span class="slot__frame">
+          <svg class="slot__mark" viewBox="0 0 100 100"><use href="#diamond"/></svg>
+          <span class="slot__count">${pad2(i + 1)} / ${pad2(nPhotos)}</span></span>
+          <p class="slot__cap">Photo à venir</p></li>`;
+      }
+    }
+    let notes = '';
+    for (let i = 0; i < nDescs; i++) {
+      const d = descs[i];
+      notes += d
+        ? `<li class="note"><span class="note__num" aria-hidden="true">${pad2(i + 1)}</span><div>${d.title ? `<h5 class="note__title">${esc(d.title)}</h5>` : ''}<p>${esc(d.text || '')}</p></div></li>`
+        : `<li class="note note--empty" aria-hidden="true"><span class="note__num">${pad2(i + 1)}</span><div><p>Description à venir.</p></div></li>`;
+    }
+    const filled = photos.filter((p) => p && p.src).length;
+    const labelId = `grp-${gid}`;
+    return `<div class="group">
+      ${g.label ? `<h4 class="group__title" id="${labelId}">${esc(g.label)} <span class="group__count">${nPhotos} photos · ${nDescs} descriptions</span></h4>` : ''}
+      <div class="rail">
+        <ul class="rail__track" role="list" tabindex="0" aria-label="${esc(g.label || phase.title)} — ${filled} of ${nPhotos} photos available">${slots}</ul>
+        <div class="rail__btns">
+          <button type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
+          <button type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <p class="sr-only">${descs.length} of ${nDescs} descriptions available.</p>
+      <ol class="notes" role="list">${notes}</ol>
+    </div>`;
+  }
+
+  if (timelineEl && phases.length) {
+    timelineEl.innerHTML = phases.map((ph, i) => `
+      <article class="era" id="era-${esc(ph.id)}" aria-labelledby="era-title-${esc(ph.id)}" data-era>
+        <header class="era__head">
+          <span class="era__num" aria-hidden="true">${ROMAN[i] || i + 1}</span>
+          <p class="era__phase">Phase historique · ${pad2(i + 1)} / ${pad2(phases.length)}</p>
+          <h3 class="era__title" id="era-title-${esc(ph.id)}">${esc(ph.title)}</h3>
+          <p class="era__range"><span>${esc(ph.from)}</span><span class="era__arrow" aria-hidden="true"></span><span class="sr-only">to</span><span>${esc(ph.to)}</span></p>
+          ${ph.intro ? `<p class="era__intro">${esc(ph.intro)}</p>` : ''}
+        </header>
+        <div class="era__body">${(ph.groups || []).map((g, gi) => renderGroup(ph, g, gi)).join('')}</div>
+      </article>`).join('');
+
+    eraList.innerHTML = phases.map((ph, i) => `<li><a href="#era-${esc(ph.id)}"><span class="era-nav__num">${ROMAN[i] || i + 1}</span><span class="era-nav__label">${esc(ph.short || ph.title)}</span></a></li>`).join('');
+
+    timelineEl.addEventListener('click', (e) => {
+      const rb = e.target.closest('[data-rail]');
+      if (rb) {
+        const track = $('.rail__track', rb.closest('.rail'));
+        track.scrollBy({ left: Number(rb.dataset.rail) * track.clientWidth * 0.8, behavior: reduced() ? 'auto' : 'smooth' });
+        return;
+      }
+      const pb = e.target.closest('[data-photo]');
+      if (!pb) return;
+      const [gid, idx] = pb.dataset.photo.split(':');
+      const cut = gid.lastIndexOf('-');
+      const ph = phases.find((x) => x.id === gid.slice(0, cut));
+      const g = ph.groups[Number(gid.slice(cut + 1))];
+      const p = g.photos[Number(idx)];
+      const cls = (g.kind || 'coin') === 'coin' ? 'coin' : 'photo';
+      openLightbox({
+        coin: p.reverse ? { front: p.src, back: p.reverse, alt: p.alt || '' } : null,
+        figures: p.reverse ? [] : [{ src: p.src, alt: p.alt || '', cls }],
+        meta: `${ph.title}${g.label ? ' · ' + g.label : ''}`, title: p.caption || '', body: p.text || '', returnTo: pb });
+    });
+
+    // Spin the timeline coins only while they are on screen.
+    const spinObs = new IntersectionObserver((entries) => {
+      entries.forEach((en) => en.target.classList.toggle('is-spinning', en.isIntersecting));
+    }, { rootMargin: '100px' });
+    $$('.coin3d', timelineEl).forEach((c) => spinObs.observe(c));
+
+    // Active period in the sticky period bar.
+    const eras = $$('[data-era]', timelineEl);
+    const eraLinks = $$('a', eraList);
+    const eraObs = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const i = eras.indexOf(en.target);
+        eraLinks.forEach((a, j) => { if (j === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); a.classList.toggle('is-past', j < i); });
+        const active = eraLinks[i];
+        if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'auto' });
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    eras.forEach((el) => eraObs.observe(el));
+    const revealEra = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('is-in'); revealEra.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    eras.forEach((el) => revealEra.observe(el));
+  }
+  function eraProgress() {
+    if (!eraBar || !timelineEl || timelineEl.closest('[hidden]')) return;
+    const r = timelineEl.getBoundingClientRect();
+    const p = clamp((window.innerHeight * 0.45 - r.top) / (r.height || 1));
+    eraBar.style.transform = `scaleX(${p.toFixed(4)})`;
+  }
 
   /* ------------------------------------------------------------------
      COLLECTION — gentle parallax + hover tilt
@@ -385,10 +624,12 @@
       header.classList.toggle('is-solid', y > 40);
       if (!nav.classList.contains('is-open')) header.classList.toggle('is-hidden', y > lastY && y > window.innerHeight && !reduced());
       if (y < lastY) header.classList.remove('is-hidden');
+      root.classList.toggle('header-hidden', header.classList.contains('is-hidden'));
       lastY = y;
       heroFrame();
       if (pinned) storiesFrame();
       parallaxFrame();
+      eraProgress();
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
