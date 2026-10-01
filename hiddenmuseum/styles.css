@@ -1454,3 +1454,34 @@ html.reduce-motion { scroll-behavior: auto; }
 }
 .gallery__frame--photo img { object-fit: contain; filter: brightness(calc(.62 + .38 * var(--f))) saturate(calc(.8 + .2 * var(--f))) drop-shadow(0 26px 30px rgba(0,0,0,.75)); }
 .gallery__work--framed .gallery__glow { width: calc(var(--h) * 1.16 * var(--r) + var(--h) * .9); top: calc(var(--h) * -.62); }
+
+/* ==========================================================================
+   ONE BUILDING, THREE WINGS — façade and mosaics
+   ========================================================================== */
+.houses__facade { position: relative; margin: 0 0 clamp(48px, 7vw, 96px); overflow: hidden; }
+.houses__facade img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; object-position: 50% 42%; filter: saturate(.92); }
+.houses__facade::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11,10,9,.55), transparent 35%); pointer-events: none; }
+.houses__facade figcaption { position: absolute; left: clamp(16px, 2.4vw, 32px); bottom: clamp(14px, 2vw, 26px); z-index: 1;
+  font-size: .74rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink); }
+[dir="rtl"] .houses__facade figcaption { left: auto; right: clamp(16px, 2.4vw, 32px); }
+:lang(ar) .houses__facade figcaption { letter-spacing: 0; }
+@media (max-width: 699px) { .houses__facade img { aspect-ratio: 4 / 3; } }
+
+.house__media.mosaic { display: grid; gap: 4px; background: var(--bg); padding: 0; border: 0; }
+.mosaic--coins, .mosaic--shop { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);
+  grid-template-areas: "a a b" "a a c" "d e e" "f e e"; }
+.mosaic--art { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);
+  grid-template-areas: "a a b" "a a b" "c d d" "e d d"; }
+.mosaic__cell:nth-child(1) { grid-area: a; } .mosaic__cell:nth-child(2) { grid-area: b; } .mosaic__cell:nth-child(3) { grid-area: c; }
+.mosaic__cell:nth-child(4) { grid-area: d; } .mosaic__cell:nth-child(5) { grid-area: e; } .mosaic__cell:nth-child(6) { grid-area: f; }
+.mosaic__cell { position: relative; display: block; overflow: hidden; min-height: 0; }
+.house__media.mosaic .mosaic__cell img { width: 100%; height: 100%; transform: none; filter: none; transition: transform 1.4s var(--ease); }
+.house:hover .house__media.mosaic .mosaic__cell img { transform: scale(1.06); }
+.mosaic__cell--coin { display: grid; place-items: center; background: radial-gradient(60% 60% at 50% 45%, #2b2622 0%, #161311 75%); }
+.house__media.mosaic .mosaic__cell--coin img { width: 78%; height: 78%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0,0,0,.6)); }
+.mosaic__cell--paint img, .mosaic__cell--photo img { object-fit: cover; }
+.house__media.mosaic .mosaic__cell--paint img { transform: scale(1.36); } /* crop into the canvas, past the frame */
+.house:hover .house__media.mosaic .mosaic__cell--paint img { transform: scale(1.44); }
+.mosaic__cell--product { background: #f3efe8; display: grid; place-items: center; }
+.house__media.mosaic .mosaic__cell--product img { object-fit: contain; width: 92%; height: 92%; mix-blend-mode: multiply; }
+.mosaic__cell--photo { background: #161311; }

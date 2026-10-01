@@ -31,7 +31,7 @@ HTML = [
 
  # houses
  ("houses.eyebrow", "One building, three wings", "Un bâtiment, trois ailes", "مبنى واحد، ثلاثة أجنحة", "Un edificio, tres alas"),
- ("houses.title", "Money, image and the objects we keep.", "La monnaie, l’image et les objets que l’on garde.", "النقود والصورة والأشياء التي نحتفظ بها.", "El dinero, la imagen y los objetos que guardamos."),
+ ("houses.title", "Money, art and financial culture.", "La monnaie, l’art et la culture financière.", "النقود والفن والثقافة المالية.", "El dinero, el arte y la cultura financiera."),
  ("houses.num", "Numismatics", "Numismatique", "المسكوكات", "Numismática"),
  ("houses.num.text", "From the first mints of the Maghreb to the dirham in your pocket — the story of Morocco told coin by coin, note by note.",
   "Des premiers ateliers monétaires du Maghreb au dirham de votre poche : l’histoire du Maroc racontée pièce après pièce, billet après billet.",
@@ -422,4 +422,14 @@ JS += [
  ("art.swipe", "Swipe to walk through the room", "Balayez pour parcourir la salle", "اسحب للتجوّل في القاعة", "Desliza para recorrer la sala"),
  ("art.prev", "Previous painting", "Œuvre précédente", "العمل السابق", "Obra anterior"),
  ("art.next", "Next painting", "Œuvre suivante", "العمل التالي", "Obra siguiente"),
+]
+
+HTML += [
+ ("houses.facade", "The Bank Al-Maghrib Museum, Rabat", "Le Musée de Bank Al-Maghrib, Rabat", "متحف بنك المغرب، الرباط", "El Museo de Bank Al-Maghrib, Rabat"),
+]
+ATTR += [
+ ("a.facadeAlt", "alt", "The façade of the Bank Al-Maghrib Museum in Rabat: white walls, carved stone arches and the museum’s name in Arabic, Tifinagh and French.", "La façade du Musée de Bank Al-Maghrib à Rabat : murs blancs, arcs de pierre sculptée et nom du musée en arabe, en tifinagh et en français.", "واجهة متحف بنك المغرب بالرباط: جدران بيضاء وأقواس من الحجر المنحوت واسم المتحف بالعربية والتيفيناغ والفرنسية.", "La fachada del Museo de Bank Al-Maghrib en Rabat: muros blancos, arcos de piedra tallada y el nombre del museo en árabe, tifinagh y francés."),
+ ("a.mosaicCoins", "aria-label", "Ancient coins from the collection: Lydia, Persia, Athens, Carthage and Rome.", "Monnaies antiques de la collection : Lydie, Perse, Athènes, Carthage et Rome.", "نقود قديمة من المجموعة: ليديا وفارس وأثينا وقرطاج وروما.", "Monedas antiguas de la colección: Lidia, Persia, Atenas, Cartago y Roma."),
+ ("a.mosaicArt", "aria-label", "Paintings from the collection: Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.", "Tableaux de la collection : Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.", "لوحات من المجموعة: إدوين لورد ويكس وجاك ماجوريل وبنجامان كونستان وألبير ماركي.", "Cuadros de la colección: Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet."),
+ ("a.mosaicShop", "aria-label", "Items from the Boutique: commemorative coins, banknotes, books, mugs, tote bags and a coin case.", "Articles de la Boutique : pièces commémoratives, billets, ouvrages, mugs, sacs en toile et coffret.", "منتجات من المتجر: قطع تذكارية وأوراق نقدية وكتب وأكواب وحقائب قماشية وعلبة.", "Artículos de la Tienda: monedas conmemorativas, billetes, libros, tazas, bolsas de tela y un estuche."),
 ]

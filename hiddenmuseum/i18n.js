@@ -17,7 +17,7 @@ window.BAM_STRINGS = {
   "hero.explore": "Explore the collections",
   "hero.caption": "Bimetallic blanks, before the strike",
   "houses.eyebrow": "One building, three wings",
-  "houses.title": "Money, image and the objects we keep.",
+  "houses.title": "Money, art and financial culture.",
   "houses.num": "Numismatics",
   "houses.num.text": "From the first mints of the Maghreb to the dirham in your pocket — the story of Morocco told coin by coin, note by note.",
   "houses.arts": "Arts",
@@ -209,6 +209,7 @@ window.BAM_STRINGS = {
   "shop.seeBooks": "See the books <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
   "books.title": "Books",
   "books.lede": "Catalogues, exhibition books and studies published by the Bank Al-Maghrib Museum.",
+  "houses.facade": "The Bank Al-Maghrib Museum, Rabat",
   "meta.title": "Musées de Bank Al-Maghrib — Numismatics, Arts & Boutique",
   "meta.desc": "Walk through twelve centuries of Moroccan money and art at the Musées de Bank Al-Maghrib in Rabat. Current exhibitions, collection highlights, events and tickets.",
   "lang.label": "Language",
@@ -319,7 +320,11 @@ window.BAM_STRINGS = {
   "a.close": "Close zoom view",
   "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب",
   "a.railLeft": "Scroll photos left",
-  "a.railRight": "Scroll photos right"
+  "a.railRight": "Scroll photos right",
+  "a.facadeAlt": "The façade of the Bank Al-Maghrib Museum in Rabat: white walls, carved stone arches and the museum’s name in Arabic, Tifinagh and French.",
+  "a.mosaicCoins": "Ancient coins from the collection: Lydia, Persia, Athens, Carthage and Rome.",
+  "a.mosaicArt": "Paintings from the collection: Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.",
+  "a.mosaicShop": "Items from the Boutique: commemorative coins, banknotes, books, mugs, tote bags and a coin case."
  },
  "fr": {
   "nav.menu": "Menu",
@@ -337,7 +342,7 @@ window.BAM_STRINGS = {
   "hero.explore": "Explorer les collections",
   "hero.caption": "Flans bimétalliques, avant la frappe",
   "houses.eyebrow": "Un bâtiment, trois ailes",
-  "houses.title": "La monnaie, l’image et les objets que l’on garde.",
+  "houses.title": "La monnaie, l’art et la culture financière.",
   "houses.num": "Numismatique",
   "houses.num.text": "Des premiers ateliers monétaires du Maghreb au dirham de votre poche : l’histoire du Maroc racontée pièce après pièce, billet après billet.",
   "houses.arts": "Arts",
@@ -529,6 +534,7 @@ window.BAM_STRINGS = {
   "shop.seeBooks": "Voir les ouvrages <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
   "books.title": "Ouvrages",
   "books.lede": "Catalogues, livres d’exposition et études publiés par le Musée de Bank Al-Maghrib.",
+  "houses.facade": "Le Musée de Bank Al-Maghrib, Rabat",
   "meta.title": "Musées de Bank Al-Maghrib — Numismatique, Arts et Boutique",
   "meta.desc": "Parcourez douze siècles de monnaie et d’art marocains aux Musées de Bank Al-Maghrib à Rabat. Expositions, collections, agenda et billetterie.",
   "lang.label": "Langue",
@@ -639,7 +645,11 @@ window.BAM_STRINGS = {
   "a.close": "Fermer l’agrandissement",
   "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب",
   "a.railLeft": "Faire défiler vers la gauche",
-  "a.railRight": "Faire défiler vers la droite"
+  "a.railRight": "Faire défiler vers la droite",
+  "a.facadeAlt": "La façade du Musée de Bank Al-Maghrib à Rabat : murs blancs, arcs de pierre sculptée et nom du musée en arabe, en tifinagh et en français.",
+  "a.mosaicCoins": "Monnaies antiques de la collection : Lydie, Perse, Athènes, Carthage et Rome.",
+  "a.mosaicArt": "Tableaux de la collection : Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.",
+  "a.mosaicShop": "Articles de la Boutique : pièces commémoratives, billets, ouvrages, mugs, sacs en toile et coffret."
  },
  "ar": {
   "nav.menu": "القائمة",
@@ -657,7 +667,7 @@ window.BAM_STRINGS = {
   "hero.explore": "استكشف المجموعات",
   "hero.caption": "أقراص ثنائية المعدن قبل السكّ",
   "houses.eyebrow": "مبنى واحد، ثلاثة أجنحة",
-  "houses.title": "النقود والصورة والأشياء التي نحتفظ بها.",
+  "houses.title": "النقود والفن والثقافة المالية.",
   "houses.num": "المسكوكات",
   "houses.num.text": "من أولى دور السكّ في المغرب الكبير إلى الدرهم الذي في جيبك: تاريخ المغرب يُروى قطعةً قطعة وورقةً ورقة.",
   "houses.arts": "الفنون",
@@ -849,6 +859,7 @@ window.BAM_STRINGS = {
   "shop.seeBooks": "اكتشف الإصدارات <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
   "books.title": "الإصدارات",
   "books.lede": "كتالوجات وكتب معارض ودراسات من إصدار متحف بنك المغرب.",
+  "houses.facade": "متحف بنك المغرب، الرباط",
   "meta.title": "متاحف بنك المغرب — المسكوكات والفنون والمتجر",
   "meta.desc": "رحلة عبر اثني عشر قرناً من النقود والفن المغربيين في متاحف بنك المغرب بالرباط. المعارض والمجموعات والفعاليات والتذاكر.",
   "lang.label": "اللغة",
@@ -959,7 +970,11 @@ window.BAM_STRINGS = {
   "a.close": "إغلاق العرض المكبّر",
   "a.logo": "متحف بنك المغرب — Musée de Bank Al-Maghrib",
   "a.railLeft": "تمرير الصور إلى اليسار",
-  "a.railRight": "تمرير الصور إلى اليمين"
+  "a.railRight": "تمرير الصور إلى اليمين",
+  "a.facadeAlt": "واجهة متحف بنك المغرب بالرباط: جدران بيضاء وأقواس من الحجر المنحوت واسم المتحف بالعربية والتيفيناغ والفرنسية.",
+  "a.mosaicCoins": "نقود قديمة من المجموعة: ليديا وفارس وأثينا وقرطاج وروما.",
+  "a.mosaicArt": "لوحات من المجموعة: إدوين لورد ويكس وجاك ماجوريل وبنجامان كونستان وألبير ماركي.",
+  "a.mosaicShop": "منتجات من المتجر: قطع تذكارية وأوراق نقدية وكتب وأكواب وحقائب قماشية وعلبة."
  },
  "es": {
   "nav.menu": "Menú",
@@ -977,7 +992,7 @@ window.BAM_STRINGS = {
   "hero.explore": "Explora las colecciones",
   "hero.caption": "Cospeles bimetálicos, antes de la acuñación",
   "houses.eyebrow": "Un edificio, tres alas",
-  "houses.title": "El dinero, la imagen y los objetos que guardamos.",
+  "houses.title": "El dinero, el arte y la cultura financiera.",
   "houses.num": "Numismática",
   "houses.num.text": "De las primeras cecas del Magreb al dírham de tu bolsillo: la historia de Marruecos contada moneda a moneda, billete a billete.",
   "houses.arts": "Artes",
@@ -1169,6 +1184,7 @@ window.BAM_STRINGS = {
   "shop.seeBooks": "Ver las publicaciones <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
   "books.title": "Publicaciones",
   "books.lede": "Catálogos, libros de exposición y estudios publicados por el Museo de Bank Al-Maghrib.",
+  "houses.facade": "El Museo de Bank Al-Maghrib, Rabat",
   "meta.title": "Musées de Bank Al-Maghrib — Numismática, Artes y Tienda",
   "meta.desc": "Recorre doce siglos de dinero y arte marroquíes en los Musées de Bank Al-Maghrib, en Rabat. Exposiciones, colecciones, agenda y entradas.",
   "lang.label": "Idioma",
@@ -1279,7 +1295,11 @@ window.BAM_STRINGS = {
   "a.close": "Cerrar la ampliación",
   "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب",
   "a.railLeft": "Desplazar fotos a la izquierda",
-  "a.railRight": "Desplazar fotos a la derecha"
+  "a.railRight": "Desplazar fotos a la derecha",
+  "a.facadeAlt": "La fachada del Museo de Bank Al-Maghrib en Rabat: muros blancos, arcos de piedra tallada y el nombre del museo en árabe, tifinagh y francés.",
+  "a.mosaicCoins": "Monedas antiguas de la colección: Lidia, Persia, Atenas, Cartago y Roma.",
+  "a.mosaicArt": "Cuadros de la colección: Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.",
+  "a.mosaicShop": "Artículos de la Tienda: monedas conmemorativas, billetes, libros, tazas, bolsas de tela y un estuche."
  }
 };
 
