@@ -820,7 +820,9 @@
 
   function totalTickets() { return state.counts.adult + state.counts.reduced + state.counts.child; }
   function isGroup() { return totalTickets() >= GROUP_MIN; }
+  function isFreeDay() { return !!state.date && state.date.getDay() === 5; } // free admission on Fridays
   function total() {
+    if (isFreeDay()) return 0;
     // Guided tours are on reservation for groups and are not charged online.
     return Object.entries(state.counts).reduce((s, [k, n]) => s + (k === 'adult' && isGroup() ? GROUP_PRICE : PRICES[k]) * n, 0);
   }
@@ -850,8 +852,9 @@
     $('[data-sum-total]').textContent = money(sum);
     const group = isGroup();
     const note = $('[data-sum-note]');
-    note.hidden = !(group && state.counts.adult);
-    note.textContent = note.hidden ? '' : t('tix.group');
+    const noteKey = isFreeDay() ? 'tix.friday' : (group && state.counts.adult ? 'tix.group' : '');
+    note.hidden = !noteKey;
+    note.textContent = noteKey ? t(noteKey) : '';
     tourBox.disabled = !group;
     if (!group && state.tour) { state.tour = false; tourBox.checked = false; $('[data-sum-tickets]').textContent = ticketText(); }
     if (state.step === 1) nextBtn.disabled = !state.date;

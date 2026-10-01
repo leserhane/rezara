@@ -461,3 +461,11 @@ JS += [
  ("tix.group", "Group rate applied", "Tarif groupe appliqué", "تم تطبيق تعريفة المجموعات", "Tarifa de grupo aplicada"),
  ("ics.location", "Corner of Avenue Allal Ben Abdellah and Rue Al-Qahira\\, Rabat", "Angle Avenue Allal Ben Abdellah et Rue Al-Qahira\\, Rabat", "زاوية شارع علال بن عبد الله وزنقة القاهرة، الرباط", "Esquina de la avenida Allal Ben Abdellah y la calle Al-Qahira\\, Rabat"),
 ]
+
+# --- Visit: free Fridays ---
+HTML += [
+ ("visit.fridays", "Fridays", "Vendredis", "أيام الجمعة", "Viernes"),
+]
+JS += [
+ ("tix.friday", "Free Friday", "Vendredi gratuit", "الجمعة مجانية", "Viernes gratuito"),
+]
