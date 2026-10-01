@@ -912,6 +912,10 @@ small { font-size: .78em; color: var(--muted); font-weight: 400; }
 .toggle input:checked + .toggle__ui::after { transform: translateX(18px); background: var(--accent-ink); }
 .toggle input:focus-visible + .toggle__ui { outline: 2px solid var(--accent); outline-offset: 3px; }
 .toggle small { display: block; }
+.toggle:has(input:disabled) { cursor: not-allowed; opacity: .55; }
+.slots__chips { display: contents; }
+.info__split span { display: block; }
+.info__list dd.info__split, .info__list dd[data-i18n="visit.p30"] { white-space: normal; }
 
 .field { display: grid; gap: 8px; margin-bottom: 20px; max-width: 480px; }
 .field label { font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
@@ -938,6 +942,7 @@ small { font-size: .78em; color: var(--muted); font-weight: 400; }
 .summary__list dd { text-align: right; }
 .summary__total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; }
 .summary__total strong { font-family: var(--serif); font-size: 2rem; font-weight: 400; color: var(--accent); }
+.summary__note { margin-top: 6px; font-size: .8rem; letter-spacing: .06em; color: var(--accent); text-align: end; }
 
 .step--done { outline: none; }
 .done__title { font-size: clamp(2rem, 4vw, 3rem); margin: .3em 0 .4em; }

@@ -492,7 +492,6 @@
   </section>
 
   <!-- ============ 4. VISIT ============ -->
-  <!-- Hours, address and prices below are placeholders: confirm with the museum before publishing. -->
   <section class="visit section" id="visit" aria-labelledby="visit-title">
     <div class="container">
       <header class="section-head">
@@ -504,25 +503,27 @@
         <div class="info reveal" style="--i:0">
           <h3 data-i18n="visit.hours" class="info__title">Hours</h3>
           <dl class="info__list">
-            <div><dt data-i18n="visit.tuesat">Tuesday – Saturday</dt><dd>10:00 – 18:00</dd></div>
-            <div><dt data-i18n="visit.sun">Sunday</dt><dd>10:00 – 16:00</dd></div>
-            <div><dt data-i18n="visit.mon">Monday &amp; public holidays</dt><dd data-i18n="visit.closed">Closed</dd></div>
+            <div><dt data-i18n="visit.tuesat">Tuesday – Friday</dt><dd>09:00 – 17:30</dd></div>
+            <div><dt data-i18n="visit.sat">Saturday</dt><dd class="info__split"><span>09:00 – 12:00</span> <span>15:00 – 18:00</span></dd></div>
+            <div><dt data-i18n="visit.sun">Sunday</dt><dd>09:00 – 13:00</dd></div>
+            <div><dt data-i18n="visit.mon">Monday &amp; religious holidays</dt><dd data-i18n="visit.closed">Closed</dd></div>
           </dl>
           <p data-i18n="visit.last" class="info__note">Last entry 45 minutes before closing.</p>
         </div>
         <div class="info reveal" style="--i:1">
           <h3 data-i18n="visit.location" class="info__title">Location</h3>
-          <address data-i18n="addr">Musées de Bank Al-Maghrib<br>Avenue Mohammed V<br>Rabat, Morocco</address>
+          <address data-i18n="addr">Musées de Bank Al-Maghrib<br>Corner of Avenue Allal Ben Abdellah and Rue Al-Qahira<br>Rabat, Morocco</address>
           <p data-i18n="visit.tram" class="info__note">Tram line 1 · Station Mohammed V – Gare de Rabat Ville, 4 minutes on foot.</p>
-          <a data-i18n="visit.maps" class="text-link" href="https://www.openstreetmap.org/search?query=Mus%C3%A9e%20de%20Bank%20Al-Maghrib%20Rabat" target="_blank" rel="noopener">Open in maps <span aria-hidden="true">↗</span></a>
+          <a data-i18n="visit.maps" class="text-link" href="https://www.openstreetmap.org/search?query=Avenue%20Allal%20Ben%20Abdellah%2C%20Rabat%2C%20Maroc" target="_blank" rel="noopener">Open in maps <span aria-hidden="true">↗</span></a>
         </div>
         <div class="info reveal" style="--i:2">
           <h3 data-i18n="visit.admission" class="info__title">Admission</h3>
           <dl class="info__list">
             <div><dt data-i18n="visit.adult">Adult</dt><dd data-i18n="tix.adult.price">20 MAD</dd></div>
-            <div><dt data-i18n="visit.reduced">Reduced <small>students, 60+</small></dt><dd data-i18n="visit.p10">10 MAD</dd></div>
+            <div><dt data-i18n="visit.reduced">Group rate <small>from 3 people</small></dt><dd data-i18n="visit.p10">10 MAD / person</dd></div>
+            <div><dt data-i18n="visit.students">Students</dt><dd data-i18n="visit.free">Free</dd></div>
             <div><dt data-i18n="visit.under18">Under 18</dt><dd data-i18n="visit.free">Free</dd></div>
-            <div><dt data-i18n="visit.tour">Guided tour <small>add-on</small></dt><dd data-i18n="visit.p30">+30 MAD</dd></div>
+            <div><dt data-i18n="visit.tour">Guided tour</dt><dd data-i18n="visit.p30">On reservation (groups)</dd></div>
           </dl>
         </div>
       </div>
@@ -548,24 +549,21 @@
               </div>
               <div data-i18n-attr="aria-label:a.entryTime" class="slots" role="radiogroup" aria-label="Entry time" data-slots>
                 <p data-i18n="tix.entry" class="slots__label" id="slots-label">Entry time</p>
-                <label class="chip"><input type="radio" name="slot" value="10:00" checked><span>10:00</span></label>
-                <label class="chip"><input type="radio" name="slot" value="12:00"><span>12:00</span></label>
-                <label class="chip"><input type="radio" name="slot" value="14:00"><span>14:00</span></label>
-                <label class="chip"><input type="radio" name="slot" value="16:00"><span>16:00</span></label>
+                <span class="slots__chips" data-slot-chips></span>
               </div>
             </fieldset>
 
             <!-- Step 2 -->
             <fieldset class="step" data-step="2" hidden>
-              <legend data-i18n="tix.who" class="step__legend">Who’s coming? <span class="step__sub">Children under 18 enter free</span></legend>
+              <legend data-i18n="tix.who" class="step__legend">Who’s coming? <span class="step__sub">Free for students and under-18s · group rate from 3 people</span></legend>
               <ul class="qty-list" role="list">
                 <li class="qty" data-type="adult" data-price="20">
                   <div><p data-i18n="visit.adult" class="qty__name" id="q-adult">Adult</p><p data-i18n="tix.adult.price" class="qty__price">20 MAD</p></div>
                   <div class="qty__ctrl"><button data-i18n-attr="aria-label:a.remAdult" type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one adult ticket">−</button><output aria-labelledby="q-adult" aria-live="polite" data-count>1</output><button data-i18n-attr="aria-label:a.addAdult" type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one adult ticket">+</button></div>
                 </li>
-                <li class="qty" data-type="reduced" data-price="10">
-                  <div><p data-i18n="tix.reduced" class="qty__name" id="q-reduced">Reduced</p><p data-i18n="tix.reduced.price" class="qty__price">10 MAD · students, 60+</p></div>
-                  <div class="qty__ctrl"><button data-i18n-attr="aria-label:a.remRed" type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one reduced ticket">−</button><output aria-labelledby="q-reduced" aria-live="polite" data-count>0</output><button data-i18n-attr="aria-label:a.addRed" type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one reduced ticket">+</button></div>
+                <li class="qty" data-type="reduced" data-price="0">
+                  <div><p data-i18n="tix.reduced" class="qty__name" id="q-reduced">Students</p><p data-i18n="tix.reduced.price" class="qty__price">Free · student card</p></div>
+                  <div class="qty__ctrl"><button data-i18n-attr="aria-label:a.remRed" type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one student ticket">−</button><output aria-labelledby="q-reduced" aria-live="polite" data-count>0</output><button data-i18n-attr="aria-label:a.addRed" type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one student ticket">+</button></div>
                 </li>
                 <li class="qty" data-type="child" data-price="0">
                   <div><p data-i18n="visit.under18" class="qty__name" id="q-child">Under 18</p><p data-i18n="visit.free" class="qty__price">Free</p></div>
@@ -575,7 +573,7 @@
               <label class="toggle">
                 <input type="checkbox" name="tour" data-tour>
                 <span class="toggle__ui" aria-hidden="true"></span>
-                <span data-i18n="tix.addtour">Add a guided tour <small>+30 MAD per group · 60 minutes</small></span>
+                <span data-i18n="tix.addtour">Request a guided tour <small>groups of 3 or more, on reservation</small></span>
               </label>
             </fieldset>
 
@@ -614,10 +612,11 @@
             <p data-i18n="tix.yourvisit" class="summary__title">Your visit</p>
             <dl class="summary__list">
               <div><dt data-i18n="tix.sum.date">Date</dt><dd data-sum-date>—</dd></div>
-              <div><dt data-i18n="tix.sum.entry">Entry</dt><dd data-sum-slot>10:00</dd></div>
+              <div><dt data-i18n="tix.sum.entry">Entry</dt><dd data-sum-slot>09:00</dd></div>
               <div><dt data-i18n="nav.tickets">Tickets</dt><dd data-sum-tickets>1 adult</dd></div>
             </dl>
             <p class="summary__total"><span data-i18n="tix.total">Total</span> <strong data-i18n="tix.adult.price" data-sum-total aria-live="polite">20 MAD</strong></p>
+            <p class="summary__note" data-sum-note hidden></p>
           </aside>
         </form>
         <p class="sr-only" aria-live="polite" data-ticket-live></p>

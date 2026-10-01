@@ -433,3 +433,31 @@ ATTR += [
  ("a.mosaicArt", "aria-label", "Paintings from the collection: Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.", "Tableaux de la collection : Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet.", "لوحات من المجموعة: إدوين لورد ويكس وجاك ماجوريل وبنجامان كونستان وألبير ماركي.", "Cuadros de la colección: Edwin Lord Weeks, Jacques Majorelle, Benjamin-Constant, Albert Marquet."),
  ("a.mosaicShop", "aria-label", "Items from the Boutique: commemorative coins, banknotes, books, mugs, tote bags and a coin case.", "Articles de la Boutique : pièces commémoratives, billets, ouvrages, mugs, sacs en toile et coffret.", "منتجات من المتجر: قطع تذكارية وأوراق نقدية وكتب وأكواب وحقائب قماشية وعلبة.", "Artículos de la Tienda: monedas conmemorativas, billetes, libros, tazas, bolsas de tela y un estuche."),
 ]
+
+# --- Visit: real hours, address and prices (October 2026) ---
+HTML += [
+ ("visit.tuesat", "Tuesday – Friday", "Mardi – vendredi", "الثلاثاء – الجمعة", "Martes – viernes"),
+ ("visit.sat", "Saturday", "Samedi", "السبت", "Sábado"),
+ ("visit.mon", "Monday &amp; religious holidays", "Lundi et fêtes religieuses", "الاثنين والأعياد الدينية", "Lunes y fiestas religiosas"),
+ ("visit.reduced", "Group rate <small>from 3 people</small>", "Tarif groupe <small>à partir de 3 personnes</small>", "تعريفة المجموعات <small>ابتداءً من 3 أشخاص</small>", "Tarifa de grupo <small>a partir de 3 personas</small>"),
+ ("visit.p10", "10 MAD / person", "10 MAD / personne", "10 دراهم للشخص", "10 MAD / persona"),
+ ("visit.students", "Students", "Étudiants", "الطلبة", "Estudiantes"),
+ ("visit.tour", "Guided tour", "Visite guidée", "جولة بمرافقة مرشد", "Visita guiada"),
+ ("visit.p30", "On reservation (groups)", "Sur réservation (groupes)", "بالحجز المسبق (للمجموعات)", "Con reserva (grupos)"),
+ ("tix.who", "Who’s coming? <span class=\"step__sub\">Free for students and under-18s · group rate from 3 people</span>", "Qui vient ? <span class=\"step__sub\">Gratuit pour les étudiants et les moins de 18 ans · tarif groupe dès 3 personnes</span>", "من سيحضر؟ <span class=\"step__sub\">الدخول مجاني للطلبة ولمن هم دون 18 سنة · تعريفة المجموعات ابتداءً من 3 أشخاص</span>", "¿Quién viene? <span class=\"step__sub\">Gratis para estudiantes y menores de 18 · tarifa de grupo desde 3 personas</span>"),
+ ("tix.reduced", "Students", "Étudiants", "الطلبة", "Estudiantes"),
+ ("tix.reduced.price", "Free · student card", "Gratuit · carte d’étudiant", "مجاني · بطاقة الطالب", "Gratis · carné de estudiante"),
+ ("tix.addtour", "Request a guided tour <small>groups of 3 or more, on reservation</small>", "Demander une visite guidée <small>groupes dès 3 personnes, sur réservation</small>", "طلب جولة بمرافقة مرشد <small>للمجموعات ابتداءً من 3 أشخاص، بالحجز المسبق</small>", "Solicitar una visita guiada <small>grupos desde 3 personas, con reserva</small>"),
+]
+ATTR += [
+ ("a.remRed", "aria-label", "Remove one student ticket", "Retirer un billet étudiant", "إزالة تذكرة طالب", "Quitar una entrada de estudiante"),
+ ("a.addRed", "aria-label", "Add one student ticket", "Ajouter un billet étudiant", "إضافة تذكرة طالب", "Añadir una entrada de estudiante"),
+]
+JS += [
+ ("addr", "Musées de Bank Al-Maghrib<br>Corner of Avenue Allal Ben Abdellah and Rue Al-Qahira<br>Rabat, Morocco", "Musées de Bank Al-Maghrib<br>Angle Avenue Allal Ben Abdellah et Rue Al-Qahira<br>Rabat, Maroc", "متاحف بنك المغرب<br>زاوية شارع علال بن عبد الله وزنقة القاهرة<br>الرباط، المغرب", "Musées de Bank Al-Maghrib<br>Esquina de la avenida Allal Ben Abdellah y la calle Al-Qahira<br>Rabat, Marruecos"),
+ ("tix.reduced.one", "{n} student", "{n} étudiant", "طالب ×{n}", "{n} estudiante"),
+ ("tix.reduced.other", "{n} students", "{n} étudiants", "طالب ×{n}", "{n} estudiantes"),
+ ("tix.tourItem", "guided tour requested", "visite guidée demandée", "طلب جولة بمرشد", "visita guiada solicitada"),
+ ("tix.group", "Group rate applied", "Tarif groupe appliqué", "تم تطبيق تعريفة المجموعات", "Tarifa de grupo aplicada"),
+ ("ics.location", "Corner of Avenue Allal Ben Abdellah and Rue Al-Qahira\\, Rabat", "Angle Avenue Allal Ben Abdellah et Rue Al-Qahira\\, Rabat", "زاوية شارع علال بن عبد الله وزنقة القاهرة، الرباط", "Esquina de la avenida Allal Ben Abdellah y la calle Al-Qahira\\, Rabat"),
+]

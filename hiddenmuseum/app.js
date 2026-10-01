@@ -708,9 +708,17 @@
   const backBtn = $('[data-back]');
   const navRow = $('[data-ticket-nav]');
   const live = $('[data-ticket-live]');
-  const PRICES = { adult: 20, reduced: 10, child: 0 };
-  const TOUR = 30;
-  const state = { step: 1, date: null, slot: '10:00', counts: { adult: 1, reduced: 0, child: 0 }, tour: false };
+  const PRICES = { adult: 20, reduced: 0, child: 0 }; // students and under-18s enter free
+  const GROUP_MIN = 3, GROUP_PRICE = 10; // group rate from 3 people, 10 MAD per paying visitor
+  // Entry slots per opening day; each slot carries the closing time of its session.
+  // Tue–Fri 09:00–17:30 · Sat 09:00–12:00 and 15:00–18:00 · Sun 09:00–13:00 · last entry 45 min before closing.
+  const SLOTS = {
+    week: [['09:00', '17:30'], ['11:00', '17:30'], ['13:00', '17:30'], ['15:00', '17:30'], ['16:30', '17:30']],
+    sat: [['09:00', '12:00'], ['10:30', '12:00'], ['15:00', '18:00'], ['16:30', '18:00']],
+    sun: [['09:00', '13:00'], ['10:30', '13:00'], ['12:00', '13:00']]
+  };
+  const slotsFor = (d) => SLOTS[!d ? 'week' : d.getDay() === 6 ? 'sat' : d.getDay() === 0 ? 'sun' : 'week'];
+  const state = { step: 1, date: null, slot: '09:00', counts: { adult: 1, reduced: 0, child: 0 }, tour: false };
   let fmtLong, fmtShort, fmtMonth, fmtDow;
   function makeFormatters() {
     const loc = I18N.locale();
@@ -764,6 +772,7 @@
     if (!b || b.disabled) return;
     state.date = parseYmd(b.dataset.date);
     renderCal(state.date);
+    renderSlots();
     updateSummary();
     live.textContent = t('cal.selected', { date: fmtLong.format(state.date) });
   });
@@ -788,8 +797,16 @@
     renderCal(d);
   });
 
-  $$('input[name="slot"]', form).forEach((r) => r.addEventListener('change', () => { state.slot = r.value; updateSummary(); }));
+  const slotChips = $('[data-slot-chips]', form);
+  function renderSlots() {
+    const list = slotsFor(state.date).map(([v]) => v);
+    if (!list.includes(state.slot)) state.slot = list[0];
+    slotChips.innerHTML = list.map((v) => `<label class="chip"><input type="radio" name="slot" value="${v}"${v === state.slot ? ' checked' : ''}><span>${v}</span></label>`).join('');
+  }
+  slotChips.addEventListener('change', (e) => { if (e.target.name === 'slot') { state.slot = e.target.value; updateSummary(); } });
+  renderSlots();
 
+  const tourBox = $('[data-tour]', form);
   $$('.qty', form).forEach((row) => {
     const type = row.dataset.type;
     const out = $('[data-count]', row);
@@ -799,11 +816,13 @@
     $('[data-inc]', row).addEventListener('click', () => { state.counts[type] = Math.min(20, state.counts[type] + 1); sync(); });
     sync();
   });
-  $('[data-tour]', form).addEventListener('change', (e) => { state.tour = e.target.checked; updateSummary(); });
+  tourBox.addEventListener('change', (e) => { state.tour = e.target.checked; updateSummary(); });
 
   function totalTickets() { return state.counts.adult + state.counts.reduced + state.counts.child; }
+  function isGroup() { return totalTickets() >= GROUP_MIN; }
   function total() {
-    return Object.entries(state.counts).reduce((s, [k, n]) => s + PRICES[k] * n, 0) + (state.tour ? TOUR : 0);
+    // Guided tours are on reservation for groups and are not charged online.
+    return Object.entries(state.counts).reduce((s, [k, n]) => s + (k === 'adult' && isGroup() ? GROUP_PRICE : PRICES[k]) * n, 0);
   }
   function ticketText() {
     const parts = [];
@@ -829,6 +848,12 @@
     $('[data-sum-tickets]').textContent = ticketText();
     const sum = total();
     $('[data-sum-total]').textContent = money(sum);
+    const group = isGroup();
+    const note = $('[data-sum-note]');
+    note.hidden = !(group && state.counts.adult);
+    note.textContent = note.hidden ? '' : t('tix.group');
+    tourBox.disabled = !group;
+    if (!group && state.tour) { state.tour = false; tourBox.checked = false; $('[data-sum-tickets]').textContent = ticketText(); }
     if (state.step === 1) nextBtn.disabled = !state.date;
     if (state.step === 2) nextBtn.disabled = totalTickets() === 0;
   }
@@ -884,17 +909,20 @@
   });
 
   $('[data-ics]').addEventListener('click', () => {
-    const [h, mi] = state.slot.split(':').map(Number);
+    const toMin = (v) => { const [h, m] = v.split(':').map(Number); return h * 60 + m; };
     const pad = (n) => String(n).padStart(2, '0');
+    const hhmm = (m) => `${pad(Math.floor(m / 60))}${pad(m % 60)}00`;
     const d = state.date;
-    const start = `${ymd(d)}T${pad(h)}${pad(mi)}00`;
-    const end = `${ymd(d)}T${pad(h + 2)}${pad(mi)}00`;
+    const slot = slotsFor(d).find(([v]) => v === state.slot) || [state.slot, '18:00'];
+    const from = toMin(slot[0]);
+    const start = `${ymd(d)}T${hhmm(from)}`;
+    const end = `${ymd(d)}T${hhmm(Math.min(from + 90, toMin(slot[1])))}`;
     const ics = [
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Musees de Bank Al-Maghrib//Tickets//EN',
       'BEGIN:VEVENT', `UID:${state.ref}@musees-bam`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
       `DTSTART;TZID=Africa/Casablanca:${start}`, `DTEND;TZID=Africa/Casablanca:${end}`,
       `SUMMARY:${t('ics.summary')}`, `DESCRIPTION:${t('ics.booking')} ${state.ref} · ${ticketText()}`,
-      'LOCATION:Avenue Mohammed V\\, Rabat', 'END:VEVENT', 'END:VCALENDAR'
+      `LOCATION:${t('ics.location')}`, 'END:VEVENT', 'END:VCALENDAR'
     ].join('\r\n');
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
     const a = Object.assign(document.createElement('a'), { href: url, download: `${state.ref}.ics` });
@@ -902,11 +930,12 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
   $('[data-restart]').addEventListener('click', () => {
-    state.date = null; form.reset(); state.slot = '10:00'; state.tour = false;
+    state.date = null; form.reset(); state.slot = '09:00'; state.tour = false;
     state.counts = { adult: 1, reduced: 0, child: 0 };
     $$('.qty', form).forEach((row) => { $('[data-count]', row).textContent = state.counts[row.dataset.type]; $('[data-dec]', row).disabled = state.counts[row.dataset.type] === 0; });
     $$('[aria-invalid]', form).forEach((el) => el.removeAttribute('aria-invalid'));
     viewMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    renderSlots();
     renderCal();
     goStep(1);
     const b = $('.cal__day[tabindex="0"]', calEl); if (b) b.focus();
