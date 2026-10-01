@@ -1014,8 +1014,7 @@ small { font-size: .78em; color: var(--muted); font-weight: 400; }
 .motion-toggle[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 
 .footer__bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; margin-top: clamp(64px, 10vw, 120px); padding-top: 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
-.footer__logo { background: #fff; padding: 14px 20px; border-radius: 2px; }
-.footer__logo img { width: 260px; max-width: 100%; }
+.footer__logo img { width: 280px; max-width: 100%; }
 
 /* ==========================================================================
    LIGHTBOX
