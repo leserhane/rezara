@@ -93,7 +93,7 @@
       });
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
-  ['exhibition', 'stories', 'collection', 'visit', 'events'].forEach((id) => { const s = document.getElementById(id); if (s) sectionObs.observe(s); });
+  ['exhibition', 'stories', 'collection', 'boutique', 'visit', 'events'].forEach((id) => { const s = document.getElementById(id); if (s) sectionObs.observe(s); });
 
   /* ------------------------------------------------------------------
      Staggered reveals

@@ -52,6 +52,7 @@
       <li><a href="#exhibition">Exhibition</a></li>
       <li><a href="#stories">Stories</a></li>
       <li><a href="#collection">Collection</a></li>
+      <li><a href="#boutique">Boutique</a></li>
       <li><a href="#visit">Visit</a></li>
       <li><a href="#events">Events</a></li>
       <li class="nav__cta"><a class="btn btn--solid btn--sm magnetic" href="#tickets">Tickets</a></li>
@@ -114,7 +115,7 @@
         <li class="house reveal" style="--i:2">
           <div class="house__media"><img src="assets/detail3-1100.webp" alt="Close view of gold-ringed coin blanks resting on one another." loading="lazy" width="1100" height="823"></div>
           <span class="house__num" aria-hidden="true">III</span>
-          <h3 class="house__title">Boutique</h3>
+          <h3 class="house__title"><a class="house__link" href="#boutique">Boutique</a></h3>
           <p>Catalogues, faithful replicas and objects made to be kept — every purchase supports the museum’s education programme.</p>
         </li>
       </ul>
@@ -346,6 +347,75 @@
             <img src="assets/coin5b.webp" alt="Small copper-red bronze coin reverse dated 1306." loading="lazy" width="132" height="132">
             <div class="tile__cap"><p class="tile__meta">Bronze · AH 1306</p><h3>Copper red</h3></div>
           </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ BOUTIQUE ============ -->
+  <section class="boutique section" id="boutique" aria-labelledby="boutique-title">
+    <div class="container">
+      <header class="section-head section-head--split">
+        <div>
+          <p class="eyebrow reveal">The Boutique</p>
+          <h2 class="section-title reveal" id="boutique-title" style="--i:1">Take a piece of the <em>collection</em> home.</h2>
+        </div>
+        <p class="lede reveal" style="--i:2">Five departments, from coins struck for the nation’s great moments to the books that tell their story.</p>
+      </header>
+
+      <ul class="shop" role="list">
+        <li class="shop__item reveal" style="--i:0">
+          <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <circle class="picto__fill" cx="38" cy="26" r="16" pathLength="1"/>
+            <circle class="picto__fill" cx="27" cy="37" r="18" pathLength="1"/>
+            <circle cx="27" cy="37" r="13" pathLength="1"/>
+            <path d="M27.0 30.5 L28.6 34.8 L33.2 35.0 L29.6 37.8 L30.8 42.3 L27.0 39.7 L23.2 42.3 L24.4 37.8 L20.8 35.0 L25.4 34.8Z" pathLength="1"/>
+          </svg>
+          <p class="shop__num" aria-hidden="true">01</p>
+          <h3 class="shop__title" lang="fr">Pièces commémoratives</h3>
+          <p class="shop__desc">Coins struck to mark the great moments of the Kingdom, in proof and uncirculated finishes.</p>
+        </li>
+        <li class="shop__item reveal" style="--i:1">
+          <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <rect class="picto__fill" x="14" y="12" width="42" height="26" rx="2" pathLength="1"/>
+            <rect class="picto__fill" x="8" y="22" width="44" height="28" rx="2" pathLength="1"/>
+            <circle cx="30" cy="36" r="7" pathLength="1"/>
+            <path d="M13 27h7M40 45h7M13 45h4M43 27h4" pathLength="1"/>
+          </svg>
+          <p class="shop__num" aria-hidden="true">02</p>
+          <h3 class="shop__title" lang="fr">Billets démonétisés et commémoratifs</h3>
+          <p class="shop__desc">Withdrawn series and commemorative notes, presented and certified for collectors.</p>
+        </li>
+        <li class="shop__item reveal" style="--i:2">
+          <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <circle cx="27" cy="27" r="16" pathLength="1"/>
+            <circle cx="27" cy="27" r="8" pathLength="1"/>
+            <path d="M18 21a11 11 0 0 1 6-5" pathLength="1"/>
+            <path class="picto__thick" d="M39 39l14 14" pathLength="1"/>
+          </svg>
+          <p class="shop__num" aria-hidden="true">03</p>
+          <h3 class="shop__title" lang="fr">Outils pour collectionneurs</h3>
+          <p class="shop__desc">Loupes, capsules, albums and gloves — everything to study and protect a collection.</p>
+        </li>
+        <li class="shop__item reveal" style="--i:3">
+          <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path d="M14 24h36l-3 30H17z" pathLength="1"/>
+            <path d="M24 24v-5a8 8 0 0 1 16 0v5" pathLength="1"/>
+            <path d="M32 32.5q2.2 4.1 6.5 6.5q-4.3 2.4-6.5 6.5q-2.2-4.1-6.5-6.5q4.3-2.4 6.5-6.5z" pathLength="1"/>
+          </svg>
+          <p class="shop__num" aria-hidden="true">04</p>
+          <h3 class="shop__title" lang="fr">Articles souvenirs</h3>
+          <p class="shop__desc">Objects inspired by the collections, made to be kept and given.</p>
+        </li>
+        <li class="shop__item reveal" style="--i:4">
+          <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path d="M32 18C24 13 14 13 8 15v34c6-2 16-2 24 3c8-5 18-5 24-3V15c-6-2-16-2-24 3z" pathLength="1"/>
+            <path d="M32 18v34" pathLength="1"/>
+            <path d="M14 23c4-1 9-1 13 1M14 30c4-1 9-1 13 1M37 24c4-2 9-2 13-1M37 31c4-2 9-2 13-1" pathLength="1"/>
+          </svg>
+          <p class="shop__num" aria-hidden="true">05</p>
+          <h3 class="shop__title" lang="fr">Ouvrages</h3>
+          <p class="shop__desc">Catalogues, numismatic studies and art books published by the museum.</p>
         </li>
       </ul>
     </div>
@@ -607,6 +677,7 @@
             <li><a href="#visit">Hours &amp; admission</a></li>
             <li><a href="#tickets">Book tickets</a></li>
             <li><a href="#events">Events</a></li>
+            <li><a href="#boutique">Boutique</a></li>
           </ul>
           <button type="button" class="motion-toggle" aria-pressed="false" data-motion-toggle>Reduce motion</button>
         </div>
