@@ -29,7 +29,9 @@ window.BAM_COLLECTION = [
         photos: [
           { src: 'assets/collection/premonnaie-1.webp', alt: 'Bronze pre-coinage object with four rounded arms.', caption: 'Prémonnaie · bronze' },
           { src: 'assets/collection/premonnaie-2.webp', alt: 'Small elongated bronze pre-coinage object with a green patina.', caption: 'Prémonnaie · bronze' },
-          { src: 'assets/collection/premonnaie-3a.webp', reverse: 'assets/collection/premonnaie-3b.webp', alt: 'Spade-shaped bronze pre-coinage piece with a forked foot, a pierced handle and incised characters.', caption: 'Prémonnaie · bronze' }
+          { src: 'assets/collection/premonnaie-3a.webp', reverse: 'assets/collection/premonnaie-3b.webp', alt: 'Spade-shaped bronze pre-coinage piece with a forked foot, a pierced handle and incised characters.', caption: 'Prémonnaie · bronze' },
+          { src: 'assets/collection/lydie-statere-b.webp', reverse: 'assets/collection/lydie-statere-a.webp', alt: 'Oval gold coin of Lydia showing the facing heads of a lion and a bull.', caption: 'Lydia · gold stater · lion and bull' },
+          { src: 'assets/collection/achemenide-darique-b.webp', reverse: 'assets/collection/achemenide-darique-a.webp', alt: 'Gold Achaemenid coin showing the Persian king running with bow and spear.', caption: 'Achaemenid Persia · gold daric · the king as archer' }
         ],
         descriptionCount: 3,
         descriptions: []
@@ -44,7 +46,16 @@ window.BAM_COLLECTION = [
     to: 'Sassanides',
     intro: 'From the silver owls of Athens to the coins of Carthage, Numidia and Mauretania, and on to Rome, Byzantium and Sassanid Persia, antiquity made money a portrait of power: a ruler’s face, a city’s emblem, carried hand to hand across the Mediterranean.',
     groups: [
-      { photoCount: 12, photos: [], descriptionCount: 12, descriptions: [] }
+      {
+        photoCount: 12,
+        photos: [
+          { src: 'assets/collection/antique-owl-a.webp', reverse: 'assets/collection/antique-owl-b.webp', alt: 'Dark coin of Athenian type with the head of Athena and, on the other side, an owl.', caption: 'Athenian type · head of Athena / owl' },
+          { src: 'assets/collection/antique-carthage-a.webp', reverse: 'assets/collection/antique-carthage-b.webp', alt: 'Gold coin of Carthage with the head of the goddess Tanit and, on the other side, a standing horse.', caption: 'Carthage · gold stater · head of Tanit / horse' },
+          { src: 'assets/collection/antique-rome-a.webp', reverse: 'assets/collection/antique-rome-b.webp', alt: 'Gold Roman coin with the laureate bust of Caracalla and, on the other side, a goddess riding a lion.', caption: 'Rome · gold aureus · Caracalla', text: 'Obverse: ANTONINVS PIVS AVG. Reverse: INDVLGENTIA AVGG IN CARTH — the goddess Caelestis riding a lion, celebrating the emperors’ favour to Carthage.' }
+        ],
+        descriptionCount: 12,
+        descriptions: []
+      }
     ]
   },
   {
