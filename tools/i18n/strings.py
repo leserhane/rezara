@@ -371,3 +371,12 @@ ATTR += [
 JS += [
  ("shelf.rail", "Commemorative coins — {n} pieces", "Pièces commémoratives — {n} pièces", "القطع النقدية التذكارية — {n} قطع", "Monedas conmemorativas — {n} piezas"),
 ]
+
+HTML += [
+ ("shop.seeNotes", "See the banknotes <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Voir les billets <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "اكتشف الأوراق النقدية <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Ver los billetes <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>"),
+ ("notes.title", "Withdrawn and commemorative banknotes", "Billets démonétisés et commémoratifs", "الأوراق النقدية الملغاة والتذكارية", "Billetes desmonetizados y conmemorativos"),
+ ("notes.lede", "Notes from the first series of the dirham onwards, withdrawn from circulation and kept for collectors.", "Des billets depuis la première série du dirham, retirés de la circulation et conservés pour les collectionneurs.", "أوراق نقدية منذ أول سلسلة للدرهم، سُحبت من التداول وحُفظت لهواة الجمع.", "Billetes desde la primera serie del dírham, retirados de la circulación y conservados para coleccionistas."),
+]
+JS += [
+ ("notes.rail", "Banknotes — {n} notes", "Billets — {n} billets", "الأوراق النقدية — {n} أوراق", "Billetes — {n} billetes"),
+]

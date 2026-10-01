@@ -465,3 +465,82 @@ window.BAM_SHOP_COINS = [
     "cover": true
   }
 ];
+
+/* Boutique — withdrawn and commemorative banknotes shelf (front only). */
+window.BAM_SHOP_NOTES = [
+  {
+    "src": "assets/boutique/billets/mohammed5-5dh.webp",
+    "alt": {
+      "fr": "Billet de 5 dirhams de Bank Al-Maghrib au portrait de Mohammed V, devant une vue de ville.",
+      "ar": "ورقة نقدية من فئة 5 دراهم لبنك المغرب تحمل صورة محمد الخامس أمام منظر لمدينة.",
+      "en": "Bank Al-Maghrib 5 dirham note with a portrait of Mohammed V in front of a city view.",
+      "es": "Billete de 5 dírhams de Bank Al-Maghrib con el retrato de Mohammed V ante una vista de ciudad."
+    },
+    "caption": {
+      "fr": "Mohammed V · 5 dirhams",
+      "ar": "محمد الخامس · 5 دراهم",
+      "en": "Mohammed V · 5 dirhams",
+      "es": "Mohammed V · 5 dírhams"
+    }
+  },
+  {
+    "src": "assets/boutique/billets/mohammed5-10dh.webp",
+    "alt": {
+      "fr": "Billet de 10 dirhams de Bank Al-Maghrib au portrait de Mohammed V, avec la tour Hassan.",
+      "ar": "ورقة نقدية من فئة 10 دراهم لبنك المغرب تحمل صورة محمد الخامس وصومعة حسان.",
+      "en": "Bank Al-Maghrib 10 dirham note with a portrait of Mohammed V and the Hassan Tower.",
+      "es": "Billete de 10 dírhams de Bank Al-Maghrib con el retrato de Mohammed V y la torre Hasán."
+    },
+    "caption": {
+      "fr": "Mohammed V · 10 dirhams · tour Hassan",
+      "ar": "محمد الخامس · 10 دراهم · صومعة حسان",
+      "en": "Mohammed V · 10 dirhams · Hassan Tower",
+      "es": "Mohammed V · 10 dírhams · torre Hasán"
+    }
+  },
+  {
+    "src": "assets/boutique/billets/hassan2-50dh-1965.webp",
+    "alt": {
+      "fr": "Billet de 50 dirhams de Bank Al-Maghrib au portrait de Hassan II, devant une ville côtière.",
+      "ar": "ورقة نقدية من فئة 50 درهماً لبنك المغرب تحمل صورة الحسن الثاني أمام مدينة ساحلية.",
+      "en": "Bank Al-Maghrib 50 dirham note with a portrait of Hassan II in front of a coastal city.",
+      "es": "Billete de 50 dírhams de Bank Al-Maghrib con el retrato de Hasán II ante una ciudad costera."
+    },
+    "caption": {
+      "fr": "Hassan II · 50 dirhams",
+      "ar": "الحسن الثاني · 50 درهماً",
+      "en": "Hassan II · 50 dirhams",
+      "es": "Hasán II · 50 dírhams"
+    }
+  },
+  {
+    "src": "assets/boutique/billets/hassan2-5dh-1970.webp",
+    "alt": {
+      "fr": "Billet violet de 5 dirhams de 1970 au portrait de Hassan II, avec une kasbah.",
+      "ar": "ورقة نقدية بنفسجية من فئة 5 دراهم لسنة 1970 تحمل صورة الحسن الثاني وقصبة.",
+      "en": "Purple 5 dirham note of 1970 with a portrait of Hassan II and a kasbah.",
+      "es": "Billete morado de 5 dírhams de 1970 con el retrato de Hasán II y una alcazaba."
+    },
+    "caption": {
+      "fr": "Hassan II · 5 dirhams · 1970 / 1390 H.",
+      "ar": "الحسن الثاني · 5 دراهم · 1970 / 1390 هـ",
+      "en": "Hassan II · 5 dirhams · 1970 / AH 1390",
+      "es": "Hasán II · 5 dírhams · 1970 / 1390 H."
+    }
+  },
+  {
+    "src": "assets/boutique/billets/hassan2-10dh-1970.webp",
+    "alt": {
+      "fr": "Billet rouge de 10 dirhams de 1970 au portrait de Hassan II.",
+      "ar": "ورقة نقدية حمراء من فئة 10 دراهم لسنة 1970 تحمل صورة الحسن الثاني.",
+      "en": "Red 10 dirham note of 1970 with a portrait of Hassan II.",
+      "es": "Billete rojo de 10 dírhams de 1970 con el retrato de Hasán II."
+    },
+    "caption": {
+      "fr": "Hassan II · 10 dirhams · 1970 / 1390 H.",
+      "ar": "الحسن الثاني · 10 دراهم · 1970 / 1390 هـ",
+      "en": "Hassan II · 10 dirhams · 1970 / AH 1390",
+      "es": "Hasán II · 10 dírhams · 1970 / 1390 H."
+    }
+  }
+];

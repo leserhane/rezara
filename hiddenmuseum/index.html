@@ -426,6 +426,7 @@
           <p class="shop__num" aria-hidden="true">02</p>
           <h3 data-i18n="shop.2" class="shop__title" lang="fr">Billets démonétisés et commémoratifs</h3>
           <p data-i18n="shop.2.text" class="shop__desc">Withdrawn series and commemorative notes, presented and certified for collectors.</p>
+          <a data-i18n="shop.seeNotes" class="text-link shop__link" href="#shop-notes">See the banknotes <span aria-hidden="true" class="flip-rtl">→</span></a>
         </li>
         <li class="shop__item reveal" style="--i:2">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -466,7 +467,21 @@
           <p data-i18n="shelf.lede" class="shelf__lede reveal" style="--i:1">Silver pieces struck for the Kingdom’s great moments. Select a coin to turn it in your hand.</p>
         </div>
         <div class="rail shelf__rail">
-          <ul class="rail__track" role="list" tabindex="0" data-shelf></ul>
+          <ul class="rail__track" role="list" tabindex="0" data-shelf="coins"></ul>
+          <div class="rail__btns">
+            <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
+            <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shelf" id="shop-notes" tabindex="-1">
+        <div class="shelf__head">
+          <h3 data-i18n="notes.title" class="shelf__title reveal">Withdrawn and commemorative banknotes</h3>
+          <p data-i18n="notes.lede" class="shelf__lede reveal" style="--i:1">Notes from the first series of the dirham onwards, withdrawn from circulation and kept for collectors.</p>
+        </div>
+        <div class="rail shelf__rail">
+          <ul class="rail__track" role="list" tabindex="0" data-shelf="notes"></ul>
           <div class="rail__btns">
             <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
             <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>

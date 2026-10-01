@@ -953,42 +953,45 @@
   });
 
   /* ------------------------------------------------------------------
-     BOUTIQUE — commemorative coins shelf (data: BAM_SHOP_COINS)
+     BOUTIQUE — shelves (data: BAM_SHOP_COINS, BAM_SHOP_NOTES)
      ------------------------------------------------------------------ */
-  const shelf = $('[data-shelf]');
-  const shopCoins = Array.isArray(window.BAM_SHOP_COINS) ? window.BAM_SHOP_COINS : [];
+  const SHELVES = [
+    { key: 'coins', items: window.BAM_SHOP_COINS, kind: 'coin', title: 'shelf.title', rail: 'shelf.rail' },
+    { key: 'notes', items: window.BAM_SHOP_NOTES, kind: 'note', title: 'notes.title', rail: 'notes.rail' },
+  ].map((sh) => ({ ...sh, items: Array.isArray(sh.items) ? sh.items : [], el: $(`[data-shelf="${sh.key}"]`) }))
+    .filter((sh) => sh.el);
   function renderShelf() {
-    if (!shelf) return;
-    $$('.coin3d', shelf).forEach((c) => spinObs.unobserve(c));
-    shelf.setAttribute('aria-label', t('shelf.rail', { n: shopCoins.length }));
-    shelf.innerHTML = shopCoins.map((p, i) => {
-      const cap = L(p.caption), alt = L(p.alt);
-      return `<li class="slot slot--coin slot--shop"><button type="button" class="slot__btn" data-shop-coin="${i}" data-cursor="${esc(t('a.zoom'))}" aria-label="${esc(t('tl.enlarge', { x: cap || alt }))}">
-          <span class="slot__frame">${p.reverse
-            ? `<span class="coin3d" style="--d:${(-(i * 3.1) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(alt), 6)}</span>`
-            : `<img${p.cover ? ' class="slot__photo"' : ''} src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
-          <p class="slot__cap">${esc(cap)}</p></li>`;
-    }).join('');
-    $$('.coin3d', shelf).forEach((c) => spinObs.observe(c));
+    SHELVES.forEach((sh) => {
+      $$('.coin3d', sh.el).forEach((c) => spinObs.unobserve(c));
+      sh.el.setAttribute('aria-label', t(sh.rail, { n: sh.items.length }));
+      sh.el.innerHTML = sh.items.map((p, i) => {
+        const cap = L(p.caption), alt = L(p.alt);
+        return `<li class="slot slot--${sh.kind} slot--shop"><button type="button" class="slot__btn" data-shop-item="${i}" data-cursor="${esc(t('a.zoom'))}" aria-label="${esc(t('tl.enlarge', { x: cap || alt }))}">
+            <span class="slot__frame">${p.reverse
+              ? `<span class="coin3d${sh.kind === 'note' ? ' coin3d--thin' : ''}" style="--d:${(-(i * 3.1) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(alt), sh.kind === 'note' ? 1 : 6)}</span>`
+              : `<img${p.cover ? ' class="slot__photo"' : ''} src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
+            <p class="slot__cap">${esc(cap)}</p></li>`;
+      }).join('');
+      $$('.coin3d', sh.el).forEach((c) => spinObs.observe(c));
+    });
   }
-  if (shelf) {
-    const shelfBox = shelf.closest('.shelf');
-    shelfBox.addEventListener('click', (e) => {
+  SHELVES.forEach((sh) => {
+    sh.el.closest('.shelf').addEventListener('click', (e) => {
       const rb = e.target.closest('[data-rail]');
       if (rb) {
-        shelf.scrollBy({ left: Number(rb.dataset.rail) * shelf.clientWidth * 0.8, behavior: reduced() ? 'auto' : 'smooth' });
+        sh.el.scrollBy({ left: Number(rb.dataset.rail) * sh.el.clientWidth * 0.8, behavior: reduced() ? 'auto' : 'smooth' });
         return;
       }
-      const b = e.target.closest('[data-shop-coin]');
+      const b = e.target.closest('[data-shop-item]');
       if (!b) return;
-      const p = shopCoins[Number(b.dataset.shopCoin)];
+      const p = sh.items[Number(b.dataset.shopItem)];
       openLightbox({
         coin: p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
-        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: p.cover ? 'photo' : 'coin' }],
-        meta: t('shelf.title'), title: L(p.caption), body: L(p.text), returnTo: b });
+        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: (p.cover || sh.kind === 'note') ? 'photo' : 'coin' }],
+        meta: t(sh.title), title: L(p.caption), body: L(p.text), returnTo: b });
     });
-    renderShelf();
-  }
+  });
+  renderShelf();
 
   /* ------------------------------------------------------------------
      LANGUAGE — flag menu; everything drawn by JS is redrawn on change
