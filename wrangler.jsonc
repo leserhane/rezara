@@ -1,8 +1,13 @@
 {
   "name": "titsuit",
   "compatibility_date": "2026-09-01",
+  // The Worker runs before the static assets so /hiddenmuseum/ can be
+  // password protected; every other path is passed straight through.
+  "main": "worker/index.js",
   "assets": {
     "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
   }
