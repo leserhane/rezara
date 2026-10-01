@@ -1,5 +1,3 @@
 README.md
 wrangler.jsonc
 .assetsignore
-worker
-.dev.vars
