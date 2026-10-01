@@ -774,6 +774,7 @@
     renderCal(state.date);
     renderSlots();
     updateSummary();
+    loadTours();
     live.textContent = t('cal.selected', { date: fmtLong.format(state.date) });
   });
   calEl.addEventListener('keydown', (e) => {
@@ -807,6 +808,33 @@
   renderSlots();
 
   const tourBox = $('[data-tour]', form);
+  const tourMsg = $('[data-tour-msg]', form);
+  // Guided tours: two guides, so at most two tours per entry time.
+  // Availability comes from the Worker API; if it cannot be reached the tour stays requestable.
+  const TOUR_API = 'api/tours';
+  const tours = { date: null, taken: {}, capacity: 2 };
+  function tourFull() { return !!state.date && tours.date === ymd(state.date) && (tours.taken[state.slot] || 0) >= tours.capacity; }
+  async function loadTours() {
+    if (!state.date) return;
+    const day = ymd(state.date);
+    try {
+      const r = await fetch(`${TOUR_API}?date=${day}`, { cache: 'no-store' });
+      if (!r.ok) return;
+      const j = await r.json();
+      if (!state.date || ymd(state.date) !== day) return; // the visitor picked another day meanwhile
+      Object.assign(tours, { date: day, taken: j.taken || {}, capacity: j.capacity || 2 });
+      updateSummary();
+    } catch (err) { /* offline or no API: leave the tour requestable */ }
+  }
+  async function reserveTour() {
+    try {
+      const r = await fetch(TOUR_API, { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ date: ymd(state.date), slot: state.slot, ref: state.ref, people: totalTickets() }) });
+      const j = await r.json().catch(() => ({}));
+      if (j.taken) Object.assign(tours, { date: ymd(state.date), taken: j.taken, capacity: j.capacity || tours.capacity });
+      return r.status !== 409;
+    } catch (err) { return true; }
+  }
   $$('.qty', form).forEach((row) => {
     const type = row.dataset.type;
     const out = $('[data-count]', row);
@@ -855,8 +883,11 @@
     const noteKey = isFreeDay() ? 'tix.friday' : (group && state.counts.adult ? 'tix.group' : '');
     note.hidden = !noteKey;
     note.textContent = noteKey ? t(noteKey) : '';
-    tourBox.disabled = !group;
-    if (!group && state.tour) { state.tour = false; tourBox.checked = false; $('[data-sum-tickets]').textContent = ticketText(); }
+    const full = tourFull();
+    tourBox.disabled = !group || full;
+    tourMsg.hidden = !full;
+    tourMsg.textContent = full ? t('tix.tourFull', { time: state.slot }) : '';
+    if ((!group || full) && state.tour) { state.tour = false; tourBox.checked = false; $('[data-sum-tickets]').textContent = ticketText(); }
     if (state.step === 1) nextBtn.disabled = !state.date;
     if (state.step === 2) nextBtn.disabled = totalTickets() === 0;
   }
@@ -880,14 +911,14 @@
     nextLabel();
     updateSummary();
     if (n === 1) { const b = $('.cal__day[tabindex="0"]', calEl); if (b && prev !== 1) b.focus(); }
-    if (n === 2) $('[data-inc]', stepsEls[2]).focus();
+    if (n === 2) { $('[data-inc]', stepsEls[2]).focus(); loadTours(); }
     if (n === 3) $('#t-name').focus();
     if (n === 'done') cur.focus();
     live.textContent = n === 'done' ? t('tix.done') : t('tix.step', { n });
   }
 
   backBtn.addEventListener('click', () => goStep(state.step - 1));
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (state.step === 1) { if (state.date) goStep(2); return; }
     if (state.step === 2) { if (totalTickets() > 0) goStep(3); return; }
@@ -903,8 +934,21 @@
       err.textContent = emailOk ? '' : t('tix.emailErr');
       if (!nameOk) { name.focus(); return; }
       if (!emailOk) { email.focus(); return; }
-      const ref = 'BAM-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+      const ref = 'BAM-' + Math.random().toString(36).slice(2, 7).toUpperCase().padEnd(5, '0');
       state.ref = ref;
+      if (state.tour) {
+        nextBtn.disabled = true;
+        const ok = await reserveTour();
+        nextBtn.disabled = false;
+        if (!ok) {
+          state.tour = false; tourBox.checked = false;
+          goStep(2);
+          tourMsg.hidden = false;
+          tourMsg.textContent = t('tix.tourFullNow');
+          live.textContent = t('tix.tourFullNow');
+          return;
+        }
+      }
       state.email = email.value.trim();
       renderDone();
       goStep('done');
