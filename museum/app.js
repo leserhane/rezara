@@ -263,9 +263,90 @@
   const lb = $('[data-lightbox]');
   const lbMedia = $('[data-lightbox-media]');
   let lbReturn = null;
-  // figures: [{ src, alt, label, cls }]
-  function openLightbox({ figures, meta, title, body, returnTo }) {
+  /* 3D coin: two faces back to back, with stacked silhouette layers for
+     the thickness of the edge. Used in the timeline and the zoom view. */
+  function coinMarkup(front, back, alt, layers, thin) {
+    let edge = '';
+    for (let i = 0; i < layers; i++) {
+      const k = layers === 1 ? 0 : (i / (layers - 1) - 0.5);
+      edge += `<img class="coin3d__edge" src="${front}" alt="" style="--k:${k.toFixed(3)}" draggable="false">`;
+    }
+    return `<span class="coin3d__body">
+        <img class="coin3d__face coin3d__face--front" src="${front}" alt="${alt}" draggable="false">
+        ${edge}
+        <img class="coin3d__face coin3d__face--back" src="${back}" alt="" draggable="false">
+      </span><span class="coin3d__shadow" aria-hidden="true"></span>`;
+  }
+
+  let coinSpin = null;
+  function startCoinSpin(stage) {
+    const body = $('.coin3d__body', stage);
+    const front = $('.coin3d__face--front', stage);
+    const back = $('.coin3d__face--back', stage);
+    const shadow = $('.coin3d__shadow', stage);
+    const btns = $$('[data-face]', stage.parentElement);
+    const st = { angle: -24, vel: 0, target: null, drag: false, lastX: 0, hold: 0, raf: 0 };
+    const auto = () => (reduced() ? 0 : 0.32);
+    const frame = () => {
+      if (st.target !== null) {
+        const d = st.target - st.angle;
+        st.angle = reduced() || Math.abs(d) < 0.2 ? st.target : st.angle + d * 0.1;
+        if (st.angle === st.target) { st.target = null; st.hold = performance.now() + 2600; st.vel = 0; }
+      } else if (!st.drag) {
+        const want = performance.now() < st.hold ? 0 : auto();
+        st.vel += (want - st.vel) * 0.04;
+        st.angle += st.vel;
+      }
+      const c = Math.cos(st.angle * Math.PI / 180);
+      body.style.transform = `rotateX(10deg) rotateY(${st.angle.toFixed(2)}deg)`;
+      front.style.filter = `brightness(${(0.62 + 0.48 * Math.max(0, c)).toFixed(3)})`;
+      back.style.filter = `brightness(${(0.62 + 0.48 * Math.max(0, -c)).toFixed(3)})`;
+      shadow.style.transform = `scaleX(${(0.25 + 0.75 * Math.abs(c)).toFixed(3)})`;
+      btns.forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.face === 'front') === (c >= 0))));
+      st.raf = requestAnimationFrame(frame);
+    };
+    const toFace = (face) => {
+      const base = Math.round(st.angle / 360) * 360;
+      let t = base + (face === 'back' ? 180 : 0);
+      if (Math.abs(t - st.angle) > 180) t += t > st.angle ? -360 : 360;
+      st.target = t;
+    };
+    btns.forEach((b) => b.addEventListener('click', () => toFace(b.dataset.face)));
+    stage.addEventListener('pointerdown', (e) => { st.drag = true; st.target = null; st.lastX = e.clientX; stage.setPointerCapture(e.pointerId); stage.classList.add('is-dragging'); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!st.drag) return;
+      const dx = e.clientX - st.lastX; st.lastX = e.clientX;
+      st.angle += dx * 0.6; st.vel = dx * 0.6;
+    });
+    const end = () => { st.drag = false; st.hold = performance.now() + 1200; stage.classList.remove('is-dragging'); };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+    stage.addEventListener('keydown', (e) => {
+      const step = { ArrowLeft: -30, ArrowRight: 30 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      st.target = (st.target ?? st.angle) + step;
+    });
+    st.raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(st.raf);
+  }
+
+  // figures: [{ src, alt, label, cls }]  ·  coin: { front, back, alt }
+  function openLightbox({ figures = [], coin, meta, title, body, returnTo }) {
     lbMedia.innerHTML = '';
+    if (coinSpin) { coinSpin(); coinSpin = null; }
+    if (coin) {
+      const wrap = document.createElement('div');
+      wrap.className = 'coin-viewer';
+      wrap.innerHTML = `<div class="coin3d coin3d--large" tabindex="0" role="img" aria-label="${esc(coin.alt)} Drag or use the arrow keys to turn it.">${coinMarkup(esc(coin.front), esc(coin.back), '', 18)}</div>
+        <div class="coin-viewer__ctrl" role="group" aria-label="Show side">
+          <button type="button" class="filter" data-face="front" aria-pressed="true">Obverse</button>
+          <button type="button" class="filter" data-face="back" aria-pressed="false">Reverse</button>
+        </div>
+        <p class="coin-viewer__hint" aria-hidden="true">Drag to turn</p>`;
+      lbMedia.append(wrap);
+      coinSpin = startCoinSpin($('.coin3d', wrap));
+    }
     figures.forEach(({ src, alt, label, cls }) => {
       const f = document.createElement('figure');
       const img = document.createElement('img');
@@ -286,11 +367,10 @@
     btn.addEventListener('click', () => {
       const card = btn.closest('.story');
       const key = btn.dataset.zoom;
-      const figures = /^\d$/.test(key)
-        ? [['a', 'Obverse'], ['b', 'Reverse']].map(([side, label]) => ({ src: `assets/coin${key}${side}.webp`, alt: `${label} of the coin, enlarged`, label, cls: 'coin' }))
-        : [{ src: `assets/${key}-1100.webp`, alt: 'Coin blanks, enlarged', cls: 'photo' }];
+      const isCoin = /^\d$/.test(key);
       openLightbox({
-        figures,
+        coin: isCoin ? { front: `assets/coin${key}a.webp`, back: `assets/coin${key}b.webp`, alt: 'The coin, shown in 3D with its obverse and reverse.' } : null,
+        figures: isCoin ? [] : [{ src: `assets/${key}-1100.webp`, alt: 'Coin blanks, enlarged', cls: 'photo' }],
         meta: $('.story__meta', card).textContent,
         title: $('.story__title', card).textContent,
         body: $$('.story__body p:not(.story__meta)', card).map((p) => p.textContent).join(' '),
@@ -301,7 +381,7 @@
   const closeLb = () => { if (lb.open) lb.close(); };
   $('[data-lightbox-close]').addEventListener('click', closeLb);
   lb.addEventListener('click', (e) => { if (e.target === lb || e.target.classList.contains('lightbox__inner')) closeLb(); });
-  lb.addEventListener('close', () => { if (lenis) lenis.start(); if (lbReturn) lbReturn.focus({ preventScroll: true }); });
+  lb.addEventListener('close', () => { if (coinSpin) { coinSpin(); coinSpin = null; } if (lenis) lenis.start(); if (lbReturn) lbReturn.focus({ preventScroll: true }); });
 
   /* ------------------------------------------------------------------
      COLLECTIONS — tabs (Numismatique / Artistique)
@@ -351,7 +431,9 @@
       const p = photos[i];
       if (p && p.src) {
         slots += `<li class="slot slot--${kind}"><button type="button" class="slot__btn" data-photo="${gid}:${i}" data-cursor="Zoom" aria-label="Enlarge: ${esc(p.caption || p.alt || 'photo')}">
-          <span class="slot__frame"><img src="${esc(p.src)}" alt="${esc(p.alt || '')}" loading="lazy"></span></button>
+          <span class="slot__frame">${p.reverse
+            ? `<span class="coin3d${kind === 'note' ? ' coin3d--thin' : ''}" style="--d:${(-(i * 2.7) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(p.alt || ''), kind === 'note' ? 1 : 5)}</span>`
+            : `<img src="${esc(p.src)}" alt="${esc(p.alt || '')}" loading="lazy">`}</span></button>
           <p class="slot__cap">${esc(p.caption || '')}</p></li>`;
       } else {
         slots += `<li class="slot slot--${kind} slot--empty" aria-hidden="true"><span class="slot__frame">
@@ -413,11 +495,17 @@
       const g = ph.groups[Number(gid.slice(cut + 1))];
       const p = g.photos[Number(idx)];
       const cls = (g.kind || 'coin') === 'coin' ? 'coin' : 'photo';
-      const figures = p.reverse
-        ? [{ src: p.src, alt: `${p.alt} Obverse.`, label: 'Obverse', cls }, { src: p.reverse, alt: `${p.alt} Reverse.`, label: 'Reverse', cls }]
-        : [{ src: p.src, alt: p.alt || '', cls }];
-      openLightbox({ figures, meta: `${ph.title}${g.label ? ' · ' + g.label : ''}`, title: p.caption || '', body: p.text || '', returnTo: pb });
+      openLightbox({
+        coin: p.reverse ? { front: p.src, back: p.reverse, alt: p.alt || '' } : null,
+        figures: p.reverse ? [] : [{ src: p.src, alt: p.alt || '', cls }],
+        meta: `${ph.title}${g.label ? ' · ' + g.label : ''}`, title: p.caption || '', body: p.text || '', returnTo: pb });
     });
+
+    // Spin the timeline coins only while they are on screen.
+    const spinObs = new IntersectionObserver((entries) => {
+      entries.forEach((en) => en.target.classList.toggle('is-spinning', en.isIntersecting));
+    }, { rootMargin: '100px' });
+    $$('.coin3d', timelineEl).forEach((c) => spinObs.observe(c));
 
     // Active period in the sticky period bar.
     const eras = $$('[data-era]', timelineEl);
