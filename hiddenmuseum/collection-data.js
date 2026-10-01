@@ -958,7 +958,24 @@ window.BAM_ART = [
               en: 'In the 1960s, around Farid Belkahia, Mohamed Chabâa and Mohamed Melehi, the Casablanca School of Fine Arts renewed painting by drawing on the signs, patterns and skills of Moroccan craftsmanship.',
               es: 'En los años sesenta, en torno a Farid Belkahia, Mohamed Chabâa y Mohamed Melehi, la Escuela de Bellas Artes de Casablanca renueva la pintura inspirándose en los signos, los motivos y los oficios de la artesanía marroquí.'
             },
-            slots: 3, works: []
+            slots: 3,
+            works: [
+              { src: 'assets/art/pionniers/belkahia-peau.webp', ratio: 0.8862, framed: true,
+                artist: 'Farid Belkahia',
+                title: { fr: 'Sans titre', ar: 'بدون عنوان', en: 'Untitled', es: 'Sin título' },
+                medium: { fr: 'henné et pigments sur peau', ar: 'حناء وأصباغ على جلد', en: 'henna and pigments on skin', es: 'henna y pigmentos sobre piel' },
+                alt: { fr: 'Panneaux de peau découpés aux contours souples : un disque ocre, une colline à deux sommets et une longue bande sinueuse couverte de signes géométriques tracés au henné.', ar: 'ألواح من الجلد مقطوعة بخطوط لينة: قرص بلون المغرة، وتلّ بقمّتين، وشريط طويل متموّج تغطيه رموز هندسية مرسومة بالحناء.', en: 'Cut panels of skin with soft outlines: an ochre disc, a twin-peaked hill and a long winding strip covered in geometric signs drawn in henna.', es: 'Paneles de piel recortados de contornos suaves: un disco ocre, una colina de dos cumbres y una larga banda sinuosa cubierta de signos geométricos trazados con henna.' } },
+              { src: 'assets/art/pionniers/belkahia-cuivre.webp', ratio: 0.979, framed: true,
+                artist: 'Farid Belkahia',
+                title: { fr: 'Sans titre', ar: 'بدون عنوان', en: 'Untitled', es: 'Sin título' },
+                medium: { fr: 'cuivre martelé', ar: 'نحاس مطروق', en: 'hammered copper', es: 'cobre martillado' },
+                alt: { fr: 'Grand disque de cuivre à la patine vert-de-gris, en relief : une flèche dressée, une spirale, des arcs concentriques, une croix et des formes géométriques.', ar: 'قرص نحاسي كبير بزنجار أخضر، بنقوش بارزة: سهم منتصب ولولب وأقواس متحدة المركز وصليب وأشكال هندسية.', en: 'A large copper disc with a verdigris patina, in relief: an upright arrow, a spiral, concentric arcs, a cross and geometric shapes.', es: 'Gran disco de cobre con pátina verde, en relieve: una flecha erguida, una espiral, arcos concéntricos, una cruz y formas geométricas.' } },
+              { src: 'assets/art/pionniers/gharbaoui-1969.webp', ratio: 1.5385,
+                artist: 'Jilali Gharbaoui',
+                title: { fr: 'Sans titre', ar: 'بدون عنوان', en: 'Untitled', es: 'Sin título' },
+                date: '1969', medium: { fr: 'huile sur toile', ar: 'زيت على قماش', en: 'oil on canvas', es: 'óleo sobre lienzo' },
+                alt: { fr: 'Abstraction en pâte épaisse : de larges gestes noirs et blancs tournent autour de deux foyers rouges et jaunes, sur un fond bleu, gris et brun.', ar: 'تجريد بعجينة لونية كثيفة: ضربات عريضة بالأسود والأبيض تدور حول بؤرتين حمراوين وصفراوين، على خلفية زرقاء ورمادية وبنية.', en: 'Thickly painted abstraction: broad black and white gestures swirl around two red and yellow centres, on a blue, grey and brown ground.', es: 'Abstracción de empaste grueso: amplios gestos negros y blancos giran en torno a dos focos rojos y amarillos, sobre un fondo azul, gris y marrón.' } }
+            ]
           },
           {
             id: 'tetouan',
