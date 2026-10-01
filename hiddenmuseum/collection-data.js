@@ -897,12 +897,37 @@ window.BAM_ART = [
     id: 'orientalistes',
     title: { fr: 'Orientalistes', ar: 'المستشرقون', en: 'Orientalists', es: 'Orientalistas' },
     intro: {
-      fr: 'Du XIXe siècle aux années 1930, des peintres venus d’Europe découvrent le Maroc ; Eugène Delacroix y accompagne une mission diplomatique dès 1832. Lumière, paysages, architecture et scènes de la vie quotidienne : un regard venu d’ailleurs, fasciné, qui a durablement marqué l’image du pays.',
-      ar: 'منذ القرن التاسع عشر إلى ثلاثينيات القرن العشرين، اكتشف رسامون قادمون من أوروبا المغرب، وقد رافق أوجين دولاكروا بعثة دبلوماسية إليه منذ سنة 1832. ضوء ومناظر طبيعية وعمارة ومشاهد من الحياة اليومية: نظرة آتية من بعيد، مفتونة، طبعت صورة البلاد طويلاً.',
-      en: 'From the nineteenth century to the 1930s, painters from Europe discovered Morocco; Eugène Delacroix accompanied a diplomatic mission there as early as 1832. Light, landscapes, architecture and scenes of daily life: an outsider’s fascinated gaze that left a lasting mark on the country’s image.',
-      es: 'Del siglo XIX a los años treinta, pintores llegados de Europa descubren Marruecos; Eugène Delacroix acompaña allí una misión diplomática ya en 1832. Luz, paisajes, arquitectura y escenas de la vida cotidiana: una mirada venida de fuera, fascinada, que marcó durante mucho tiempo la imagen del país.'
+      fr: 'Du XIXe au milieu du XXe siècle, des peintres venus d’Europe découvrent le Maroc ; Eugène Delacroix y accompagne une mission diplomatique dès 1832. Lumière, paysages, architecture et scènes de la vie quotidienne : un regard venu d’ailleurs, fasciné, qui a durablement marqué l’image du pays.',
+      ar: 'منذ القرن التاسع عشر إلى منتصف القرن العشرين، اكتشف رسامون قادمون من أوروبا المغرب، وقد رافق أوجين دولاكروا بعثة دبلوماسية إليه منذ سنة 1832. ضوء ومناظر طبيعية وعمارة ومشاهد من الحياة اليومية: نظرة آتية من بعيد، مفتونة، طبعت صورة البلاد طويلاً.',
+      en: 'From the nineteenth to the mid-twentieth century, painters from Europe discovered Morocco; Eugène Delacroix accompanied a diplomatic mission there as early as 1832. Light, landscapes, architecture and scenes of daily life: an outsider’s fascinated gaze that left a lasting mark on the country’s image.',
+      es: 'Del siglo XIX a mediados del XX, pintores llegados de Europa descubren Marruecos; Eugène Delacroix acompaña allí una misión diplomática ya en 1832. Luz, paisajes, arquitectura y escenas de la vida cotidiana: una mirada venida de fuera, fascinada, que marcó durante mucho tiempo la imagen del país.'
     },
-    slots: 6, works: []
+    slots: 5,
+    works: [
+      { src: 'assets/art/orientalistes/benjamin-constant-1878.webp', ratio: 1.4184, framed: true,
+        artist: 'Benjamin-Constant',
+        title: { fr: 'Artisans et marchands devant une boutique', ar: 'حرفيون وتجار أمام دكان', en: 'Craftsmen and merchants outside a shop', es: 'Artesanos y mercaderes ante una tienda' },
+        date: '1878', medium: { fr: 'huile sur toile', ar: 'زيت على قماش', en: 'oil on canvas', es: 'óleo sobre lienzo' },
+        alt: { fr: 'Devant un mur blanc, des hommes cousent et brodent des étoffes près d’une boutique aux tentures colorées.', ar: 'أمام جدار أبيض، رجال يخيطون ويطرّزون الأقمشة قرب دكان بستائر ملونة.', en: 'In front of a white wall, men sew and embroider fabrics beside a shop hung with coloured textiles.', es: 'Ante un muro blanco, unos hombres cosen y bordan telas junto a una tienda con colgaduras de colores.' } },
+      { src: 'assets/art/orientalistes/femmes-jardin-mer.webp', ratio: 1.6444, framed: true,
+        title: { fr: 'Femmes au jardin, face à la mer', ar: 'نساء في حديقة مطلة على البحر', en: 'Women in a garden by the sea', es: 'Mujeres en un jardín frente al mar' },
+        medium: { fr: 'huile sur toile', ar: 'زيت على قماش', en: 'oil on canvas', es: 'óleo sobre lienzo' },
+        alt: { fr: 'Trois femmes voilées de blanc et de rouge se reposent dans l’herbe à l’ombre d’un mur fleuri, avec la mer au loin.', ar: 'ثلاث نساء بأثواب بيضاء وحمراء يسترحن على العشب في ظل جدار مزهر، والبحر في الأفق.', en: 'Three women in white and red veils rest on the grass in the shade of a flowering wall, with the sea in the distance.', es: 'Tres mujeres con velos blancos y rojos descansan en la hierba a la sombra de un muro florido, con el mar al fondo.' } },
+      { src: 'assets/art/orientalistes/weeks-caravane-marrakech.webp', ratio: 1.5444, framed: true,
+        artist: 'Edwin Lord Weeks',
+        title: { fr: 'Arrivée d’une caravane devant les remparts de Marrakech', ar: 'وصول قافلة أمام أسوار مراكش', en: 'Arrival of a caravan outside the walls of Marrakech', es: 'Llegada de una caravana ante las murallas de Marrakech' },
+        medium: { fr: 'huile sur toile', ar: 'زيت على قماش', en: 'oil on canvas', es: 'óleo sobre lienzo' },
+        alt: { fr: 'Chameaux, chevaux et voyageurs se reposent devant les remparts ocre d’une ville, près d’un pont, avec les montagnes enneigées de l’Atlas au loin.', ar: 'جمال وخيول ومسافرون يستريحون أمام الأسوار المغرة لمدينة قرب قنطرة، وجبال الأطلس المكسوة بالثلج في الأفق.', en: 'Camels, horses and travellers rest before the ochre walls of a city, near a bridge, with the snow-capped Atlas mountains beyond.', es: 'Camellos, caballos y viajeros descansan ante las murallas ocres de una ciudad, junto a un puente, con el Atlas nevado al fondo.' } },
+      { src: 'assets/art/orientalistes/marquet-port.webp', ratio: 1.1552, framed: true,
+        artist: 'Albert Marquet',
+        title: { fr: 'Vue sur le port', ar: 'منظر على الميناء', en: 'View of the harbour', es: 'Vista del puerto' },
+        medium: { fr: 'huile sur toile', ar: 'زيت على قماش', en: 'oil on canvas', es: 'óleo sobre lienzo' },
+        alt: { fr: 'Depuis une terrasse blanche, une baie turquoise, une petite barque et une ville dominée par une tour, sous un ciel gris.', ar: 'من سطح أبيض: خليج فيروزي وقارب صغير ومدينة تعلوها صومعة تحت سماء رمادية.', en: 'From a white rooftop: a turquoise bay, a small boat and a town crowned by a tower, under a grey sky.', es: 'Desde una azotea blanca: una bahía turquesa, una barca y una ciudad dominada por una torre, bajo un cielo gris.' } },
+      { src: 'assets/art/orientalistes/majorelle-danse.webp', ratio: 0.8605, framed: true,
+        artist: 'Jacques Majorelle',
+        title: { fr: 'Scène de danse', ar: 'مشهد رقص', en: 'Dance scene', es: 'Escena de danza' },
+        alt: { fr: 'Une danseuse agenouillée en robe violette, parée de bijoux, entourée d’hommes qui frappent des mains, sur des tapis colorés.', ar: 'راقصة جاثية بثوب بنفسجي مزيّنة بالحلي، يحيط بها رجال يصفّقون، فوق زرابي ملونة.', en: 'A kneeling dancer in a purple dress and jewellery, surrounded by men clapping, on colourful rugs.', es: 'Una bailarina arrodillada con vestido violeta y joyas, rodeada de hombres que dan palmas, sobre alfombras de colores.' } }
+    ]
   },
   {
     id: 'marocains',

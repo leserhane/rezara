@@ -1446,3 +1446,11 @@ html.reduce-motion { scroll-behavior: auto; }
 :lang(ar) .gallery__title { line-height: 1.45; font-weight: 500; }
 :lang(ar) .gallery__room-no { letter-spacing: 0; }
 @media (max-width: 599px) { .gallery__pin { --h: min(36vh, 230px); } .gallery__track { gap: 44px; } .gallery__plaque { width: 72vw; } }
+
+/* Paintings photographed in their own frame: hung as photographed, a little larger */
+.gallery .gallery__frame.gallery__frame--photo {
+  border: 0; outline: 0; padding: 0; background: transparent; box-shadow: none;
+  width: calc(var(--h) * 1.16 * var(--r)); height: calc(var(--h) * 1.16);
+}
+.gallery__frame--photo img { object-fit: contain; filter: brightness(calc(.62 + .38 * var(--f))) saturate(calc(.8 + .2 * var(--f))) drop-shadow(0 26px 30px rgba(0,0,0,.75)); }
+.gallery__work--framed .gallery__glow { width: calc(var(--h) * 1.16 * var(--r) + var(--h) * .9); top: calc(var(--h) * -.62); }

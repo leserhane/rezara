@@ -1029,9 +1029,9 @@
     if (w && w.src) {
       const k = artWorks.push({ w, label }) - 1;
       const cap = [L(w.artist), L(w.title)].filter(Boolean).join(' · ');
-      return `<figure class="gallery__work" style="--r:${ratioNum(w.ratio || '4 / 5')}">
+      return `<figure class="gallery__work${w.framed ? ' gallery__work--framed' : ''}" style="--r:${ratioNum(w.ratio || '4 / 5')}">
           <span class="gallery__glow" aria-hidden="true"></span>
-          <button type="button" class="gallery__frame" data-art-work="${k}" data-cursor="${esc(t('a.view'))}" aria-label="${esc(t('tl.enlarge', { x: cap || L(w.alt) }))}">
+          <button type="button" class="gallery__frame${w.framed ? ' gallery__frame--photo' : ''}" data-art-work="${k}" data-cursor="${esc(t('a.view'))}" aria-label="${esc(t('tl.enlarge', { x: cap || L(w.alt) }))}">
             <img src="${esc(w.src)}" alt="${esc(L(w.alt))}" loading="lazy" draggable="false"></button>
           <figcaption class="gallery__cartel">${L(w.artist) ? `<strong>${esc(L(w.artist))}</strong>` : ''}${L(w.title) ? `<em>${esc(L(w.title))}</em>` : ''}${[L(w.date), L(w.medium)].filter(Boolean).length ? `<span>${esc([L(w.date), L(w.medium)].filter(Boolean).join(', '))}</span>` : ''}</figcaption>
         </figure>`;
