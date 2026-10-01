@@ -24,7 +24,16 @@ window.BAM_COLLECTION = [
     to: 'Achéménides',
     intro: 'Long before coins, value travelled as grain, cattle, shells and metal weighed out on the scale. The first true coins — lumps of electrum stamped with a mark of guarantee — appeared in Lydia in the seventh century BCE, and the Persian Achaemenids carried the idea across an empire with their gold daric.',
     groups: [
-      { photoCount: 6, photos: [], descriptionCount: 3, descriptions: [] }
+      {
+        photoCount: 6,
+        photos: [
+          { src: 'assets/collection/premonnaie-1.webp', alt: 'Bronze pre-coinage object with four rounded arms.', caption: 'Prémonnaie · bronze' },
+          { src: 'assets/collection/premonnaie-2.webp', alt: 'Small elongated bronze pre-coinage object with a green patina.', caption: 'Prémonnaie · bronze' },
+          { src: 'assets/collection/premonnaie-3a.webp', reverse: 'assets/collection/premonnaie-3b.webp', alt: 'Spade-shaped bronze pre-coinage piece with a forked foot, a pierced handle and incised characters.', caption: 'Prémonnaie · bronze' }
+        ],
+        descriptionCount: 3,
+        descriptions: []
+      }
     ]
   },
   {
