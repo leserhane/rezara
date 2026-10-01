@@ -18,7 +18,7 @@
 
   --serif: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
   --sans: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --arabic: "Amiri", "Noto Naskh Arabic", serif;
+  --arabic: "Aref Ruqaa", "Amiri", "Noto Naskh Arabic", serif; /* calligraphic Ruqʿa for Arabic display text */
 
   --gutter: clamp(16px, 4vw, 56px);
   --max: 1440px;
@@ -207,7 +207,7 @@ small { font-size: .78em; color: var(--muted); font-weight: 400; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
 .brand__mark { width: 46px; height: 28px; flex: none; }
 .brand__text { display: grid; line-height: 1.1; }
-.brand__ar { font-family: var(--arabic); font-size: 1rem; color: var(--ink); }
+.brand__ar { font-family: var(--arabic); font-size: 1.12rem; line-height: 1.2; color: var(--ink); }
 .brand__fr { font-family: var(--serif); font-size: 1rem; color: var(--muted); white-space: nowrap; }
 @media (max-width: 380px) { .brand__fr { font-size: .85rem; } }
 
@@ -1120,7 +1120,7 @@ html.reduce-motion { scroll-behavior: auto; }
    no faux italics, and taller lines for the script's ascenders. */
 :root:lang(ar) {
   --sans: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
-  --serif: "Amiri", "Noto Naskh Arabic", serif;
+  --serif: "Aref Ruqaa", "Amiri", "Noto Naskh Arabic", serif;
 }
 :lang(ar) .eyebrow, :lang(ar) .story__meta, :lang(ar) .tile__meta, :lang(ar) .event__type, :lang(ar) .panel__index,
 :lang(ar) .footer__h, :lang(ar) .field label, :lang(ar) .slots__label, :lang(ar) .exhibit__caption,
@@ -1186,3 +1186,17 @@ html.reduce-motion { scroll-behavior: auto; }
   .brand { gap: 8px; }
   .brand__mark { width: 38px; height: 23px; }
 }
+
+/* Arabic display type: Aref Ruqaa (Ruqʿa calligraphy). Its long strokes need
+   generous line height; small serif labels fall back to Amiri for legibility. */
+:lang(ar) .section-title, :lang(ar) .hero__title, :lang(ar) .footer__title, :lang(ar) .era__title,
+:lang(ar) .panel__title, :lang(ar) .house__title, :lang(ar) .tickets__title, :lang(ar) .lightbox__title,
+:lang(ar) .done__title, :lang(ar) .shop__title, :lang(ar) .tab { line-height: 1.55; font-weight: 400; }
+:lang(ar) .hero__title { font-size: clamp(2.4rem, min(5.6vw, 7.8vh), 5.8rem); }
+:lang(ar) .section-title { font-size: clamp(2.6rem, 6.2vw, 5.4rem); }
+:lang(ar) .section-title--xl { font-size: clamp(3.4rem, 10vw, 8.6rem); }
+:lang(ar) .hero__title em, :lang(ar) .section-title em, :lang(ar) .footer__title em { font-weight: 700; }
+:lang(ar) .story__title, :lang(ar) .event__title, :lang(ar) .note__title, :lang(ar) .info__title,
+:lang(ar) .summary__title, :lang(ar) .step__legend, :lang(ar) .tile__cap h3, :lang(ar) .group__title,
+:lang(ar) .summary__total strong, :lang(ar) .event__day { font-family: "Amiri", "Noto Naskh Arabic", serif; line-height: 1.5; }
+:lang(ar) .step__legend .step__sub, :lang(ar) .group__count { font-family: var(--sans); }
