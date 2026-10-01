@@ -623,6 +623,21 @@ window.BAM_SHOP_TOOLS = [
     }
   },
   {
+    "src": "assets/boutique/outils/etuis-autocollants.webp",
+    "alt": {
+      "fr": "Étuis cartonnés autocollants avec quelques pièces, à côté de leurs boîtes de 25.",
+      "ar": "حوافظ كرتونية لاصقة مع بعض القطع النقدية، بجانب علبها ذات 25 حافظة.",
+      "en": "Self-adhesive cardboard coin holders with a few coins, next to their boxes of 25.",
+      "es": "Cartones autoadhesivos con algunas monedas, junto a sus cajas de 25."
+    },
+    "caption": {
+      "fr": "Étuis autocollants pour pièces, en boîte",
+      "ar": "حوافظ لاصقة للقطع النقدية في علبة",
+      "en": "Self-adhesive coin holders, boxed",
+      "es": "Cartones autoadhesivos para monedas, en caja"
+    }
+  },
+  {
     "src": "assets/boutique/outils/pochettes.webp",
     "alt": {
       "fr": "Pochettes plastiques transparentes de plusieurs formats, pour billets et documents.",
@@ -638,6 +653,36 @@ window.BAM_SHOP_TOOLS = [
     }
   },
   {
+    "src": "assets/boutique/outils/albums-poche.webp",
+    "alt": {
+      "fr": "Rangée d’albums de poche aux couvertures de couleurs vives.",
+      "ar": "صفّ من ألبومات الجيب بأغلفة زاهية الألوان.",
+      "en": "A row of pocket albums with brightly coloured covers.",
+      "es": "Una fila de álbumes de bolsillo con tapas de colores vivos."
+    },
+    "caption": {
+      "fr": "Albums de poche pour pièces et billets",
+      "ar": "ألبومات جيب للقطع والأوراق النقدية",
+      "en": "Pocket albums for coins and banknotes",
+      "es": "Álbumes de bolsillo para monedas y billetes"
+    }
+  },
+  {
+    "src": "assets/boutique/outils/classeurs-billets.webp",
+    "alt": {
+      "fr": "Classeurs dans leurs étuis de cinq couleurs, et un classeur ouvert montrant des billets dans des feuilles transparentes.",
+      "ar": "مجلّدات داخل علبها بخمسة ألوان، ومجلّد مفتوح يعرض أوراقاً نقدية داخل صفحات شفافة.",
+      "en": "Binders in slipcases in five colours, and an open binder showing banknotes in clear pages.",
+      "es": "Archivadores en estuches de cinco colores y uno abierto con billetes en hojas transparentes."
+    },
+    "caption": {
+      "fr": "Classeurs à anneaux pour billets, avec étui",
+      "ar": "مجلّدات بحلقات للأوراق النقدية مع علبة",
+      "en": "Ring binders for banknotes, with slipcase",
+      "es": "Archivadores de anillas para billetes, con estuche"
+    }
+  },
+  {
     "src": "assets/boutique/outils/plateau-velours.webp",
     "alt": {
       "fr": "Plateau en velours noir à alvéoles, garni de pièces dorées.",
@@ -650,6 +695,21 @@ window.BAM_SHOP_TOOLS = [
       "ar": "صينية مخملية للقطع النقدية",
       "en": "Velvet coin tray",
       "es": "Bandeja de terciopelo para monedas"
+    }
+  },
+  {
+    "src": "assets/boutique/outils/coffret-bois.webp",
+    "alt": {
+      "fr": "Coffret en bois sombre ouvert, garni de vingt alvéoles de velours rouge.",
+      "ar": "علبة خشبية داكنة مفتوحة تضم عشرين خانة من المخمل الأحمر.",
+      "en": "Open dark wooden case lined with twenty red velvet compartments.",
+      "es": "Estuche de madera oscura abierto con veinte compartimentos de terciopelo rojo."
+    },
+    "caption": {
+      "fr": "Coffret en bois à alvéoles de velours",
+      "ar": "علبة خشبية بخانات مخملية",
+      "en": "Wooden coin case with velvet compartments",
+      "es": "Estuche de madera con compartimentos de terciopelo"
     }
   }
 ];

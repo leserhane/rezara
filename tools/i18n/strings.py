@@ -384,7 +384,7 @@ JS += [
 HTML += [
  ("shop.seeTools", "See the tools <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Voir les outils <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "اكتشف الأدوات <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Ver las herramientas <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>"),
  ("tools.title", "Collector’s tools", "Outils pour collectionneurs", "أدوات هواة الجمع", "Herramientas para coleccionistas"),
- ("tools.lede", "Everything to observe, measure and protect a collection: loupes, callipers, holders, sleeves and trays.", "Tout pour observer, mesurer et protéger une collection : loupes, pieds à coulisse, étuis, pochettes et plateaux.", "كل ما يلزم لتأمّل المجموعة وقياسها وحمايتها: عدسات مكبّرة وقدمات قنوية وحوافظ وأغلفة وصوانٍ.", "Todo para observar, medir y proteger una colección: lupas, calibres, cartones, fundas y bandejas."),
+ ("tools.lede", "Everything to observe, measure, store and protect a collection: loupes, callipers, holders, sleeves, albums, binders and cases.", "Tout pour observer, mesurer, ranger et protéger une collection : loupes, pieds à coulisse, étuis, pochettes, albums, classeurs et coffrets.", "كل ما يلزم لتأمّل المجموعة وقياسها وترتيبها وحمايتها: عدسات مكبّرة وقدمات قنوية وحوافظ وأغلفة وألبومات ومجلّدات وعلب.", "Todo para observar, medir, ordenar y proteger una colección: lupas, calibres, cartones, fundas, álbumes, archivadores y estuches."),
 ]
 JS += [
  ("tools.rail", "Collector’s tools — {n} items", "Outils pour collectionneurs — {n} articles", "أدوات هواة الجمع — {n} منتجات", "Herramientas para coleccionistas — {n} artículos"),
