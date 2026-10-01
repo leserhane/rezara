@@ -13,6 +13,15 @@
 
   const reduced = () => osReduce.matches || root.classList.contains('reduce-motion');
 
+  // Translations (i18n.js). Falls back to the page's built-in English.
+  const I18N = window.BAM_I18N || {
+    lang: 'en', t: (k) => k, plural: (k, n) => String(n), locale: () => 'en-GB', onChange() {}, set() {},
+    L: (v) => (v && typeof v === 'object' ? (v.en || v.fr || '') : (v || '')),
+  };
+  const t = (k, vars) => I18N.t(k, vars);
+  const L = (v) => I18N.L(v);
+  const isRTL = () => root.dir === 'rtl';
+
   /* ------------------------------------------------------------------
      Smooth scrolling (Lenis, loaded from CDN; optional)
      ------------------------------------------------------------------ */
@@ -113,7 +122,7 @@
     const isDesk = desktop.matches;
     const short = vh < 700;
     const baseSize = isDesk ? Math.min(Math.min(vw, vh) * 0.64, 620) : Math.min(vw * (short ? 0.52 : 0.66), vh * (short ? 0.28 : 0.36));
-    const cx0 = isDesk ? vw * 0.68 : vw * 0.5;
+    const cx0 = isDesk ? vw * (isRTL() ? 0.32 : 0.68) : vw * 0.5;
     const cy0 = isDesk ? vh * 0.5 : vh * (short ? 0.24 : 0.29);
     let p = 0;
     if (!reduced()) {
@@ -176,11 +185,11 @@
       track.style.setProperty('--tx', '0px');
       travel = Math.max(0, track.scrollWidth - viewport.clientWidth);
       stories.style.height = (pin.offsetHeight + travel) + 'px';
-      hint.textContent = 'Scroll to travel · select a coin to zoom';
+      hint.textContent = t('stories.scroll');
     } else {
       stories.style.height = '';
       track.style.removeProperty('--tx');
-      hint.textContent = 'Swipe to travel · tap a coin to zoom';
+      hint.textContent = t('stories.swipe');
     }
     storiesFrame();
   }
@@ -190,11 +199,11 @@
       return range > 0 ? clamp(-stories.getBoundingClientRect().top / range) : 0;
     }
     const max = viewport.scrollWidth - viewport.clientWidth;
-    return max > 0 ? clamp(viewport.scrollLeft / max) : 0;
+    return max > 0 ? clamp(Math.abs(viewport.scrollLeft) / max) : 0;
   }
   function storiesFrame() {
     const p = storiesProgress();
-    if (pinned) track.style.setProperty('--tx', (-p * travel).toFixed(1) + 'px');
+    if (pinned) track.style.setProperty('--tx', ((isRTL() ? p : -p) * travel).toFixed(1) + 'px');
     bar.parentElement.style.setProperty('--sp', p.toFixed(4));
     bar.style.setProperty('--sp', p.toFixed(4));
   }
@@ -206,20 +215,25 @@
     const card = cards[i];
     if (pinned) {
       viewport.scrollLeft = 0;
-      const pad = parseFloat(getComputedStyle(track).paddingLeft) || 0;
-      const x = clamp((card.offsetLeft - pad) / (travel || 1));
+      const pad = parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
+      const tr = track.getBoundingClientRect(), cr = card.getBoundingClientRect();
+      const dist = isRTL() ? tr.right - cr.right : cr.left - tr.left;
+      const x = clamp((dist - pad) / (travel || 1));
       const top = stories.getBoundingClientRect().top + window.scrollY + x * (stories.offsetHeight - pin.offsetHeight);
       if (lenis) lenis.scrollTo(top, { immediate, duration: 1.1 });
       else window.scrollTo({ top, behavior: immediate || reduced() ? 'auto' : 'smooth' });
     } else {
-      const pad = parseFloat(getComputedStyle(track).paddingLeft) || 0;
-      viewport.scrollTo({ left: card.offsetLeft - pad, behavior: reduced() ? 'auto' : 'smooth' });
+      card.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'nearest', inline: 'start' });
     }
   }
   function currentCard() {
-    const vpLeft = viewport.getBoundingClientRect().left;
+    const vr = viewport.getBoundingClientRect();
     let best = 0, bestD = Infinity;
-    cards.forEach((c, i) => { const d = Math.abs(c.getBoundingClientRect().left - vpLeft - 24); if (d < bestD) { bestD = d; best = i; } });
+    cards.forEach((c, i) => {
+      const cr = c.getBoundingClientRect();
+      const d = Math.abs(isRTL() ? vr.right - cr.right - 24 : cr.left - vr.left - 24);
+      if (d < bestD) { bestD = d; best = i; }
+    });
     return best;
   }
   $('[data-stories-prev]').addEventListener('click', () => goToCard(currentCard() - 1));
@@ -338,12 +352,12 @@
     if (coin) {
       const wrap = document.createElement('div');
       wrap.className = 'coin-viewer';
-      wrap.innerHTML = `<div class="coin3d coin3d--large" tabindex="0" role="img" aria-label="${esc(coin.alt)} Drag or use the arrow keys to turn it.">${coinMarkup(esc(coin.front), esc(coin.back), '', 18)}</div>
-        <div class="coin-viewer__ctrl" role="group" aria-label="Show side">
-          <button type="button" class="filter" data-face="front" aria-pressed="true">Obverse</button>
-          <button type="button" class="filter" data-face="back" aria-pressed="false">Reverse</button>
+      wrap.innerHTML = `<div class="coin3d coin3d--large" tabindex="0" role="img" aria-label="${esc(coin.alt)} ${esc(t('coin.dragHelp'))}">${coinMarkup(esc(coin.front), esc(coin.back), '', 18)}</div>
+        <div class="coin-viewer__ctrl" role="group" aria-label="${esc(t('coin.side'))}">
+          <button type="button" class="filter" data-face="front" aria-pressed="true">${esc(t('coin.obverse'))}</button>
+          <button type="button" class="filter" data-face="back" aria-pressed="false">${esc(t('coin.reverse'))}</button>
         </div>
-        <p class="coin-viewer__hint" aria-hidden="true">Drag to turn</p>`;
+        <p class="coin-viewer__hint" aria-hidden="true">${esc(t('coin.drag'))}</p>`;
       lbMedia.append(wrap);
       coinSpin = startCoinSpin($('.coin3d', wrap));
     }
@@ -369,8 +383,8 @@
       const key = btn.dataset.zoom;
       const isCoin = /^\d$/.test(key);
       openLightbox({
-        coin: isCoin ? { front: `assets/coin${key}a.webp`, back: `assets/coin${key}b.webp`, alt: 'The coin, shown in 3D with its obverse and reverse.' } : null,
-        figures: isCoin ? [] : [{ src: `assets/${key}-1100.webp`, alt: 'Coin blanks, enlarged', cls: 'photo' }],
+        coin: isCoin ? { front: `assets/coin${key}a.webp`, back: `assets/coin${key}b.webp`, alt: t('coin.alt3d') } : null,
+        figures: isCoin ? [] : [{ src: `assets/${key}-1100.webp`, alt: t('blanks.alt'), cls: 'photo' }],
         meta: $('.story__meta', card).textContent,
         title: $('.story__title', card).textContent,
         body: $$('.story__body p:not(.story__meta)', card).map((p) => p.textContent).join(' '),
@@ -401,7 +415,8 @@
   tabs.forEach((t, i) => {
     t.addEventListener('click', () => selectTab(t));
     t.addEventListener('keydown', (e) => {
-      const keys = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+      const fwd = isRTL() ? -1 : 1;
+      const keys = { ArrowRight: i + fwd, ArrowLeft: i - fwd, Home: 0, End: tabs.length - 1 };
       if (!(e.key in keys)) return;
       e.preventDefault();
       selectTab(tabs[(keys[e.key] + tabs.length) % tabs.length], true);
@@ -430,56 +445,88 @@
     for (let i = 0; i < nPhotos; i++) {
       const p = photos[i];
       if (p && p.src) {
-        slots += `<li class="slot slot--${kind}"><button type="button" class="slot__btn" data-photo="${gid}:${i}" data-cursor="Zoom" aria-label="Enlarge: ${esc(p.caption || p.alt || 'photo')}">
+        const cap = L(p.caption), alt = L(p.alt);
+        slots += `<li class="slot slot--${kind}"><button type="button" class="slot__btn" data-photo="${gid}:${i}" data-cursor="${esc(t('a.zoom'))}" aria-label="${esc(t('tl.enlarge', { x: cap || alt || t('tl.photo') }))}">
           <span class="slot__frame">${p.reverse
-            ? `<span class="coin3d${kind === 'note' ? ' coin3d--thin' : ''}" style="--d:${(-(i * 2.7) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(p.alt || ''), kind === 'note' ? 1 : 5)}</span>`
-            : `<img src="${esc(p.src)}" alt="${esc(p.alt || '')}" loading="lazy">`}</span></button>
-          <p class="slot__cap">${esc(p.caption || '')}</p></li>`;
+            ? `<span class="coin3d${kind === 'note' ? ' coin3d--thin' : ''}" style="--d:${(-(i * 2.7) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(alt), kind === 'note' ? 1 : 5)}</span>`
+            : `<img src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
+          <p class="slot__cap">${esc(cap)}</p></li>`;
       } else {
         slots += `<li class="slot slot--${kind} slot--empty" aria-hidden="true"><span class="slot__frame">
           <svg class="slot__mark" viewBox="0 0 100 100"><use href="#diamond"/></svg>
           <span class="slot__count">${pad2(i + 1)} / ${pad2(nPhotos)}</span></span>
-          <p class="slot__cap">Photo à venir</p></li>`;
+          <p class="slot__cap">${esc(t('tl.photoSoon'))}</p></li>`;
       }
     }
     let notes = '';
     for (let i = 0; i < nDescs; i++) {
       const d = descs[i];
       notes += d
-        ? `<li class="note"><span class="note__num" aria-hidden="true">${pad2(i + 1)}</span><div>${d.title ? `<h5 class="note__title">${esc(d.title)}</h5>` : ''}<p>${esc(d.text || '')}</p></div></li>`
-        : `<li class="note note--empty" aria-hidden="true"><span class="note__num">${pad2(i + 1)}</span><div><p>Description à venir.</p></div></li>`;
+        ? `<li class="note"><span class="note__num" aria-hidden="true">${pad2(i + 1)}</span><div>${d.title ? `<h5 class="note__title">${esc(L(d.title))}</h5>` : ''}<p>${esc(L(d.text))}</p></div></li>`
+        : `<li class="note note--empty" aria-hidden="true"><span class="note__num">${pad2(i + 1)}</span><div><p>${esc(t('tl.descSoon'))}</p></div></li>`;
     }
     const filled = photos.filter((p) => p && p.src).length;
     const labelId = `grp-${gid}`;
     return `<div class="group">
-      ${g.label ? `<h4 class="group__title" id="${labelId}">${esc(g.label)} <span class="group__count">${nPhotos} photos · ${nDescs} descriptions</span></h4>` : ''}
+      ${g.label ? `<h4 class="group__title" id="${labelId}">${esc(L(g.label))} <span class="group__count">${esc(t('tl.counts', { p: nPhotos, d: nDescs }))}</span></h4>` : ''}
       <div class="rail">
-        <ul class="rail__track" role="list" tabindex="0" aria-label="${esc(g.label || phase.title)} — ${filled} of ${nPhotos} photos available">${slots}</ul>
+        <ul class="rail__track" role="list" tabindex="0" aria-label="${esc(t('tl.rail', { label: L(g.label) || L(phase.title), n: filled, total: nPhotos }))}">${slots}</ul>
         <div class="rail__btns">
-          <button type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
-          <button type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+          <button type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="${esc(t('tl.left'))}"><span aria-hidden="true">←</span></button>
+          <button type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="${esc(t('tl.right'))}"><span aria-hidden="true">→</span></button>
         </div>
       </div>
-      <p class="sr-only">${descs.length} of ${nDescs} descriptions available.</p>
+      <p class="sr-only">${esc(t('tl.descAvail', { n: descs.length, total: nDescs }))}</p>
       <ol class="notes" role="list">${notes}</ol>
     </div>`;
   }
 
-  if (timelineEl && phases.length) {
+  // Observers live for the whole page; renderTimeline() re-attaches them.
+  let eras = [], eraLinks = [];
+  const revealedEras = new Set();
+  const spinObs = new IntersectionObserver((entries) => {
+    entries.forEach((en) => en.target.classList.toggle('is-spinning', en.isIntersecting));
+  }, { rootMargin: '100px' });
+  const eraObs = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      const i = eras.indexOf(en.target);
+      eraLinks.forEach((a, j) => { if (j === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); a.classList.toggle('is-past', j < i); });
+      const active = eraLinks[i];
+      if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'auto' });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  const revealEra = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('is-in');
+      revealedEras.add(en.target.id);
+      revealEra.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px' });
+
+  function renderTimeline() {
+    if (!timelineEl || !phases.length) return;
+    spinObs.disconnect(); eraObs.disconnect(); revealEra.disconnect();
     timelineEl.innerHTML = phases.map((ph, i) => `
-      <article class="era" id="era-${esc(ph.id)}" aria-labelledby="era-title-${esc(ph.id)}" data-era>
+      <article class="era${revealedEras.has('era-' + ph.id) ? ' is-in' : ''}" id="era-${esc(ph.id)}" aria-labelledby="era-title-${esc(ph.id)}" data-era>
         <header class="era__head">
           <span class="era__num" aria-hidden="true">${ROMAN[i] || i + 1}</span>
-          <p class="era__phase">Phase historique · ${pad2(i + 1)} / ${pad2(phases.length)}</p>
-          <h3 class="era__title" id="era-title-${esc(ph.id)}">${esc(ph.title)}</h3>
-          <p class="era__range"><span>${esc(ph.from)}</span><span class="era__arrow" aria-hidden="true"></span><span class="sr-only">to</span><span>${esc(ph.to)}</span></p>
-          ${ph.intro ? `<p class="era__intro">${esc(ph.intro)}</p>` : ''}
+          <p class="era__phase">${esc(t('tl.phase'))} · ${pad2(i + 1)} / ${pad2(phases.length)}</p>
+          <h3 class="era__title" id="era-title-${esc(ph.id)}">${esc(L(ph.title))}</h3>
+          <p class="era__range"><span>${esc(L(ph.from))}</span><span class="era__arrow" aria-hidden="true"></span><span class="sr-only">${esc(t('tl.to'))}</span><span>${esc(L(ph.to))}</span></p>
+          ${ph.intro ? `<p class="era__intro">${esc(L(ph.intro))}</p>` : ''}
         </header>
         <div class="era__body">${(ph.groups || []).map((g, gi) => renderGroup(ph, g, gi)).join('')}</div>
       </article>`).join('');
+    eraList.innerHTML = phases.map((ph, i) => `<li><a href="#era-${esc(ph.id)}"><span class="era-nav__num">${ROMAN[i] || i + 1}</span><span class="era-nav__label">${esc(L(ph.short) || L(ph.title))}</span></a></li>`).join('');
+    eras = $$('[data-era]', timelineEl);
+    eraLinks = $$('a', eraList);
+    $$('.coin3d', timelineEl).forEach((c) => spinObs.observe(c));
+    eras.forEach((el) => { eraObs.observe(el); if (!el.classList.contains('is-in')) revealEra.observe(el); });
+  }
 
-    eraList.innerHTML = phases.map((ph, i) => `<li><a href="#era-${esc(ph.id)}"><span class="era-nav__num">${ROMAN[i] || i + 1}</span><span class="era-nav__label">${esc(ph.short || ph.title)}</span></a></li>`).join('');
-
+  if (timelineEl && phases.length) {
     timelineEl.addEventListener('click', (e) => {
       const rb = e.target.closest('[data-rail]');
       if (rb) {
@@ -496,34 +543,11 @@
       const p = g.photos[Number(idx)];
       const cls = (g.kind || 'coin') === 'coin' ? 'coin' : 'photo';
       openLightbox({
-        coin: p.reverse ? { front: p.src, back: p.reverse, alt: p.alt || '' } : null,
-        figures: p.reverse ? [] : [{ src: p.src, alt: p.alt || '', cls }],
-        meta: `${ph.title}${g.label ? ' · ' + g.label : ''}`, title: p.caption || '', body: p.text || '', returnTo: pb });
+        coin: p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
+        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls }],
+        meta: `${L(ph.title)}${g.label ? ' · ' + L(g.label) : ''}`, title: L(p.caption), body: L(p.text), returnTo: pb });
     });
-
-    // Spin the timeline coins only while they are on screen.
-    const spinObs = new IntersectionObserver((entries) => {
-      entries.forEach((en) => en.target.classList.toggle('is-spinning', en.isIntersecting));
-    }, { rootMargin: '100px' });
-    $$('.coin3d', timelineEl).forEach((c) => spinObs.observe(c));
-
-    // Active period in the sticky period bar.
-    const eras = $$('[data-era]', timelineEl);
-    const eraLinks = $$('a', eraList);
-    const eraObs = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        const i = eras.indexOf(en.target);
-        eraLinks.forEach((a, j) => { if (j === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); a.classList.toggle('is-past', j < i); });
-        const active = eraLinks[i];
-        if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'auto' });
-      });
-    }, { rootMargin: '-40% 0px -55% 0px' });
-    eras.forEach((el) => eraObs.observe(el));
-    const revealEra = new IntersectionObserver((entries) => {
-      entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('is-in'); revealEra.unobserve(en.target); } });
-    }, { rootMargin: '0px 0px -10% 0px' });
-    eras.forEach((el) => revealEra.observe(el));
+    renderTimeline();
   }
   function eraProgress() {
     if (!eraBar || !timelineEl || timelineEl.closest('[hidden]')) return;
@@ -644,9 +668,9 @@
   function applyMotion() {
     const r = reduced();
     motionBtn.setAttribute('aria-pressed', String(r));
-    motionBtn.textContent = r ? 'Motion reduced' : 'Reduce motion';
+    motionBtn.textContent = r ? t('motion.on') : t('motion.off');
     motionBtn.disabled = osReduce.matches;
-    if (osReduce.matches) motionBtn.title = 'Reduced motion is set by your system';
+    if (osReduce.matches) motionBtn.title = t('motion.system');
     if (r) { stopLenis(); cursor.classList.remove('is-on'); } else startLenis();
     layoutStories(); onScroll();
   }
@@ -673,9 +697,15 @@
   const PRICES = { adult: 20, reduced: 10, child: 0 };
   const TOUR = 30;
   const state = { step: 1, date: null, slot: '10:00', counts: { adult: 1, reduced: 0, child: 0 }, tour: false };
-  const fmtLong = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const fmtShort = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-  const fmtMonth = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' });
+  let fmtLong, fmtShort, fmtMonth, fmtDow;
+  function makeFormatters() {
+    const loc = I18N.locale();
+    fmtLong = new Intl.DateTimeFormat(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    fmtShort = new Intl.DateTimeFormat(loc, { weekday: 'short', day: 'numeric', month: 'short' });
+    fmtMonth = new Intl.DateTimeFormat(loc, { month: 'long', year: 'numeric' });
+    fmtDow = new Intl.DateTimeFormat(loc, { weekday: I18N.lang === 'ar' ? 'narrow' : 'short' });
+  }
+  makeFormatters();
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const lastDay = new Date(today); lastDay.setDate(lastDay.getDate() + 90);
@@ -692,16 +722,16 @@
     const canPrev = viewMonth > new Date(today.getFullYear(), today.getMonth(), 1);
     const canNext = new Date(y, m + 1, 1) <= lastDay;
     let html = `<div class="cal__head"><p class="cal__month" id="cal-month" aria-live="polite">${fmtMonth.format(first)}</p>
-      <div class="cal__nav"><button type="button" class="icon-btn icon-btn--sm" data-cal-prev aria-label="Previous month" ${canPrev ? '' : 'disabled'}>←</button>
-      <button type="button" class="icon-btn icon-btn--sm" data-cal-next aria-label="Next month" ${canNext ? '' : 'disabled'}>→</button></div></div>
+      <div class="cal__nav"><button type="button" class="icon-btn icon-btn--sm" data-cal-prev aria-label="${t('cal.prev')}" ${canPrev ? '' : 'disabled'}><span aria-hidden="true" class="flip-rtl">←</span></button>
+      <button type="button" class="icon-btn icon-btn--sm" data-cal-next aria-label="${t('cal.next')}" ${canNext ? '' : 'disabled'}><span aria-hidden="true" class="flip-rtl">→</span></button></div></div>
       <div class="cal__grid" role="group" aria-labelledby="cal-month">`;
-    ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach((d) => { html += `<span class="cal__dow" aria-hidden="true">${d}</span>`; });
+    for (let k = 0; k < 7; k++) html += `<span class="cal__dow" aria-hidden="true">${fmtDow.format(new Date(2024, 0, 1 + k))}</span>`; // 1 Jan 2024 was a Monday
     for (let i = 0; i < lead; i++) html += '<span class="cal__empty" aria-hidden="true"></span>';
     for (let d = 1; d <= days; d++) {
       const date = new Date(y, m, d);
       const open = isOpen(date);
       const sel = sameDay(date, state.date);
-      const label = fmtLong.format(date) + (date.getDay() === 1 ? ', closed' : (!open ? ', unavailable' : ''));
+      const label = date.getDay() === 1 ? t('cal.closed', { date: fmtLong.format(date) }) : (!open ? t('cal.unavailable', { date: fmtLong.format(date) }) : fmtLong.format(date));
       html += `<button type="button" class="cal__day${sameDay(date, today) ? ' is-today' : ''}" data-date="${ymd(date)}" aria-label="${label}" aria-pressed="${sel}" ${open ? '' : 'disabled'} tabindex="-1">${d}</button>`;
     }
     html += '</div>';
@@ -721,12 +751,13 @@
     state.date = parseYmd(b.dataset.date);
     renderCal(state.date);
     updateSummary();
-    live.textContent = `Selected ${fmtLong.format(state.date)}.`;
+    live.textContent = t('cal.selected', { date: fmtLong.format(state.date) });
   });
   calEl.addEventListener('keydown', (e) => {
     const b = e.target.closest('.cal__day');
     if (!b) return;
-    const deltas = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    const fwd = isRTL() ? -1 : 1; // in Arabic the week runs right to left
+    const deltas = { ArrowLeft: -fwd, ArrowRight: fwd, ArrowUp: -7, ArrowDown: 7 };
     if (!(e.key in deltas) && e.key !== 'Home' && e.key !== 'End') return;
     e.preventDefault();
     let d = parseYmd(b.dataset.date);
@@ -763,18 +794,27 @@
   function ticketText() {
     const parts = [];
     const { adult, reduced: red, child } = state.counts;
-    if (adult) parts.push(`${adult} adult${adult > 1 ? 's' : ''}`);
-    if (red) parts.push(`${red} reduced`);
-    if (child) parts.push(`${child} under 18`);
-    if (state.tour) parts.push('guided tour');
-    return parts.join(', ') || '—';
+    if (adult) parts.push(I18N.plural('tix.adult', adult));
+    if (red) parts.push(I18N.plural('tix.reduced', red));
+    if (child) parts.push(I18N.plural('tix.child', child));
+    if (state.tour) parts.push(t('tix.tourItem'));
+    return parts.join(isRTL() ? '، ' : ', ') || '—';
+  }
+  function money(n) { return n === 0 ? t('tix.free') : t('tix.mad', { n }); }
+  function nextLabel() {
+    $('span', nextBtn).textContent = state.step === 3 ? t('tix.confirm', { total: money(total()) }) : t('tix.continue');
+  }
+  function renderDone() {
+    if (!state.date || !state.ref) return;
+    $('[data-done-title]').textContent = t('done.title', { date: t('done.when', { date: fmtLong.format(state.date), time: state.slot }) });
+    $('[data-done-body]').innerHTML = t('done.body', { ref: `<strong class="done__ref">${esc(state.ref)}</strong>`, email: esc(state.email || '') });
   }
   function updateSummary() {
     $('[data-sum-date]').textContent = state.date ? fmtShort.format(state.date) : '—';
     $('[data-sum-slot]').textContent = state.slot;
     $('[data-sum-tickets]').textContent = ticketText();
-    const t = total();
-    $('[data-sum-total]').textContent = t === 0 ? 'Free' : `${t} MAD`;
+    const sum = total();
+    $('[data-sum-total]').textContent = money(sum);
     if (state.step === 1) nextBtn.disabled = !state.date;
     if (state.step === 2) nextBtn.disabled = totalTickets() === 0;
   }
@@ -795,13 +835,13 @@
     });
     backBtn.hidden = n === 1 || n === 'done';
     navRow.hidden = n === 'done';
-    $('span', nextBtn).textContent = n === 3 ? `Confirm · ${total() === 0 ? 'Free' : total() + ' MAD'}` : 'Continue';
+    nextLabel();
     updateSummary();
     if (n === 1) { const b = $('.cal__day[tabindex="0"]', calEl); if (b && prev !== 1) b.focus(); }
     if (n === 2) $('[data-inc]', stepsEls[2]).focus();
     if (n === 3) $('#t-name').focus();
     if (n === 'done') cur.focus();
-    live.textContent = n === 'done' ? 'Booking confirmed.' : `Step ${n} of 3.`;
+    live.textContent = n === 'done' ? t('tix.done') : t('tix.step', { n });
   }
 
   backBtn.addEventListener('click', () => goStep(state.step - 1));
@@ -817,14 +857,14 @@
       const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
       name.setAttribute('aria-invalid', String(!nameOk));
       email.setAttribute('aria-invalid', String(!emailOk));
-      err.textContent = emailOk ? '' : 'Please enter a valid email address, e.g. name@example.com.';
+      state.emailErr = !emailOk;
+      err.textContent = emailOk ? '' : t('tix.emailErr');
       if (!nameOk) { name.focus(); return; }
       if (!emailOk) { email.focus(); return; }
       const ref = 'BAM-' + Math.random().toString(36).slice(2, 7).toUpperCase();
       state.ref = ref;
-      $('[data-done-date]').textContent = `${fmtLong.format(state.date)} at ${state.slot}`;
-      $('[data-done-ref]').textContent = ref;
-      $('[data-done-email]').textContent = email.value.trim();
+      state.email = email.value.trim();
+      renderDone();
       goStep('done');
     }
   });
@@ -839,7 +879,7 @@
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Musees de Bank Al-Maghrib//Tickets//EN',
       'BEGIN:VEVENT', `UID:${state.ref}@musees-bam`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
       `DTSTART;TZID=Africa/Casablanca:${start}`, `DTEND;TZID=Africa/Casablanca:${end}`,
-      'SUMMARY:Visit — Musées de Bank Al-Maghrib', `DESCRIPTION:Booking ${state.ref} · ${ticketText()}`,
+      `SUMMARY:${t('ics.summary')}`, `DESCRIPTION:${t('ics.booking')} ${state.ref} · ${ticketText()}`,
       'LOCATION:Avenue Mohammed V\\, Rabat', 'END:VEVENT', 'END:VCALENDAR'
     ].join('\r\n');
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
@@ -868,6 +908,13 @@
   const eventItems = $$('[data-events] .event');
   const eventsEmpty = $('[data-events-empty]');
   const eventsLive = $('[data-events-live]');
+  function renderEventDates() {
+    const fmt = new Intl.DateTimeFormat(I18N.locale(), { month: 'short' });
+    eventItems.forEach((el) => {
+      const d = new Date($('time', el).getAttribute('datetime') + 'T12:00:00');
+      $('.event__mon', el).textContent = fmt.format(d);
+    });
+  }
   filterBtns.forEach((btn) => btn.addEventListener('click', () => {
     const type = btn.dataset.filter;
     filterBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
@@ -884,7 +931,7 @@
         if (vis) { n++; if (wasHidden) { el.style.animationDelay = (n * 50) + 'ms'; void el.offsetWidth; el.classList.add('is-entering'); } }
       });
       eventsEmpty.hidden = n > 0;
-      eventsLive.textContent = `${n} event${n === 1 ? '' : 's'} shown.`;
+      eventsLive.textContent = I18N.plural('ev.shown', n);
       if (lenis) lenis.resize();
     }, leaving.length && !reduced() ? 320 : 0);
   }));
@@ -900,9 +947,64 @@
     const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(input.value.trim());
     input.setAttribute('aria-invalid', String(!ok));
     newsMsg.className = 'news__msg ' + (ok ? 'is-ok' : 'is-err');
-    newsMsg.textContent = ok ? 'Thank you — the first letter arrives next month.' : 'Please enter a valid email address.';
+    newsMsg.dataset.key = ok ? 'news.ok' : 'news.err';
+    newsMsg.textContent = t(newsMsg.dataset.key);
     if (ok) news.reset(); else input.focus();
   });
 
-  applyMotion();
+  /* ------------------------------------------------------------------
+     LANGUAGE — flag menu; everything drawn by JS is redrawn on change
+     ------------------------------------------------------------------ */
+  const langBox = $('[data-lang]');
+  const langBtn = $('[data-lang-btn]');
+  const langMenu = $('[data-lang-menu]');
+  const FLAGS = { fr: 'flag-fr', ar: 'flag-ma', en: 'flag-gb', es: 'flag-es' };
+  const NAMES = { fr: 'Français', ar: 'العربية', en: 'English', es: 'Español' };
+  const langItems = $$('[data-set-lang]', langMenu);
+  function openLang(open) {
+    langMenu.hidden = !open;
+    langBtn.setAttribute('aria-expanded', String(open));
+    if (open) (langItems.find((b) => b.dataset.setLang === I18N.lang) || langItems[0]).focus();
+  }
+  langBtn.addEventListener('click', () => openLang(langMenu.hidden));
+  langMenu.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-set-lang]');
+    if (!b) return;
+    openLang(false);
+    langBtn.focus();
+    if (b.dataset.setLang !== I18N.lang) I18N.set(b.dataset.setLang, { save: true });
+  });
+  document.addEventListener('click', (e) => { if (!langMenu.hidden && !langBox.contains(e.target)) openLang(false); });
+  langBox.addEventListener('keydown', (e) => {
+    if (langMenu.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); openLang(false); langBtn.focus(); return; }
+    const i = langItems.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const n = (i + (e.key === 'ArrowDown' ? 1 : -1) + langItems.length) % langItems.length;
+      langItems[n].focus();
+    }
+  });
+  langBox.addEventListener('focusout', (e) => { if (!langMenu.hidden && !langBox.contains(e.relatedTarget)) openLang(false); });
+
+  function onLangChange(lang) {
+    $('use', langBtn).setAttribute('href', '#' + FLAGS[lang]);
+    $('[data-lang-code]', langBtn).textContent = lang.toUpperCase();
+    langBtn.setAttribute('aria-label', `${t('lang.label')}: ${NAMES[lang]}`);
+    langItems.forEach((b) => { if (b.dataset.setLang === lang) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+    makeFormatters();
+    if (activePanel > -1) caption.textContent = panels[activePanel].dataset.caption;
+    renderTimeline();
+    renderCal();
+    updateSummary();
+    nextLabel();
+    if (state.step === 'done') renderDone();
+    if (state.emailErr) $('[data-error]', stepsEls[3]).textContent = t('tix.emailErr');
+    renderEventDates();
+    if (newsMsg.dataset.key) newsMsg.textContent = t(newsMsg.dataset.key);
+    applyMotion(); // also re-measures the Stories rail, whose width depends on the text
+    if (lenis) lenis.resize();
+  }
+  I18N.onChange(onLangChange);
+  onLangChange(I18N.lang);
 })();

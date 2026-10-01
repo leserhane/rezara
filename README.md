@@ -13,3 +13,11 @@ Cloudflare Workers (projet `titsuit`) publie cette branche à chaque push : bran
 ## `/hiddenmuseum`
 
 `hiddenmuseum/` contient une copie du site des Musées de Bank Al-Maghrib, servie publiquement (sans mot de passe) sur `www.titsuit.com/hiddenmuseum/`. La page porte une balise `noindex` pour rester hors des moteurs de recherche.
+
+### Langues
+
+Le site du musée est disponible en français, arabe (de droite à gauche), anglais et espagnol. La langue est choisie automatiquement selon le navigateur du visiteur (français par défaut), ou via le sélecteur à drapeaux de l’en-tête ; le choix est mémorisé, et un lien `?lang=fr|ar|en|es` force une langue.
+
+- Textes de l’interface : `tools/i18n/strings.py`, puis `python3 tools/i18n/build.py` pour régénérer `hiddenmuseum/i18n.js`.
+- Contenus de la frise : `hiddenmuseum/collection-data.js`, chaque texte au format `{ fr, ar, en, es }`.
+

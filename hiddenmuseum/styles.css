@@ -1066,3 +1066,123 @@ html.reduce-motion { scroll-behavior: auto; }
   .btn, .filter, .chip span, .icon-btn, .cal__day { border: 1px solid CanvasText; }
   .hero__echo { display: none; }
 }
+
+/* ==========================================================================
+   LANGUAGES — switcher, Arabic typography, right-to-left mirroring
+   ========================================================================== */
+
+/* Keep the page hidden for the instant it takes to apply the visitor's
+   language; the animation is a failsafe if the script never runs. */
+.i18n-pending body { visibility: hidden; animation: i18nFailsafe 0s linear 1.5s forwards; }
+@keyframes i18nFailsafe { to { visibility: visible; } }
+
+/* Header layout: brand · language · navigation */
+.lang { position: relative; margin-inline-start: auto; }
+.lang__btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 40px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--line-strong); background: rgba(11, 10, 9, .35);
+  font-size: .78rem; font-weight: 600; letter-spacing: .08em;
+  transition: border-color .3s, color .3s;
+}
+.lang__btn:hover, .lang__btn:focus-visible, .lang__btn[aria-expanded="true"] { border-color: var(--accent); }
+.flag { width: 21px; height: 14px; flex: none; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,.18); overflow: hidden; }
+.lang__caret { width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .3s var(--ease); }
+.lang__btn[aria-expanded="true"] .lang__caret { transform: translateY(1px) rotate(-135deg); }
+.lang__menu {
+  position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 120;
+  min-width: 190px; margin: 0; padding: 6px; list-style: none;
+  background: var(--bg-2); border: 1px solid var(--line-strong); border-radius: 10px;
+  box-shadow: 0 24px 60px -20px rgba(0,0,0,.8);
+  animation: rise .35s var(--ease) both;
+}
+.lang__menu button {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  min-height: 44px; padding: 0 12px; border: 0; border-radius: 6px; background: none;
+  font-size: .95rem; text-align: start;
+}
+.lang__menu button[lang="ar"] { font-family: "IBM Plex Sans Arabic", var(--sans); }
+.lang__menu button:hover, .lang__menu button:focus-visible { background: var(--bg-3); outline-offset: -2px; }
+.lang__menu button[aria-current="true"] { color: var(--accent); }
+.lang__menu button[aria-current="true"]::after { content: "✓"; margin-inline-start: auto; }
+@media (min-width: 1024px) {
+  .site-header { gap: 20px; }
+  .lang { order: 3; margin-inline-start: 0; }
+  .nav { margin-inline-start: auto; }
+}
+@media (max-width: 1023px) {
+  .site-header { gap: 10px; }
+  .lang__code { display: none; }
+  .lang__btn { padding: 0 10px; }
+}
+
+/* Arabic: proper typefaces, no letter-spacing (it breaks joined letters),
+   no faux italics, and taller lines for the script's ascenders. */
+:root:lang(ar) {
+  --sans: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+  --serif: "Amiri", "Noto Naskh Arabic", serif;
+}
+:lang(ar) .eyebrow, :lang(ar) .story__meta, :lang(ar) .tile__meta, :lang(ar) .event__type, :lang(ar) .panel__index,
+:lang(ar) .footer__h, :lang(ar) .field label, :lang(ar) .slots__label, :lang(ar) .exhibit__caption,
+:lang(ar) .era__phase, :lang(ar) .group__count, :lang(ar) .hero__caption, :lang(ar) .nav__toggle,
+:lang(ar) .cal__dow, :lang(ar) .event__mon, :lang(ar) .coin-viewer__hint, :lang(ar) .cursor__label,
+:lang(ar) .nav__list a, :lang(ar) .lang__btn, :lang(ar) .slot__count {
+  letter-spacing: 0 !important; text-transform: none;
+}
+:lang(ar) em { font-style: normal; }
+:lang(ar) .section-title, :lang(ar) .hero__title, :lang(ar) .footer__title, :lang(ar) .panel__title,
+:lang(ar) .house__title, :lang(ar) .tickets__title, :lang(ar) .done__title, :lang(ar) .lightbox__title,
+:lang(ar) .story__title, :lang(ar) .era__title, :lang(ar) .shop__title, :lang(ar) .event__title, :lang(ar) .tab {
+  line-height: 1.4; font-weight: 400;
+}
+:lang(ar) .hero__title { font-size: clamp(2.2rem, min(5.2vw, 7.4vh), 5.4rem); }
+:lang(ar) body { line-height: 1.8; }
+:lang(ar) .era__num, :lang(ar) .shop__num, :lang(ar) .house__num, :lang(ar) .note__num, :lang(ar) .era-nav__num { font-family: "Cormorant Garamond", serif; }
+
+/* Right-to-left mirroring */
+[dir="rtl"] .flip-rtl { display: inline-block; transform: scaleX(-1); }
+[dir="rtl"] .skip-link { left: auto; right: 16px; }
+[dir="rtl"] .hero__base::after {
+  background: linear-gradient(270deg, rgba(11,10,9,.85) 0%, rgba(11,10,9,.2) 60%, rgba(11,10,9,0) 100%),
+              linear-gradient(0deg, var(--bg) 0%, rgba(11,10,9,0) 30%);
+}
+@media (max-width: 899px) {
+  [dir="rtl"] .hero__base::after { background: linear-gradient(0deg, var(--bg) 0%, rgba(11,10,9,.75) 38%, rgba(11,10,9,0) 70%); }
+}
+[dir="rtl"] .hero__echo--2 { transform: translateX(calc(var(--size) * -.2)); }
+[dir="rtl"] .hero__echo--3 { transform: translateX(calc(var(--size) * -.4)); }
+@media (max-width: 899px) {
+  [dir="rtl"] .hero__echo--2 { transform: translateX(calc(var(--size) * -.14)); }
+  [dir="rtl"] .hero__echo--3 { transform: translateX(calc(var(--size) * -.28)); }
+}
+[dir="rtl"] .hero__caption { right: auto; left: var(--gutter); }
+[dir="rtl"] .house:hover .house__media--graphic svg { transform: translateX(-6%); }
+[dir="rtl"] .exhibit__dots { right: auto; left: 16px; }
+[dir="rtl"] .stories__progress span, [dir="rtl"] .era-nav__progress span { transform-origin: right; }
+[dir="rtl"] .tab { margin-right: 0; margin-left: clamp(20px, 3vw, 44px); }
+[dir="rtl"] .tab::after, [dir="rtl"] .shop__item::after, [dir="rtl"] .event::before { transform-origin: right; }
+[dir="rtl"] .timeline::before { left: auto; right: 7px; }
+[dir="rtl"] .era { padding-left: 0; padding-right: 40px; }
+[dir="rtl"] .era::before { left: auto; right: 0; }
+@media (min-width: 1100px) { [dir="rtl"] .era { padding-left: 0; padding-right: 56px; } }
+[dir="rtl"] .era__arrow { transform: scaleX(-1); }
+[dir="rtl"] .slot__btn { text-align: right; }
+[dir="rtl"] .slot__count { left: auto; right: 10px; }
+[dir="rtl"] .info__list dd, [dir="rtl"] .summary__list dd { text-align: left; }
+[dir="rtl"] .toggle__ui::after { left: auto; right: 3px; }
+[dir="rtl"] .toggle input:checked + .toggle__ui::after { transform: translateX(-18px); }
+[dir="rtl"] .event.is-leaving { transform: translateX(12px); }
+@media (min-width: 900px) { [dir="rtl"] .event__time { text-align: left; } }
+[dir="rtl"] .lightbox__close { right: auto; left: var(--gutter); }
+[dir="rtl"] .nav__list a:not(.btn)::after { transform-origin: left; }
+[dir="rtl"] .nav__list a:not(.btn):hover::after, [dir="rtl"] .nav__list a:not(.btn):focus-visible::after, [dir="rtl"] .nav__list a[aria-current="true"]::after { transform-origin: right; }
+/* Numbers, times, prices and e-mail addresses stay left-to-right inside Arabic text */
+[dir="rtl"] .cal__day, [dir="rtl"] .event__day, [dir="rtl"] .chip span, [dir="rtl"] input[type="email"] { direction: ltr; }
+[dir="rtl"] input[type="email"] { text-align: right; }
+@media (max-width: 479px) {
+  /* Narrow phones: icon-only menu button (the label stays for screen readers) */
+  .nav__toggle-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .nav__toggle { padding: 0 6px; }
+  .brand { gap: 8px; }
+  .brand__mark { width: 38px; height: 23px; }
+}

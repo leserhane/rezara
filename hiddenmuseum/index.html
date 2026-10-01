@@ -13,9 +13,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23d8b56a' d='M50 3Q68 32 97 50Q68 68 50 97Q32 68 3 50Q32 32 50 3Z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@400;500;600&display=swap">
 <link rel="preload" as="image" href="assets/pile-2400.webp" imagesrcset="assets/pile-1280.webp 1280w, assets/pile-2400.webp 2400w" imagesizes="100vw">
 <link rel="stylesheet" href="styles.css">
+<script>(function(){var L=['fr','ar','en','es'],l=null,d=document.documentElement;try{var q=new URLSearchParams(location.search).get('lang');if(L.indexOf(q)>-1)l=q;if(!l){var s=localStorage.getItem('bam-lang');if(L.indexOf(s)>-1)l=s}}catch(e){}if(!l){var n=navigator.languages||[navigator.language||''];for(var i=0;i<n.length&&!l;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(L.indexOf(c)>-1)l=c}}l=l||'fr';d.lang=l;d.dir=l==='ar'?'rtl':'ltr';d.classList.add('i18n-pending');window.BAM_LANG=l})();</script>
 <script>document.documentElement.classList.replace('no-js','js');try{if(localStorage.getItem('bam-motion')==='reduce')document.documentElement.classList.add('reduce-motion')}catch(e){}</script>
 </head>
 <body>
@@ -23,6 +24,10 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <path id="diamond" d="M50 3Q68 32 97 50Q68 68 50 97Q32 68 3 50Q32 32 50 3Z"/>
+    <symbol id="flag-fr" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></symbol>
+    <symbol id="flag-ma" viewBox="0 0 30 20"><rect width="30" height="20" fill="#C1272D"/><path d="M15 4.5L18.23 14.45 9.77 8.3H20.23L11.77 14.45Z" fill="none" stroke="#006233" stroke-width="1"/></symbol>
+    <symbol id="flag-gb" viewBox="0 0 60 30"><clipPath id="flag-gb-c"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0 0l60 30M60 0L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30M60 0L0 30" clip-path="url(#flag-gb-c)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></symbol>
+    <symbol id="flag-es" viewBox="0 0 3 2"><rect width="3" height="2" fill="#AA151B"/><rect y=".5" width="3" height="1" fill="#F1BF00"/></symbol>
     <symbol id="mark" viewBox="0 0 170 100">
       <use href="#diamond" x="68" fill="#4a2a5c"/>
       <use href="#diamond" x="34" fill="#8a5d80"/>
@@ -31,31 +36,44 @@
   </defs>
 </svg>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<a data-i18n="skip" class="skip-link" href="#main">Skip to content</a>
 
 <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
 
 <header class="site-header" data-header>
-  <a class="brand" href="#top" aria-label="Musées de Bank Al-Maghrib — back to top">
+  <a data-i18n-attr="aria-label:a.brand" class="brand" href="#top" aria-label="Musées de Bank Al-Maghrib — back to top">
     <svg class="brand__mark" aria-hidden="true"><use href="#mark"/></svg>
     <span class="brand__text">
       <span class="brand__ar" lang="ar" dir="rtl">متاحف بنك المغرب</span>
       <span class="brand__fr" lang="fr">Musées de Bank Al-Maghrib</span>
     </span>
   </a>
-  <nav class="nav" aria-label="Primary">
+  <div class="lang" data-lang>
+    <button class="lang__btn" type="button" aria-expanded="false" aria-controls="lang-menu" data-lang-btn>
+      <svg class="flag" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><use href="#flag-gb" data-lang-flag/></svg>
+      <span class="lang__code" data-lang-code>EN</span>
+      <span class="lang__caret" aria-hidden="true"></span>
+    </button>
+    <ul class="lang__menu" id="lang-menu" role="list" hidden data-lang-menu>
+      <li><button type="button" lang="fr" data-set-lang="fr"><svg class="flag" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><use href="#flag-fr"/></svg><span>Français</span></button></li>
+      <li><button type="button" lang="ar" dir="rtl" data-set-lang="ar"><svg class="flag" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><use href="#flag-ma"/></svg><span>العربية</span></button></li>
+      <li><button type="button" lang="en" data-set-lang="en"><svg class="flag" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><use href="#flag-gb"/></svg><span>English</span></button></li>
+      <li><button type="button" lang="es" data-set-lang="es"><svg class="flag" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><use href="#flag-es"/></svg><span>Español</span></button></li>
+    </ul>
+  </div>
+  <nav data-i18n-attr="aria-label:a.navPrimary" class="nav" aria-label="Primary">
     <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-list" data-nav-toggle>
       <span class="nav__toggle-bars" aria-hidden="true"></span>
-      <span class="nav__toggle-text">Menu</span>
+      <span data-i18n="nav.menu" class="nav__toggle-text">Menu</span>
     </button>
     <ul class="nav__list" id="nav-list" data-nav-list>
-      <li><a href="#exhibition">Exhibition</a></li>
-      <li><a href="#stories">Stories</a></li>
-      <li><a href="#collection">Collection</a></li>
-      <li><a href="#boutique">Boutique</a></li>
-      <li><a href="#visit">Visit</a></li>
-      <li><a href="#events">Events</a></li>
-      <li class="nav__cta"><a class="btn btn--solid btn--sm magnetic" href="#tickets">Tickets</a></li>
+      <li><a data-i18n="nav.exhibition" href="#exhibition">Exhibition</a></li>
+      <li><a data-i18n="nav.stories" href="#stories">Stories</a></li>
+      <li><a data-i18n="nav.collection" href="#collection">Collection</a></li>
+      <li><a data-i18n="nav.boutique" href="#boutique">Boutique</a></li>
+      <li><a data-i18n="nav.visit" href="#visit">Visit</a></li>
+      <li><a data-i18n="nav.events" href="#events">Events</a></li>
+      <li class="nav__cta"><a data-i18n="nav.tickets" class="btn btn--solid btn--sm magnetic" href="#tickets">Tickets</a></li>
     </ul>
   </nav>
 </header>
@@ -72,23 +90,23 @@
       <div class="hero__stage" data-hero-stage>
         <span class="hero__echo hero__echo--3" aria-hidden="true"></span>
         <span class="hero__echo hero__echo--2" aria-hidden="true"></span>
-        <div class="hero__window" data-cursor="Look closer">
-          <img class="hero__img hero__img--window" src="assets/pile-2400.webp" srcset="assets/pile-1280.webp 1280w, assets/pile-2400.webp 2400w" sizes="100vw" alt="Hundreds of bimetallic coin blanks — golden rings around silver cores — heaped under warm gallery light.">
+        <div data-i18n-attr="data-cursor:a.lookCloser" class="hero__window" data-cursor="Look closer">
+          <img data-i18n-attr="alt:a.heroAlt" class="hero__img hero__img--window" src="assets/pile-2400.webp" srcset="assets/pile-1280.webp 1280w, assets/pile-2400.webp 2400w" sizes="100vw" alt="Hundreds of bimetallic coin blanks — golden rings around silver cores — heaped under warm gallery light.">
         </div>
         <svg class="hero__outline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><use href="#diamond"/></svg>
       </div>
 
       <div class="hero__content">
-        <p class="eyebrow reveal">Rabat &nbsp;·&nbsp; Numismatics &nbsp;·&nbsp; Arts &nbsp;·&nbsp; Boutique</p>
-        <h1 class="hero__title reveal" id="hero-title" style="--i:1">Where a nation’s memory is <em>struck in metal</em> and kept in light.</h1>
+        <p data-i18n="hero.eyebrow" class="eyebrow reveal">Rabat &nbsp;·&nbsp; Numismatics &nbsp;·&nbsp; Arts &nbsp;·&nbsp; Boutique</p>
+        <h1 data-i18n="hero.title" class="hero__title reveal" id="hero-title" style="--i:1">Where a nation’s memory is <em>struck in metal</em> and kept in light.</h1>
         <div class="hero__ctas reveal" style="--i:2">
-          <a class="btn btn--solid magnetic" href="#visit"><span>Plan your visit</span></a>
-          <a class="btn btn--ghost magnetic" href="#collection"><span>Explore the collections</span></a>
+          <a class="btn btn--solid magnetic" href="#visit"><span data-i18n="hero.plan">Plan your visit</span></a>
+          <a class="btn btn--ghost magnetic" href="#collection"><span data-i18n="hero.explore">Explore the collections</span></a>
         </div>
       </div>
 
-      <p class="hero__caption" aria-hidden="true"><span>Bimetallic blanks, before the strike</span></p>
-      <a class="hero__cue" href="#houses" aria-label="Scroll to begin the visit"><span aria-hidden="true"></span></a>
+      <p class="hero__caption" aria-hidden="true"><span data-i18n="hero.caption">Bimetallic blanks, before the strike</span></p>
+      <a data-i18n-attr="aria-label:a.cue" class="hero__cue" href="#houses" aria-label="Scroll to begin the visit"><span aria-hidden="true"></span></a>
     </div>
   </section>
 
@@ -96,27 +114,27 @@
   <section class="houses section" id="houses" aria-labelledby="houses-title">
     <div class="container">
       <header class="section-head">
-        <p class="eyebrow reveal">One building, three wings</p>
-        <h2 class="section-title reveal" id="houses-title" style="--i:1">Money, image and the objects we keep.</h2>
+        <p data-i18n="houses.eyebrow" class="eyebrow reveal">One building, three wings</p>
+        <h2 data-i18n="houses.title" class="section-title reveal" id="houses-title" style="--i:1">Money, image and the objects we keep.</h2>
       </header>
       <ul class="houses__grid" role="list">
         <li class="house reveal" style="--i:0">
-          <div class="house__media"><img src="assets/vitrine-1280.webp" alt="A lit museum vitrine set into a blue wall, displaying five coins of Moulay al-Hassan I." loading="lazy" width="1280" height="853"></div>
+          <div class="house__media"><img data-i18n-attr="alt:a.vitrineAlt" src="assets/vitrine-1280.webp" alt="A lit museum vitrine set into a blue wall, displaying five coins of Moulay al-Hassan I." loading="lazy" width="1280" height="853"></div>
           <span class="house__num" aria-hidden="true">I</span>
-          <h3 class="house__title">Numismatics</h3>
-          <p>From the first mints of the Maghreb to the dirham in your pocket — the story of Morocco told coin by coin, note by note.</p>
+          <h3 data-i18n="houses.num" class="house__title">Numismatics</h3>
+          <p data-i18n="houses.num.text">From the first mints of the Maghreb to the dirham in your pocket — the story of Morocco told coin by coin, note by note.</p>
         </li>
         <li class="house reveal" style="--i:1">
           <div class="house__media house__media--graphic" aria-hidden="true"><span lang="ar" dir="rtl">فنون</span><svg viewBox="0 0 170 100"><use href="#mark"/></svg></div>
           <span class="house__num" aria-hidden="true">II</span>
-          <h3 class="house__title">Arts</h3>
-          <p>The Bank Al-Maghrib collection of Moroccan painting and sculpture, shown in rotating hangs across the upper galleries.</p>
+          <h3 data-i18n="houses.arts" class="house__title">Arts</h3>
+          <p data-i18n="houses.arts.text">The Bank Al-Maghrib collection of Moroccan painting and sculpture, shown in rotating hangs across the upper galleries.</p>
         </li>
         <li class="house reveal" style="--i:2">
-          <div class="house__media"><img src="assets/detail3-1100.webp" alt="Close view of gold-ringed coin blanks resting on one another." loading="lazy" width="1100" height="823"></div>
+          <div class="house__media"><img data-i18n-attr="alt:a.blanksAlt" src="assets/detail3-1100.webp" alt="Close view of gold-ringed coin blanks resting on one another." loading="lazy" width="1100" height="823"></div>
           <span class="house__num" aria-hidden="true">III</span>
-          <h3 class="house__title"><a class="house__link" href="#boutique">Boutique</a></h3>
-          <p>Catalogues, faithful replicas and objects made to be kept — every purchase supports the museum’s education programme.</p>
+          <h3 class="house__title"><a data-i18n="nav.boutique" class="house__link" href="#boutique">Boutique</a></h3>
+          <p data-i18n="houses.shop.text">Catalogues, faithful replicas and objects made to be kept — every purchase supports the museum’s education programme.</p>
         </li>
       </ul>
     </div>
@@ -127,20 +145,20 @@
     <div class="container">
       <header class="section-head section-head--split">
         <div>
-          <p class="eyebrow reveal">Current exhibition &nbsp;·&nbsp; Until 28 February 2027</p>
-          <h2 class="section-title section-title--xl reveal" id="exhibit-title" style="--i:1">Struck in <em>Paris</em></h2>
+          <p data-i18n="ex.eyebrow" class="eyebrow reveal">Current exhibition &nbsp;·&nbsp; Until 28 February 2027</p>
+          <h2 data-i18n="ex.title" class="section-title section-title--xl reveal" id="exhibit-title" style="--i:1">Struck in <em>Paris</em></h2>
         </div>
-        <p class="lede reveal" style="--i:2">The coinage of Sultan Moulay al-Hassan I — five pieces, one vitrine, and the reform that tried to give Morocco a single, modern currency.</p>
+        <p data-i18n="ex.lede" class="lede reveal" style="--i:2">The coinage of Sultan Moulay al-Hassan I — five pieces, one vitrine, and the reform that tried to give Morocco a single, modern currency.</p>
       </header>
     </div>
 
     <div class="exhibit__layout container">
-      <div class="exhibit__stage" data-cursor="Look closer">
+      <div data-i18n-attr="data-cursor:a.lookCloser" class="exhibit__stage" data-cursor="Look closer">
         <figure class="exhibit__frame">
           <div class="exhibit__zoom" data-exhibit-zoom>
-            <img src="assets/vitrine-2400.webp" srcset="assets/vitrine-1280.webp 1280w, assets/vitrine-2400.webp 2400w" sizes="(min-width: 960px) 60vw, 100vw" alt="Vitrine of five Hassani coins, each shown obverse above reverse, labelled in Arabic and French." loading="lazy" width="2400" height="1600">
+            <img data-i18n-attr="alt:a.exhibitAlt" src="assets/vitrine-2400.webp" srcset="assets/vitrine-1280.webp 1280w, assets/vitrine-2400.webp 2400w" sizes="(min-width: 960px) 60vw, 100vw" alt="Vitrine of five Hassani coins, each shown obverse above reverse, labelled in Arabic and French." loading="lazy" width="2400" height="1600">
           </div>
-          <figcaption class="exhibit__caption" data-exhibit-caption>The vitrine — five coins, obverse above reverse.</figcaption>
+          <figcaption data-i18n="ex.cap1" class="exhibit__caption" data-exhibit-caption>The vitrine — five coins, obverse above reverse.</figcaption>
         </figure>
         <ol class="exhibit__dots" aria-hidden="true" data-exhibit-dots>
           <li></li><li></li><li></li><li></li><li></li>
@@ -148,31 +166,31 @@
       </div>
 
       <div class="exhibit__panels">
-        <article class="panel" data-panel data-x="0.5" data-y="0.5" data-z="1" data-caption="The vitrine — five coins, obverse above reverse.">
+        <article data-i18n-attr="data-caption:a.cap1" class="panel" data-panel data-x="0.5" data-y="0.5" data-z="1" data-caption="The vitrine — five coins, obverse above reverse.">
           <p class="panel__index">01 / 05</p>
-          <h3 class="panel__title">A reform in metal</h3>
-          <p>In the 1880s, Moulay al-Hassan I set out to replace a patchwork of foreign and local coins with a currency bearing Morocco’s own name. The new pieces — silver for the treasury, bronze for the market — were ordered from the most precise mints in Europe.</p>
+          <h3 data-i18n="ex.p1.title" class="panel__title">A reform in metal</h3>
+          <p data-i18n="ex.p1.text">In the 1880s, Moulay al-Hassan I set out to replace a patchwork of foreign and local coins with a currency bearing Morocco’s own name. The new pieces — silver for the treasury, bronze for the market — were ordered from the most precise mints in Europe.</p>
         </article>
-        <article class="panel" data-panel data-x="0.498" data-y="0.358" data-z="3.1" data-caption="Obverse — the legend ‘struck in Paris’.">
+        <article data-i18n-attr="data-caption:a.cap2" class="panel" data-panel data-x="0.498" data-y="0.358" data-z="3.1" data-caption="Obverse — the legend ‘struck in Paris’.">
           <p class="panel__index">02 / 05</p>
-          <h3 class="panel__title">“Struck in Paris”</h3>
-          <p>Look at the centre of the largest coin. The calligraphy reads <span lang="ar" dir="rtl" class="ar">ضرب بباريس</span> — <em>struck in Paris</em>. A sultan’s coin announcing, without apology, where it was made: modernity was a thing you could commission.</p>
+          <h3 data-i18n="ex.p2.title" class="panel__title">“Struck in Paris”</h3>
+          <p data-i18n="ex.p2.text">Look at the centre of the largest coin. The calligraphy reads <span lang="ar" dir="rtl" class="ar">ضرب بباريس</span> — <em>struck in Paris</em>. A sultan’s coin announcing, without apology, where it was made: modernity was a thing you could commission.</p>
         </article>
-        <article class="panel" data-panel data-x="0.498" data-y="0.514" data-z="3.1" data-caption="Reverse — the year 1306 of the Hijra.">
+        <article data-i18n-attr="data-caption:a.cap3" class="panel" data-panel data-x="0.498" data-y="0.514" data-z="3.1" data-caption="Reverse — the year 1306 of the Hijra.">
           <p class="panel__index">03 / 05</p>
-          <h3 class="panel__title">Counting in another calendar</h3>
-          <p>On the reverse, <span lang="ar" dir="rtl" class="ar">عام ١٣٠٦</span> — the year 1306 of the Hijra, 1888–89 in the Gregorian calendar. The numerals are set in European type, the word for “year” in flowing Maghrebi script. Two worlds on a single face.</p>
+          <h3 data-i18n="ex.p3.title" class="panel__title">Counting in another calendar</h3>
+          <p data-i18n="ex.p3.text">On the reverse, <span lang="ar" dir="rtl" class="ar">عام ١٣٠٦</span> — the year 1306 of the Hijra, 1888–89 in the Gregorian calendar. The numerals are set in European type, the word for “year” in flowing Maghrebi script. Two worlds on a single face.</p>
         </article>
-        <article class="panel" data-panel data-x="0.815" data-y="0.434" data-z="3.8" data-caption="The smallest bronze in the case.">
+        <article data-i18n-attr="data-caption:a.cap4" class="panel" data-panel data-x="0.815" data-y="0.434" data-z="3.8" data-caption="The smallest bronze in the case.">
           <p class="panel__index">04 / 05</p>
-          <h3 class="panel__title">Change for the souk</h3>
-          <p>The smallest bronze in the case was the one that travelled furthest — from palm to palm, stall to stall. Its warm red patina is the residue of a century of ordinary lives.</p>
+          <h3 data-i18n="ex.p4.title" class="panel__title">Change for the souk</h3>
+          <p data-i18n="ex.p4.text">The smallest bronze in the case was the one that travelled furthest — from palm to palm, stall to stall. Its warm red patina is the residue of a century of ordinary lives.</p>
         </article>
-        <article class="panel" data-panel data-x="0.186" data-y="0.431" data-z="3.6" data-caption="Silver — dated 1311, the final years of the reign.">
+        <article data-i18n-attr="data-caption:a.cap5" class="panel" data-panel data-x="0.186" data-y="0.431" data-z="3.6" data-caption="Silver — dated 1311, the final years of the reign.">
           <p class="panel__index">05 / 05</p>
-          <h3 class="panel__title">The last silver</h3>
-          <p>Dated 1311 — 1893–94 — this worn silver piece belongs to the final year of the reign. Its softened edges are a record of use, and of how quickly a reform can become simply money.</p>
-          <a class="text-link" href="#tickets">Book to see it in person <span aria-hidden="true">→</span></a>
+          <h3 data-i18n="ex.p5.title" class="panel__title">The last silver</h3>
+          <p data-i18n="ex.p5.text">Dated 1311 — 1893–94 — this worn silver piece belongs to the final year of the reign. Its softened edges are a record of use, and of how quickly a reform can become simply money.</p>
+          <a data-i18n="ex.book" class="text-link" href="#tickets">Book to see it in person <span aria-hidden="true" class="flip-rtl">→</span></a>
         </article>
       </div>
     </div>
@@ -183,14 +201,14 @@
     <div class="stories__pin" data-stories-pin>
       <div class="container stories__head">
         <div>
-          <p class="eyebrow reveal">Stories</p>
-          <h2 class="section-title reveal" id="stories-title" style="--i:1">Every object is a <em>small biography.</em></h2>
+          <p data-i18n="nav.stories" class="eyebrow reveal">Stories</p>
+          <h2 data-i18n="st.title" class="section-title reveal" id="stories-title" style="--i:1">Every object is a <em>small biography.</em></h2>
         </div>
         <div class="stories__controls">
           <p class="stories__hint" data-stories-hint>Scroll to travel · select a coin to zoom</p>
           <div class="stories__buttons">
-            <button class="icon-btn" type="button" data-stories-prev aria-label="Previous story"><span aria-hidden="true">←</span></button>
-            <button class="icon-btn" type="button" data-stories-next aria-label="Next story"><span aria-hidden="true">→</span></button>
+            <button data-i18n-attr="aria-label:a.prevStory" class="icon-btn" type="button" data-stories-prev aria-label="Previous story"><span aria-hidden="true" class="flip-rtl">←</span></button>
+            <button data-i18n-attr="aria-label:a.nextStory" class="icon-btn" type="button" data-stories-next aria-label="Next story"><span aria-hidden="true" class="flip-rtl">→</span></button>
           </div>
         </div>
       </div>
@@ -198,85 +216,85 @@
       <div class="stories__viewport" data-stories-viewport>
         <ol class="stories__track" data-stories-track>
           <li class="story">
-            <button class="story__media" type="button" data-zoom="3" data-cursor="Zoom" aria-label="Zoom: Struck in Paris, obverse and reverse">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z1" class="story__media" type="button" data-zoom="3" data-cursor="Zoom" aria-label="Zoom: Struck in Paris, obverse and reverse">
               <img class="story__coin" src="assets/coin3a.webp" alt="" width="242" height="242" loading="lazy">
               <span class="story__loupe" aria-hidden="true"></span>
             </button>
             <div class="story__body">
-              <p class="story__meta">Bronze · Paris · AH 1306</p>
-              <h3 class="story__title">The widest voice</h3>
-              <p>The largest bronze of the series, made to be seen across a market stall.</p>
-              <p class="story__detail">Its border of eight-pointed stars echoes the tile work of Fez — a European machine asked to speak in Moroccan ornament.</p>
+              <p data-i18n="st.meta.bp1306" class="story__meta">Bronze · Paris · AH 1306</p>
+              <h3 data-i18n="st.1.title" class="story__title">The widest voice</h3>
+              <p data-i18n="st.1.text">The largest bronze of the series, made to be seen across a market stall.</p>
+              <p data-i18n="st.1.detail" class="story__detail">Its border of eight-pointed stars echoes the tile work of Fez — a European machine asked to speak in Moroccan ornament.</p>
             </div>
           </li>
           <li class="story">
-            <button class="story__media" type="button" data-zoom="1" data-cursor="Zoom" aria-label="Zoom: The last silver, obverse and reverse">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z2" class="story__media" type="button" data-zoom="1" data-cursor="Zoom" aria-label="Zoom: The last silver, obverse and reverse">
               <img class="story__coin" src="assets/coin1a.webp" alt="" width="144" height="144" loading="lazy">
               <span class="story__loupe" aria-hidden="true"></span>
             </button>
             <div class="story__body">
-              <p class="story__meta">Silver · AH 1311</p>
-              <h3 class="story__title">The last silver</h3>
-              <p>Minted in the final year of Moulay al-Hassan I’s reign.</p>
-              <p class="story__detail">Worn smooth at the rim, the date still stands proud: 1311. Silver is soft; every hand that held it took a little away.</p>
+              <p data-i18n="st.meta.s1311" class="story__meta">Silver · AH 1311</p>
+              <h3 data-i18n="ex.p5.title" class="story__title">The last silver</h3>
+              <p data-i18n="st.2.text">Minted in the final year of Moulay al-Hassan I’s reign.</p>
+              <p data-i18n="st.2.detail" class="story__detail">Worn smooth at the rim, the date still stands proud: 1311. Silver is soft; every hand that held it took a little away.</p>
             </div>
           </li>
           <li class="story">
-            <button class="story__media" type="button" data-zoom="2" data-cursor="Zoom" aria-label="Zoom: Dark patina, obverse and reverse">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z3" class="story__media" type="button" data-zoom="2" data-cursor="Zoom" aria-label="Zoom: Dark patina, obverse and reverse">
               <img class="story__coin" src="assets/coin2a.webp" alt="" width="180" height="180" loading="lazy">
               <span class="story__loupe" aria-hidden="true"></span>
             </button>
             <div class="story__body">
-              <p class="story__meta">AH 1310</p>
-              <h3 class="story__title">A darker skin</h3>
-              <p>Same design, different century of weather.</p>
-              <p class="story__detail">Patina is not damage but biography — oxygen, sweat and time, written as a thin dark film over the metal.</p>
+              <p data-i18n="st.meta.1310" class="story__meta">AH 1310</p>
+              <h3 data-i18n="st.3.title" class="story__title">A darker skin</h3>
+              <p data-i18n="st.3.text">Same design, different century of weather.</p>
+              <p data-i18n="st.3.detail" class="story__detail">Patina is not damage but biography — oxygen, sweat and time, written as a thin dark film over the metal.</p>
             </div>
           </li>
           <li class="story">
-            <button class="story__media" type="button" data-zoom="4" data-cursor="Zoom" aria-label="Zoom: Border of stars, obverse and reverse">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z4" class="story__media" type="button" data-zoom="4" data-cursor="Zoom" aria-label="Zoom: Border of stars, obverse and reverse">
               <img class="story__coin" src="assets/coin4b.webp" alt="" width="204" height="204" loading="lazy">
               <span class="story__loupe" aria-hidden="true"></span>
             </button>
             <div class="story__body">
-              <p class="story__meta">Bronze · Paris · AH 1306</p>
-              <h3 class="story__title">A border of stars</h3>
-              <p>A ring of arabesques that frames the date like a doorway.</p>
-              <p class="story__detail">Look closely and each star is slightly different — the engraver’s hand survives even inside an industrial die.</p>
+              <p data-i18n="st.meta.bp1306" class="story__meta">Bronze · Paris · AH 1306</p>
+              <h3 data-i18n="st.4.title" class="story__title">A border of stars</h3>
+              <p data-i18n="st.4.text">A ring of arabesques that frames the date like a doorway.</p>
+              <p data-i18n="st.4.detail" class="story__detail">Look closely and each star is slightly different — the engraver’s hand survives even inside an industrial die.</p>
             </div>
           </li>
           <li class="story">
-            <button class="story__media" type="button" data-zoom="5" data-cursor="Zoom" aria-label="Zoom: Change for the souk, obverse and reverse">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z5" class="story__media" type="button" data-zoom="5" data-cursor="Zoom" aria-label="Zoom: Change for the souk, obverse and reverse">
               <img class="story__coin" src="assets/coin5a.webp" alt="" width="132" height="132" loading="lazy">
               <span class="story__loupe" aria-hidden="true"></span>
             </button>
             <div class="story__body">
-              <p class="story__meta">Bronze · AH 1306</p>
-              <h3 class="story__title">Change for the souk</h3>
-              <p>The smallest coin here, and the busiest.</p>
-              <p class="story__detail">Small change is where a currency becomes real. Bread, mint tea, a ride across the river: this is the coin that paid for them.</p>
+              <p data-i18n="st.meta.b1306" class="story__meta">Bronze · AH 1306</p>
+              <h3 data-i18n="ex.p4.title" class="story__title">Change for the souk</h3>
+              <p data-i18n="st.5.text">The smallest coin here, and the busiest.</p>
+              <p data-i18n="st.5.detail" class="story__detail">Small change is where a currency becomes real. Bread, mint tea, a ride across the river: this is the coin that paid for them.</p>
             </div>
           </li>
           <li class="story story--wide">
-            <button class="story__media story__media--photo" type="button" data-zoom="detail1" data-cursor="Zoom" aria-label="Zoom: Before the strike">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z6" class="story__media story__media--photo" type="button" data-zoom="detail1" data-cursor="Zoom" aria-label="Zoom: Before the strike">
               <img class="story__photo" src="assets/detail1-1100.webp" alt="" width="1100" height="847" loading="lazy">
             </button>
             <div class="story__body">
-              <p class="story__meta">Bimetallic blanks · today</p>
-              <h3 class="story__title">Before the strike</h3>
-              <p>A coin begins as a blank — a ring and a core, pressed together, waiting for a face.</p>
-              <p class="story__detail">A single strike of the press, in a fraction of a second, gives the blank its design, its edge and its value.</p>
+              <p data-i18n="st.meta.blanks" class="story__meta">Bimetallic blanks · today</p>
+              <h3 data-i18n="st.6.title" class="story__title">Before the strike</h3>
+              <p data-i18n="st.6.text">A coin begins as a blank — a ring and a core, pressed together, waiting for a face.</p>
+              <p data-i18n="st.6.detail" class="story__detail">A single strike of the press, in a fraction of a second, gives the blank its design, its edge and its value.</p>
             </div>
           </li>
           <li class="story story--wide">
-            <button class="story__media story__media--photo" type="button" data-zoom="detail2" data-cursor="Zoom" aria-label="Zoom: Two metals, one coin">
+            <button data-i18n-attr="data-cursor:a.zoom;aria-label:a.z7" class="story__media story__media--photo" type="button" data-zoom="detail2" data-cursor="Zoom" aria-label="Zoom: Two metals, one coin">
               <img class="story__photo" src="assets/detail2-1100.webp" alt="" width="1100" height="1000" loading="lazy">
             </button>
             <div class="story__body">
-              <p class="story__meta">Bimetallic blanks · today</p>
-              <h3 class="story__title">Two metals, one coin</h3>
-              <p>Gold-coloured ring, silver-coloured heart — the hardest coin to counterfeit is the one made of two.</p>
-              <p class="story__detail">The two alloys respond differently to machines that test them, turning metallurgy itself into a security feature.</p>
+              <p data-i18n="st.meta.blanks" class="story__meta">Bimetallic blanks · today</p>
+              <h3 data-i18n="st.7.title" class="story__title">Two metals, one coin</h3>
+              <p data-i18n="st.7.text">Gold-coloured ring, silver-coloured heart — the hardest coin to counterfeit is the one made of two.</p>
+              <p data-i18n="st.7.detail" class="story__detail">The two alloys respond differently to machines that test them, turning metallurgy itself into a security feature.</p>
             </div>
           </li>
         </ol>
@@ -294,79 +312,79 @@
     <div class="container">
       <header class="section-head section-head--split">
         <div>
-          <p class="eyebrow reveal">The collections</p>
-          <h2 class="section-title reveal" id="collection-title" style="--i:1">Held up to the <em>light.</em></h2>
+          <p data-i18n="col.eyebrow" class="eyebrow reveal">The collections</p>
+          <h2 data-i18n="col.title" class="section-title reveal" id="collection-title" style="--i:1">Held up to the <em>light.</em></h2>
         </div>
-        <p class="lede reveal" style="--i:2">Two collections under one roof: the story of money in Morocco, from the first exchanges to today’s dirham, and the Bank’s collection of Moroccan art.</p>
+        <p data-i18n="col.lede" class="lede reveal" style="--i:2">Two collections under one roof: the story of money in Morocco, from the first exchanges to today’s dirham, and the Bank’s collection of Moroccan art.</p>
       </header>
 
-      <div class="tabs reveal" role="tablist" aria-label="Collections" data-tabs>
-        <button class="tab" type="button" role="tab" id="tab-num" aria-controls="panel-num" aria-selected="true">Numismatique</button>
-        <button class="tab" type="button" role="tab" id="tab-art" aria-controls="panel-art" aria-selected="false" tabindex="-1">Artistique</button>
+      <div data-i18n-attr="aria-label:a.collections" class="tabs reveal" role="tablist" aria-label="Collections" data-tabs>
+        <button data-i18n="col.tab.num" class="tab" type="button" role="tab" id="tab-num" aria-controls="panel-num" aria-selected="true">Numismatique</button>
+        <button data-i18n="col.tab.art" class="tab" type="button" role="tab" id="tab-art" aria-controls="panel-art" aria-selected="false" tabindex="-1">Artistique</button>
       </div>
 
       <div class="tabpanel" id="panel-num" role="tabpanel" aria-labelledby="tab-num" tabindex="0">
-        <nav class="era-nav" aria-label="Timeline periods" data-era-nav>
+        <nav data-i18n-attr="aria-label:a.periods" class="era-nav" aria-label="Timeline periods" data-era-nav>
           <ol class="era-nav__list" data-era-list></ol>
           <span class="era-nav__progress" aria-hidden="true"><span data-era-bar></span></span>
         </nav>
         <div class="timeline" data-timeline>
-          <noscript><p class="lede">The timeline needs JavaScript to display.</p></noscript>
+          <noscript><p data-i18n="col.noscript" class="lede">The timeline needs JavaScript to display.</p></noscript>
         </div>
       </div>
 
       <div class="tabpanel" id="panel-art" role="tabpanel" aria-labelledby="tab-art" tabindex="0" hidden>
         <div class="art-intro">
-          <p class="eyebrow">Collection artistique</p>
-          <p class="lede">Painting, sculpture and works on paper by Moroccan artists, collected by Bank Al-Maghrib and shown in rotating hangs across the upper galleries.</p>
+          <p data-i18n="art.eyebrow" class="eyebrow">Collection artistique</p>
+          <p data-i18n="art.lede" class="lede">Painting, sculpture and works on paper by Moroccan artists, collected by Bank Al-Maghrib and shown in rotating hangs across the upper galleries.</p>
         </div>
-        <ul class="masonry" role="list" aria-label="Artworks — photographs coming soon">
+        <ul data-i18n-attr="aria-label:a.artworks" class="masonry" role="list" aria-label="Artworks — photographs coming soon">
         <li class="tile" data-speed="0.06">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:4 / 5">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 01</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w1" class="tile__meta">Œuvre 01</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="-0.04">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:1 / 1">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 02</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w2" class="tile__meta">Œuvre 02</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="0.03">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:3 / 4">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 03</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w3" class="tile__meta">Œuvre 03</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="0.07">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:16 / 11">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 04</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w4" class="tile__meta">Œuvre 04</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="-0.05">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:4 / 5">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 05</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w5" class="tile__meta">Œuvre 05</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="0.02">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:5 / 4">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 06</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w6" class="tile__meta">Œuvre 06</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="0.05">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:3 / 4">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 07</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w7" class="tile__meta">Œuvre 07</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         <li class="tile" data-speed="-0.03">
           <div class="tile__inner tilt art-slot" style="aspect-ratio:1 / 1">
             <svg class="slot__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg>
-            <div class="tile__cap"><p class="tile__meta">Œuvre 08</p><h3>Photo à venir</h3></div>
+            <div class="tile__cap"><p data-i18n="art.w8" class="tile__meta">Œuvre 08</p><h3 data-i18n="art.soon">Photo à venir</h3></div>
           </div>
         </li>
         </ul>
@@ -379,10 +397,10 @@
     <div class="container">
       <header class="section-head section-head--split">
         <div>
-          <p class="eyebrow reveal">The Boutique</p>
-          <h2 class="section-title reveal" id="boutique-title" style="--i:1">Take a piece of the <em>collection</em> home.</h2>
+          <p data-i18n="shop.eyebrow" class="eyebrow reveal">The Boutique</p>
+          <h2 data-i18n="shop.title" class="section-title reveal" id="boutique-title" style="--i:1">Take a piece of the <em>collection</em> home.</h2>
         </div>
-        <p class="lede reveal" style="--i:2">Five departments, from coins struck for the nation’s great moments to the books that tell their story.</p>
+        <p data-i18n="shop.lede" class="lede reveal" style="--i:2">Five departments, from coins struck for the nation’s great moments to the books that tell their story.</p>
       </header>
 
       <ul class="shop" role="list">
@@ -394,8 +412,8 @@
             <path d="M27.0 30.5 L28.6 34.8 L33.2 35.0 L29.6 37.8 L30.8 42.3 L27.0 39.7 L23.2 42.3 L24.4 37.8 L20.8 35.0 L25.4 34.8Z" pathLength="1"/>
           </svg>
           <p class="shop__num" aria-hidden="true">01</p>
-          <h3 class="shop__title" lang="fr">Pièces commémoratives</h3>
-          <p class="shop__desc">Coins struck to mark the great moments of the Kingdom, in proof and uncirculated finishes.</p>
+          <h3 data-i18n="shop.1" class="shop__title" lang="fr">Pièces commémoratives</h3>
+          <p data-i18n="shop.1.text" class="shop__desc">Coins struck to mark the great moments of the Kingdom, in proof and uncirculated finishes.</p>
         </li>
         <li class="shop__item reveal" style="--i:1">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -405,8 +423,8 @@
             <path d="M13 27h7M40 45h7M13 45h4M43 27h4" pathLength="1"/>
           </svg>
           <p class="shop__num" aria-hidden="true">02</p>
-          <h3 class="shop__title" lang="fr">Billets démonétisés et commémoratifs</h3>
-          <p class="shop__desc">Withdrawn series and commemorative notes, presented and certified for collectors.</p>
+          <h3 data-i18n="shop.2" class="shop__title" lang="fr">Billets démonétisés et commémoratifs</h3>
+          <p data-i18n="shop.2.text" class="shop__desc">Withdrawn series and commemorative notes, presented and certified for collectors.</p>
         </li>
         <li class="shop__item reveal" style="--i:2">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -416,8 +434,8 @@
             <path class="picto__thick" d="M39 39l14 14" pathLength="1"/>
           </svg>
           <p class="shop__num" aria-hidden="true">03</p>
-          <h3 class="shop__title" lang="fr">Outils pour collectionneurs</h3>
-          <p class="shop__desc">Loupes, capsules, albums and gloves — everything to study and protect a collection.</p>
+          <h3 data-i18n="shop.3" class="shop__title" lang="fr">Outils pour collectionneurs</h3>
+          <p data-i18n="shop.3.text" class="shop__desc">Loupes, capsules, albums and gloves — everything to study and protect a collection.</p>
         </li>
         <li class="shop__item reveal" style="--i:3">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -426,8 +444,8 @@
             <path d="M32 32.5q2.2 4.1 6.5 6.5q-4.3 2.4-6.5 6.5q-2.2-4.1-6.5-6.5q4.3-2.4 6.5-6.5z" pathLength="1"/>
           </svg>
           <p class="shop__num" aria-hidden="true">04</p>
-          <h3 class="shop__title" lang="fr">Articles souvenirs</h3>
-          <p class="shop__desc">Objects inspired by the collections, made to be kept and given.</p>
+          <h3 data-i18n="shop.4" class="shop__title" lang="fr">Articles souvenirs</h3>
+          <p data-i18n="shop.4.text" class="shop__desc">Objects inspired by the collections, made to be kept and given.</p>
         </li>
         <li class="shop__item reveal" style="--i:4">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -436,8 +454,8 @@
             <path d="M14 23c4-1 9-1 13 1M14 30c4-1 9-1 13 1M37 24c4-2 9-2 13-1M37 31c4-2 9-2 13-1" pathLength="1"/>
           </svg>
           <p class="shop__num" aria-hidden="true">05</p>
-          <h3 class="shop__title" lang="fr">Ouvrages</h3>
-          <p class="shop__desc">Catalogues, numismatic studies and art books published by the museum.</p>
+          <h3 data-i18n="shop.5" class="shop__title" lang="fr">Ouvrages</h3>
+          <p data-i18n="shop.5.text" class="shop__desc">Catalogues, numismatic studies and art books published by the museum.</p>
         </li>
       </ul>
     </div>
@@ -448,37 +466,33 @@
   <section class="visit section" id="visit" aria-labelledby="visit-title">
     <div class="container">
       <header class="section-head">
-        <p class="eyebrow reveal">Plan your visit</p>
-        <h2 class="section-title reveal" id="visit-title" style="--i:1">Come slowly. <em>Stay long.</em></h2>
+        <p data-i18n="hero.plan" class="eyebrow reveal">Plan your visit</p>
+        <h2 data-i18n="visit.title" class="section-title reveal" id="visit-title" style="--i:1">Come slowly. <em>Stay long.</em></h2>
       </header>
 
       <div class="visit__info">
         <div class="info reveal" style="--i:0">
-          <h3 class="info__title">Hours</h3>
+          <h3 data-i18n="visit.hours" class="info__title">Hours</h3>
           <dl class="info__list">
-            <div><dt>Tuesday – Saturday</dt><dd>10:00 – 18:00</dd></div>
-            <div><dt>Sunday</dt><dd>10:00 – 16:00</dd></div>
-            <div><dt>Monday &amp; public holidays</dt><dd>Closed</dd></div>
+            <div><dt data-i18n="visit.tuesat">Tuesday – Saturday</dt><dd>10:00 – 18:00</dd></div>
+            <div><dt data-i18n="visit.sun">Sunday</dt><dd>10:00 – 16:00</dd></div>
+            <div><dt data-i18n="visit.mon">Monday &amp; public holidays</dt><dd data-i18n="visit.closed">Closed</dd></div>
           </dl>
-          <p class="info__note">Last entry 45 minutes before closing.</p>
+          <p data-i18n="visit.last" class="info__note">Last entry 45 minutes before closing.</p>
         </div>
         <div class="info reveal" style="--i:1">
-          <h3 class="info__title">Location</h3>
-          <address>
-            Musées de Bank Al-Maghrib<br>
-            Avenue Mohammed V<br>
-            Rabat, Morocco
-          </address>
-          <p class="info__note">Tram line 1 · Station Mohammed V – Gare de Rabat Ville, 4 minutes on foot.</p>
-          <a class="text-link" href="https://www.openstreetmap.org/search?query=Mus%C3%A9e%20de%20Bank%20Al-Maghrib%20Rabat" target="_blank" rel="noopener">Open in maps <span aria-hidden="true">↗</span></a>
+          <h3 data-i18n="visit.location" class="info__title">Location</h3>
+          <address data-i18n="addr">Musées de Bank Al-Maghrib<br>Avenue Mohammed V<br>Rabat, Morocco</address>
+          <p data-i18n="visit.tram" class="info__note">Tram line 1 · Station Mohammed V – Gare de Rabat Ville, 4 minutes on foot.</p>
+          <a data-i18n="visit.maps" class="text-link" href="https://www.openstreetmap.org/search?query=Mus%C3%A9e%20de%20Bank%20Al-Maghrib%20Rabat" target="_blank" rel="noopener">Open in maps <span aria-hidden="true">↗</span></a>
         </div>
         <div class="info reveal" style="--i:2">
-          <h3 class="info__title">Admission</h3>
+          <h3 data-i18n="visit.admission" class="info__title">Admission</h3>
           <dl class="info__list">
-            <div><dt>Adult</dt><dd>20 MAD</dd></div>
-            <div><dt>Reduced <small>students, 60+</small></dt><dd>10 MAD</dd></div>
-            <div><dt>Under 18</dt><dd>Free</dd></div>
-            <div><dt>Guided tour <small>add-on</small></dt><dd>+30 MAD</dd></div>
+            <div><dt data-i18n="visit.adult">Adult</dt><dd data-i18n="tix.adult.price">20 MAD</dd></div>
+            <div><dt data-i18n="visit.reduced">Reduced <small>students, 60+</small></dt><dd data-i18n="visit.p10">10 MAD</dd></div>
+            <div><dt data-i18n="visit.under18">Under 18</dt><dd data-i18n="visit.free">Free</dd></div>
+            <div><dt data-i18n="visit.tour">Guided tour <small>add-on</small></dt><dd data-i18n="visit.p30">+30 MAD</dd></div>
           </dl>
         </div>
       </div>
@@ -486,11 +500,11 @@
       <!-- Ticket flow -->
       <div class="tickets reveal" id="tickets" data-tickets>
         <div class="tickets__head">
-          <h3 class="tickets__title">Book tickets</h3>
-          <ol class="steps" aria-label="Booking progress">
-            <li class="steps__item is-current" data-step-label="1"><span class="steps__num">1</span> Date</li>
-            <li class="steps__item" data-step-label="2"><span class="steps__num">2</span> Tickets</li>
-            <li class="steps__item" data-step-label="3"><span class="steps__num">3</span> Confirm</li>
+          <h3 data-i18n="tix.title" class="tickets__title">Book tickets</h3>
+          <ol data-i18n-attr="aria-label:a.steps" class="steps" aria-label="Booking progress">
+            <li data-i18n="tix.s1" class="steps__item is-current" data-step-label="1"><span class="steps__num">1</span> Date</li>
+            <li data-i18n="tix.s2" class="steps__item" data-step-label="2"><span class="steps__num">2</span> Tickets</li>
+            <li data-i18n="tix.s3" class="steps__item" data-step-label="3"><span class="steps__num">3</span> Confirm</li>
           </ol>
         </div>
 
@@ -498,12 +512,12 @@
           <div class="tickets__main">
             <!-- Step 1 -->
             <fieldset class="step is-active" data-step="1">
-              <legend class="step__legend">Choose a day <span class="step__sub">Closed on Mondays</span></legend>
+              <legend data-i18n="tix.day" class="step__legend">Choose a day <span class="step__sub">Closed on Mondays</span></legend>
               <div class="cal" data-cal>
-                <noscript><p>Booking requires JavaScript. Please call the museum or buy tickets on site.</p></noscript>
+                <noscript><p data-i18n="tix.noscript">Booking requires JavaScript. Please call the museum or buy tickets on site.</p></noscript>
               </div>
-              <div class="slots" role="radiogroup" aria-label="Entry time" data-slots>
-                <p class="slots__label" id="slots-label">Entry time</p>
+              <div data-i18n-attr="aria-label:a.entryTime" class="slots" role="radiogroup" aria-label="Entry time" data-slots>
+                <p data-i18n="tix.entry" class="slots__label" id="slots-label">Entry time</p>
                 <label class="chip"><input type="radio" name="slot" value="10:00" checked><span>10:00</span></label>
                 <label class="chip"><input type="radio" name="slot" value="12:00"><span>12:00</span></label>
                 <label class="chip"><input type="radio" name="slot" value="14:00"><span>14:00</span></label>
@@ -513,37 +527,37 @@
 
             <!-- Step 2 -->
             <fieldset class="step" data-step="2" hidden>
-              <legend class="step__legend">Who’s coming? <span class="step__sub">Children under 18 enter free</span></legend>
+              <legend data-i18n="tix.who" class="step__legend">Who’s coming? <span class="step__sub">Children under 18 enter free</span></legend>
               <ul class="qty-list" role="list">
                 <li class="qty" data-type="adult" data-price="20">
-                  <div><p class="qty__name" id="q-adult">Adult</p><p class="qty__price">20 MAD</p></div>
-                  <div class="qty__ctrl"><button type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one adult ticket">−</button><output aria-labelledby="q-adult" aria-live="polite" data-count>1</output><button type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one adult ticket">+</button></div>
+                  <div><p data-i18n="visit.adult" class="qty__name" id="q-adult">Adult</p><p data-i18n="tix.adult.price" class="qty__price">20 MAD</p></div>
+                  <div class="qty__ctrl"><button data-i18n-attr="aria-label:a.remAdult" type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one adult ticket">−</button><output aria-labelledby="q-adult" aria-live="polite" data-count>1</output><button data-i18n-attr="aria-label:a.addAdult" type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one adult ticket">+</button></div>
                 </li>
                 <li class="qty" data-type="reduced" data-price="10">
-                  <div><p class="qty__name" id="q-reduced">Reduced</p><p class="qty__price">10 MAD · students, 60+</p></div>
-                  <div class="qty__ctrl"><button type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one reduced ticket">−</button><output aria-labelledby="q-reduced" aria-live="polite" data-count>0</output><button type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one reduced ticket">+</button></div>
+                  <div><p data-i18n="tix.reduced" class="qty__name" id="q-reduced">Reduced</p><p data-i18n="tix.reduced.price" class="qty__price">10 MAD · students, 60+</p></div>
+                  <div class="qty__ctrl"><button data-i18n-attr="aria-label:a.remRed" type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one reduced ticket">−</button><output aria-labelledby="q-reduced" aria-live="polite" data-count>0</output><button data-i18n-attr="aria-label:a.addRed" type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one reduced ticket">+</button></div>
                 </li>
                 <li class="qty" data-type="child" data-price="0">
-                  <div><p class="qty__name" id="q-child">Under 18</p><p class="qty__price">Free</p></div>
-                  <div class="qty__ctrl"><button type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one under-18 ticket">−</button><output aria-labelledby="q-child" aria-live="polite" data-count>0</output><button type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one under-18 ticket">+</button></div>
+                  <div><p data-i18n="visit.under18" class="qty__name" id="q-child">Under 18</p><p data-i18n="visit.free" class="qty__price">Free</p></div>
+                  <div class="qty__ctrl"><button data-i18n-attr="aria-label:a.remChild" type="button" class="icon-btn icon-btn--sm" data-dec aria-label="Remove one under-18 ticket">−</button><output aria-labelledby="q-child" aria-live="polite" data-count>0</output><button data-i18n-attr="aria-label:a.addChild" type="button" class="icon-btn icon-btn--sm" data-inc aria-label="Add one under-18 ticket">+</button></div>
                 </li>
               </ul>
               <label class="toggle">
                 <input type="checkbox" name="tour" data-tour>
                 <span class="toggle__ui" aria-hidden="true"></span>
-                <span>Add a guided tour <small>+30 MAD per group · 60 minutes</small></span>
+                <span data-i18n="tix.addtour">Add a guided tour <small>+30 MAD per group · 60 minutes</small></span>
               </label>
             </fieldset>
 
             <!-- Step 3 -->
             <fieldset class="step" data-step="3" hidden>
-              <legend class="step__legend">Where should we send your tickets?</legend>
+              <legend data-i18n="tix.where" class="step__legend">Where should we send your tickets?</legend>
               <div class="field">
-                <label for="t-name">Full name</label>
+                <label data-i18n="tix.name" for="t-name">Full name</label>
                 <input id="t-name" name="name" type="text" autocomplete="name" required>
               </div>
               <div class="field">
-                <label for="t-email">Email</label>
+                <label data-i18n="tix.email" for="t-email">Email</label>
                 <input id="t-email" name="email" type="email" autocomplete="email" required aria-describedby="t-email-err">
                 <p class="field__error" id="t-email-err" data-error></p>
               </div>
@@ -551,29 +565,29 @@
 
             <!-- Success -->
             <div class="step step--done" data-step="done" hidden tabindex="-1">
-              <p class="eyebrow">Booking confirmed</p>
-              <p class="done__title">See you on <span data-done-date></span>.</p>
-              <p>Your reference is <strong class="done__ref" data-done-ref></strong>. A confirmation has been sent to <span data-done-email></span>.</p>
+              <p data-i18n="tix.confirmed" class="eyebrow">Booking confirmed</p>
+              <p class="done__title" data-done-title></p>
+              <p data-done-body></p>
               <div class="done__actions">
-                <button type="button" class="btn btn--ghost magnetic" data-ics><span>Add to calendar</span></button>
-                <button type="button" class="btn btn--quiet" data-restart><span>Book another visit</span></button>
+                <button type="button" class="btn btn--ghost magnetic" data-ics><span data-i18n="tix.ics">Add to calendar</span></button>
+                <button type="button" class="btn btn--quiet" data-restart><span data-i18n="tix.again">Book another visit</span></button>
               </div>
             </div>
 
             <div class="tickets__nav" data-ticket-nav>
-              <button type="button" class="btn btn--quiet" data-back hidden><span>Back</span></button>
+              <button type="button" class="btn btn--quiet" data-back hidden><span data-i18n="tix.back">Back</span></button>
               <button type="submit" class="btn btn--solid magnetic" data-next><span>Continue</span></button>
             </div>
           </div>
 
-          <aside class="summary" aria-label="Booking summary">
-            <p class="summary__title">Your visit</p>
+          <aside data-i18n-attr="aria-label:a.summary" class="summary" aria-label="Booking summary">
+            <p data-i18n="tix.yourvisit" class="summary__title">Your visit</p>
             <dl class="summary__list">
-              <div><dt>Date</dt><dd data-sum-date>—</dd></div>
-              <div><dt>Entry</dt><dd data-sum-slot>10:00</dd></div>
-              <div><dt>Tickets</dt><dd data-sum-tickets>1 adult</dd></div>
+              <div><dt data-i18n="tix.sum.date">Date</dt><dd data-sum-date>—</dd></div>
+              <div><dt data-i18n="tix.sum.entry">Entry</dt><dd data-sum-slot>10:00</dd></div>
+              <div><dt data-i18n="nav.tickets">Tickets</dt><dd data-sum-tickets>1 adult</dd></div>
             </dl>
-            <p class="summary__total"><span>Total</span> <strong data-sum-total aria-live="polite">20 MAD</strong></p>
+            <p class="summary__total"><span data-i18n="tix.total">Total</span> <strong data-i18n="tix.adult.price" data-sum-total aria-live="polite">20 MAD</strong></p>
           </aside>
         </form>
         <p class="sr-only" aria-live="polite" data-ticket-live></p>
@@ -586,16 +600,16 @@
     <div class="container">
       <header class="section-head section-head--split">
         <div>
-          <p class="eyebrow reveal">What’s on</p>
-          <h2 class="section-title reveal" id="events-title" style="--i:1">Events <em>calendar</em></h2>
+          <p data-i18n="ev.eyebrow" class="eyebrow reveal">What’s on</p>
+          <h2 data-i18n="ev.title" class="section-title reveal" id="events-title" style="--i:1">Events <em>calendar</em></h2>
         </div>
-        <div class="filters reveal" style="--i:2" role="group" aria-label="Filter events by type" data-filters>
-          <button type="button" class="filter" aria-pressed="true" data-filter="all">All</button>
-          <button type="button" class="filter" aria-pressed="false" data-filter="talk">Talks</button>
-          <button type="button" class="filter" aria-pressed="false" data-filter="tour">Tours</button>
-          <button type="button" class="filter" aria-pressed="false" data-filter="workshop">Workshops</button>
-          <button type="button" class="filter" aria-pressed="false" data-filter="family">Family</button>
-          <button type="button" class="filter" aria-pressed="false" data-filter="music">Music</button>
+        <div data-i18n-attr="aria-label:a.filters" class="filters reveal" style="--i:2" role="group" aria-label="Filter events by type" data-filters>
+          <button data-i18n="ev.all" type="button" class="filter" aria-pressed="true" data-filter="all">All</button>
+          <button data-i18n="ev.talks" type="button" class="filter" aria-pressed="false" data-filter="talk">Talks</button>
+          <button data-i18n="ev.tours" type="button" class="filter" aria-pressed="false" data-filter="tour">Tours</button>
+          <button data-i18n="ev.workshops" type="button" class="filter" aria-pressed="false" data-filter="workshop">Workshops</button>
+          <button data-i18n="ev.family" type="button" class="filter" aria-pressed="false" data-filter="family">Family</button>
+          <button data-i18n="ev.music" type="button" class="filter" aria-pressed="false" data-filter="music">Music</button>
         </div>
       </header>
       <p class="sr-only" aria-live="polite" data-events-live></p>
@@ -603,56 +617,56 @@
       <ol class="events__list" data-events>
         <li class="event" data-type="talk">
           <time class="event__date" datetime="2026-10-08"><span class="event__day">08</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p class="event__type">Talk</p><h3 class="event__title">Struck in Paris: the curator’s view</h3><p class="event__desc">The exhibition’s curator on commissioning a currency abroad.</p></div>
-          <p class="event__time">18:30 · Auditorium</p>
+          <div class="event__body"><p data-i18n="ev.t.talk" class="event__type">Talk</p><h3 data-i18n="ev.1.title" class="event__title">Struck in Paris: the curator’s view</h3><p data-i18n="ev.1.desc" class="event__desc">The exhibition’s curator on commissioning a currency abroad.</p></div>
+          <p data-i18n="ev.time.aud1830" class="event__time">18:30 · Auditorium</p>
         </li>
         <li class="event" data-type="family">
           <time class="event__date" datetime="2026-10-11"><span class="event__day">11</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p class="event__type">Family</p><h3 class="event__title">Design your own coin</h3><p class="event__desc">Rubbings, stamps and clay for ages 6–12. Parents welcome.</p></div>
-          <p class="event__time">10:30 · Learning studio</p>
+          <div class="event__body"><p data-i18n="ev.family" class="event__type">Family</p><h3 data-i18n="ev.2.title" class="event__title">Design your own coin</h3><p data-i18n="ev.2.desc" class="event__desc">Rubbings, stamps and clay for ages 6–12. Parents welcome.</p></div>
+          <p data-i18n="ev.time.studio1030" class="event__time">10:30 · Learning studio</p>
         </li>
         <li class="event" data-type="tour">
           <time class="event__date" datetime="2026-10-17"><span class="event__day">17</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p class="event__type">Tour</p><h3 class="event__title">Twelve centuries in sixty minutes</h3><p class="event__desc">A guided walk through the numismatics galleries.</p></div>
-          <p class="event__time">11:00 · Main hall</p>
+          <div class="event__body"><p data-i18n="ev.t.tour" class="event__type">Tour</p><h3 data-i18n="ev.3.title" class="event__title">Twelve centuries in sixty minutes</h3><p data-i18n="ev.3.desc" class="event__desc">A guided walk through the numismatics galleries.</p></div>
+          <p data-i18n="ev.time.hall1100" class="event__time">11:00 · Main hall</p>
         </li>
         <li class="event" data-type="workshop">
           <time class="event__date" datetime="2026-10-24"><span class="event__day">24</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p class="event__type">Workshop</p><h3 class="event__title">Reading Maghrebi calligraphy on coins</h3><p class="event__desc">Learn to decipher mint names and dates with a magnifier in hand.</p></div>
-          <p class="event__time">14:00 · Learning studio</p>
+          <div class="event__body"><p data-i18n="ev.t.workshop" class="event__type">Workshop</p><h3 data-i18n="ev.4.title" class="event__title">Reading Maghrebi calligraphy on coins</h3><p data-i18n="ev.4.desc" class="event__desc">Learn to decipher mint names and dates with a magnifier in hand.</p></div>
+          <p data-i18n="ev.time.studio1400" class="event__time">14:00 · Learning studio</p>
         </li>
         <li class="event" data-type="music">
           <time class="event__date" datetime="2026-11-06"><span class="event__day">06</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p class="event__type">Music</p><h3 class="event__title">Andalusian nights in the galleries</h3><p class="event__desc">A late opening with a chamber ensemble among the collections.</p></div>
-          <p class="event__time">19:30 · Arts galleries</p>
+          <div class="event__body"><p data-i18n="ev.music" class="event__type">Music</p><h3 data-i18n="ev.5.title" class="event__title">Andalusian nights in the galleries</h3><p data-i18n="ev.5.desc" class="event__desc">A late opening with a chamber ensemble among the collections.</p></div>
+          <p data-i18n="ev.time.arts1930" class="event__time">19:30 · Arts galleries</p>
         </li>
         <li class="event" data-type="talk">
           <time class="event__date" datetime="2026-11-12"><span class="event__day">12</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p class="event__type">Talk</p><h3 class="event__title">What makes a banknote hard to fake?</h3><p class="event__desc">Security features explained, from watermark to hologram.</p></div>
-          <p class="event__time">18:30 · Auditorium</p>
+          <div class="event__body"><p data-i18n="ev.t.talk" class="event__type">Talk</p><h3 data-i18n="ev.6.title" class="event__title">What makes a banknote hard to fake?</h3><p data-i18n="ev.6.desc" class="event__desc">Security features explained, from watermark to hologram.</p></div>
+          <p data-i18n="ev.time.aud1830" class="event__time">18:30 · Auditorium</p>
         </li>
         <li class="event" data-type="tour">
           <time class="event__date" datetime="2026-11-21"><span class="event__day">21</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p class="event__type">Tour</p><h3 class="event__title">Modern Moroccan painting</h3><p class="event__desc">A walk through the Bank Al-Maghrib art collection.</p></div>
-          <p class="event__time">11:00 · Arts galleries</p>
+          <div class="event__body"><p data-i18n="ev.t.tour" class="event__type">Tour</p><h3 data-i18n="ev.7.title" class="event__title">Modern Moroccan painting</h3><p data-i18n="ev.7.desc" class="event__desc">A walk through the Bank Al-Maghrib art collection.</p></div>
+          <p data-i18n="ev.time.arts1100" class="event__time">11:00 · Arts galleries</p>
         </li>
         <li class="event" data-type="family">
           <time class="event__date" datetime="2026-11-29"><span class="event__day">29</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p class="event__type">Family</p><h3 class="event__title">Treasure trail</h3><p class="event__desc">A self-guided hunt through the galleries, with a prize at the Boutique.</p></div>
-          <p class="event__time">All day · Free with entry</p>
+          <div class="event__body"><p data-i18n="ev.family" class="event__type">Family</p><h3 data-i18n="ev.8.title" class="event__title">Treasure trail</h3><p data-i18n="ev.8.desc" class="event__desc">A self-guided hunt through the galleries, with a prize at the Boutique.</p></div>
+          <p data-i18n="ev.time.allday" class="event__time">All day · Free with entry</p>
         </li>
         <li class="event" data-type="workshop">
           <time class="event__date" datetime="2026-12-05"><span class="event__day">05</span><span class="event__mon">Dec</span></time>
-          <div class="event__body"><p class="event__type">Workshop</p><h3 class="event__title">Photographing small objects</h3><p class="event__desc">Light, macro lenses and patience — shoot the collection like a pro.</p></div>
-          <p class="event__time">14:00 · Learning studio</p>
+          <div class="event__body"><p data-i18n="ev.t.workshop" class="event__type">Workshop</p><h3 data-i18n="ev.9.title" class="event__title">Photographing small objects</h3><p data-i18n="ev.9.desc" class="event__desc">Light, macro lenses and patience — shoot the collection like a pro.</p></div>
+          <p data-i18n="ev.time.studio1400" class="event__time">14:00 · Learning studio</p>
         </li>
         <li class="event" data-type="music">
           <time class="event__date" datetime="2026-12-18"><span class="event__day">18</span><span class="event__mon">Dec</span></time>
-          <div class="event__body"><p class="event__type">Music</p><h3 class="event__title">Oud at dusk</h3><p class="event__desc">Solo recital to close the year.</p></div>
-          <p class="event__time">19:00 · Main hall</p>
+          <div class="event__body"><p data-i18n="ev.music" class="event__type">Music</p><h3 data-i18n="ev.10.title" class="event__title">Oud at dusk</h3><p data-i18n="ev.10.desc" class="event__desc">Solo recital to close the year.</p></div>
+          <p data-i18n="ev.time.hall1900" class="event__time">19:00 · Main hall</p>
         </li>
       </ol>
-      <p class="events__empty" data-events-empty hidden>No events of this type are scheduled yet — check back soon.</p>
+      <p data-i18n="ev.empty" class="events__empty" data-events-empty hidden>No events of this type are scheduled yet — check back soon.</p>
     </div>
   </section>
 
@@ -663,29 +677,29 @@
   <div class="container">
     <div class="footer__top">
       <div class="footer__news">
-        <h2 class="footer__title" id="footer-title">Letters from the <em>vault.</em></h2>
-        <p>New exhibitions, events and the occasional story from the collection — once a month, never more.</p>
+        <h2 data-i18n="ft.title" class="footer__title" id="footer-title">Letters from the <em>vault.</em></h2>
+        <p data-i18n="ft.text">New exhibitions, events and the occasional story from the collection — once a month, never more.</p>
         <form class="news" novalidate data-news>
-          <label class="sr-only" for="news-email">Email address</label>
+          <label data-i18n="ft.emaillabel" class="sr-only" for="news-email">Email address</label>
           <input id="news-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required aria-describedby="news-msg">
-          <button class="btn btn--solid magnetic" type="submit"><span>Subscribe</span></button>
+          <button class="btn btn--solid magnetic" type="submit"><span data-i18n="ft.subscribe">Subscribe</span></button>
           <p class="news__msg" id="news-msg" aria-live="polite" data-news-msg></p>
         </form>
       </div>
 
       <div class="footer__cols">
         <div>
-          <h3 class="footer__h">Accessibility</h3>
+          <h3 data-i18n="ft.a11y" class="footer__h">Accessibility</h3>
           <ul role="list">
-            <li>Step-free entrance and lifts to every floor</li>
-            <li>Wheelchairs available on request</li>
-            <li>Large-print guides and audio descriptions</li>
-            <li>Assistance dogs welcome</li>
-            <li>Free entry for a companion</li>
+            <li data-i18n="ft.a11y.1">Step-free entrance and lifts to every floor</li>
+            <li data-i18n="ft.a11y.2">Wheelchairs available on request</li>
+            <li data-i18n="ft.a11y.3">Large-print guides and audio descriptions</li>
+            <li data-i18n="ft.a11y.4">Assistance dogs welcome</li>
+            <li data-i18n="ft.a11y.5">Free entry for a companion</li>
           </ul>
         </div>
         <div>
-          <h3 class="footer__h">Follow</h3>
+          <h3 data-i18n="ft.follow" class="footer__h">Follow</h3>
           <ul role="list" class="socials">
             <li><a href="#" data-social>Instagram</a></li>
             <li><a href="#" data-social>Facebook</a></li>
@@ -694,21 +708,21 @@
           </ul>
         </div>
         <div>
-          <h3 class="footer__h">Visit</h3>
+          <h3 data-i18n="nav.visit" class="footer__h">Visit</h3>
           <ul role="list">
-            <li><a href="#visit">Hours &amp; admission</a></li>
-            <li><a href="#tickets">Book tickets</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#boutique">Boutique</a></li>
+            <li><a data-i18n="ft.hours" href="#visit">Hours &amp; admission</a></li>
+            <li><a data-i18n="tix.title" href="#tickets">Book tickets</a></li>
+            <li><a data-i18n="nav.events" href="#events">Events</a></li>
+            <li><a data-i18n="nav.boutique" href="#boutique">Boutique</a></li>
           </ul>
-          <button type="button" class="motion-toggle" aria-pressed="false" data-motion-toggle>Reduce motion</button>
+          <button data-i18n="ft.motion" type="button" class="motion-toggle" aria-pressed="false" data-motion-toggle>Reduce motion</button>
         </div>
       </div>
     </div>
 
     <div class="footer__bottom">
-      <div class="footer__logo"><img src="assets/logo.webp" alt="Musée de Bank Al-Maghrib — متحف بنك المغرب" width="1200" height="397" loading="lazy"></div>
-      <p>© 2026 Musées de Bank Al-Maghrib · Rabat</p>
+      <div class="footer__logo"><img data-i18n-attr="alt:a.logo" src="assets/logo.webp" alt="Musée de Bank Al-Maghrib — متحف بنك المغرب" width="1200" height="397" loading="lazy"></div>
+      <p data-i18n="ft.copy">© 2026 Musées de Bank Al-Maghrib · Rabat</p>
     </div>
   </div>
 </footer>
@@ -716,7 +730,7 @@
 <!-- Zoom lightbox -->
 <dialog class="lightbox" data-lightbox aria-labelledby="lb-title">
   <div class="lightbox__inner">
-    <button class="icon-btn lightbox__close" type="button" data-lightbox-close aria-label="Close zoom view"><span aria-hidden="true">✕</span></button>
+    <button data-i18n-attr="aria-label:a.close" class="icon-btn lightbox__close" type="button" data-lightbox-close aria-label="Close zoom view"><span aria-hidden="true">✕</span></button>
     <div class="lightbox__media" data-lightbox-media></div>
     <div class="lightbox__text">
       <p class="eyebrow" data-lightbox-meta></p>
@@ -726,6 +740,7 @@
   </div>
 </dialog>
 
+<script src="i18n.js" defer></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
 <script src="collection-data.js" defer></script>
 <script src="app.js" defer></script>
