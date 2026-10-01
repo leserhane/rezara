@@ -415,3 +415,11 @@ JS += [
  ("art.workSoon", "Work to come", "Œuvre à venir", "عمل قادم", "Obra próximamente"),
  ("art.works", "{label} — {n} of {total} works available", "{label} — {n} œuvres disponibles sur {total}", "{label} — {n} من أصل {total} أعمال متاحة", "{label} — {n} de {total} obras disponibles"),
 ]
+
+JS += [
+ ("art.room", "Room {n}", "Salle {n}", "القاعة {n}", "Sala {n}"),
+ ("art.walk", "Scroll to walk through the room", "Faites défiler pour parcourir la salle", "مرّر للتجوّل في القاعة", "Desplázate para recorrer la sala"),
+ ("art.swipe", "Swipe to walk through the room", "Balayez pour parcourir la salle", "اسحب للتجوّل في القاعة", "Desliza para recorrer la sala"),
+ ("art.prev", "Previous painting", "Œuvre précédente", "العمل السابق", "Obra anterior"),
+ ("art.next", "Next painting", "Œuvre suivante", "العمل التالي", "Obra siguiente"),
+]

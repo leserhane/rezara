@@ -1328,3 +1328,121 @@ html.reduce-motion { scroll-behavior: auto; }
 .art-work__date { font-variant-numeric: tabular-nums; }
 :lang(ar) .art-part__title, :lang(ar) .art-group__title, :lang(ar) .art-school__title { line-height: 1.45; font-weight: 500; }
 :lang(ar) .art-work--empty .art-work__cap { font-style: normal; }
+
+/* ==========================================================================
+   GALLERY ROOMS — walk along a wall of framed paintings
+   ========================================================================== */
+.art-part { padding-bottom: clamp(40px, 6vw, 80px); }
+.art-part + .art-part { padding-top: clamp(40px, 6vw, 80px); }
+.art-part__head { margin-bottom: clamp(20px, 3vw, 36px); }
+.art-group { margin: clamp(32px, 4vw, 48px) 0 0; }
+.art-group + .gallery, .gallery + .gallery { margin-top: clamp(20px, 3vw, 32px); }
+
+.gallery { position: relative; margin-inline: calc(-1 * var(--gutter)); scroll-margin-top: var(--header-h); }
+.gallery__pin { --h: min(44vh, 320px); position: relative; }
+.gallery__room {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(255,240,215,.07), transparent 60%),
+    linear-gradient(180deg, #0e0c0b 0%, #1d1a17 14%, #24201c 55%, #1f1b18 78%);
+  border-block: 1px solid var(--line);
+}
+/* ceiling shadow and the line where wall meets floor */
+.gallery__room::before { content: ""; position: absolute; inset: 0 0 auto; height: 14%; background: linear-gradient(#0b0a09, transparent); z-index: 1; pointer-events: none; }
+.gallery__floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 17%; z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.15) 30%, rgba(0,0,0,.55)),
+    repeating-linear-gradient(90deg, #2b2119 0 118px, #231a13 118px 120px, #30251c 120px 240px, #221912 240px 242px);
+  background-position: 0 0, var(--fx, 0px) 0;
+  box-shadow: inset 0 1px 0 rgba(255,235,205,.08);
+}
+.gallery__wall {
+  position: relative; z-index: 2; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
+  padding-bottom: 17%;
+}
+.gallery__wall::-webkit-scrollbar { display: none; }
+.gallery__track {
+  display: flex; align-items: center; gap: clamp(56px, 7vw, 120px);
+  width: max-content;
+  padding: calc(var(--h) * .42) max(var(--gutter), 6vw) calc(var(--h) * .5);
+  padding-inline-end: 30vw;
+  will-change: transform;
+}
+
+/* Wall text at the room's entrance */
+.gallery__plaque { flex: none; width: clamp(260px, 26vw, 380px); scroll-snap-align: center; }
+.gallery__room-no { font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.gallery__title { font-family: var(--serif); font-weight: 300; font-size: clamp(2.2rem, 3.6vw, 3.2rem); line-height: 1.05; margin: .25em 0 .5em; }
+.gallery__intro { color: #bdb5a9; font-size: .98rem; }
+
+/* Paintings */
+.gallery__work { --f: 0; position: relative; flex: none; margin: 0; scroll-snap-align: center; }
+.gallery__glow {
+  position: absolute; left: 50%; top: calc(var(--h) * -.55); width: calc(var(--h) * var(--r) + var(--h) * .9); height: calc(var(--h) * 1.5);
+  translate: -50% 0; pointer-events: none;
+  background: radial-gradient(ellipse 50% 60% at 50% 18%, rgba(255,233,196,.24), rgba(255,233,196,.06) 55%, transparent 72%);
+  opacity: calc(.35 + .65 * var(--f)); transition: opacity .4s;
+}
+.gallery__glow::before { /* the picture light fixture */
+  content: ""; position: absolute; left: 50%; top: calc(var(--h) * .28); width: calc(var(--h) * .34); height: 5px; translate: -50% 0;
+  border-radius: 3px; background: linear-gradient(#3a332b, #15120f); box-shadow: 0 6px 18px rgba(255,226,180,.35);
+}
+.gallery__frame {
+  position: relative; display: block; box-sizing: content-box;
+  width: calc(var(--h) * var(--r)); height: var(--h); padding: 0;
+  background: #14110e; cursor: pointer;
+  transform: scale(calc(.94 + .06 * var(--f)));
+  transition: transform .5s var(--ease), box-shadow .5s;
+  box-shadow: 0 28px 44px -18px rgba(0,0,0,.85), 0 8px 16px rgba(0,0,0,.45);
+}
+.gallery__frame img { display: block; width: 100%; height: 100%; object-fit: cover; filter: brightness(calc(.62 + .38 * var(--f))) saturate(calc(.8 + .2 * var(--f))); transition: filter .4s; }
+.gallery__frame:focus-visible { outline-offset: 8px; }
+.gallery--classic .gallery__frame { border: 14px solid transparent; border-image: linear-gradient(135deg, #6f521f, #e2c27a 22%, #8a6a2c 45%, #d7b465 70%, #5e4419) 1;
+  box-shadow: inset 0 0 0 6px #efe7d6, inset 0 0 0 7px rgba(0,0,0,.25), 0 28px 44px -18px rgba(0,0,0,.85), 0 8px 16px rgba(0,0,0,.45); padding: 6px; }
+.gallery--modern .gallery__frame { border: 7px solid #17120d; outline: 1px solid rgba(255,255,255,.05); }
+.gallery__canvas {
+  display: grid; place-items: center; width: 100%; height: 100%;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 2px, transparent 2px 4px),
+    linear-gradient(160deg, #3a342c, #2a2520);
+}
+.gallery__canvas .slot__mark { width: 18%; opacity: calc(.5 + .5 * var(--f)); }
+.gallery__work--empty .gallery__frame { cursor: default; }
+
+/* Museum label (cartel) */
+.gallery__cartel {
+  position: absolute; top: calc(100% + 26px); inset-inline-start: 0;
+  min-width: 150px; max-width: max(200px, 100%);
+  display: grid; gap: 1px; padding: 9px 12px;
+  background: #ece6da; color: #1b1815; font-size: .72rem; line-height: 1.35;
+  box-shadow: 0 6px 14px rgba(0,0,0,.4);
+  opacity: calc(.55 + .45 * var(--f)); transition: opacity .4s;
+}
+.gallery__cartel strong { font-weight: 600; }
+.gallery__cartel em { font-style: italic; }
+.gallery__cartel span { color: #5d564d; }
+.gallery__work--empty .gallery__cartel { background: rgba(236,230,218,.12); color: var(--muted); box-shadow: none; }
+
+/* Controls under the room */
+.gallery__controls { display: flex; align-items: center; gap: 18px; padding: 14px var(--gutter); }
+.gallery__hint { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+.gallery__progress { position: relative; flex: 1; height: 1px; background: var(--line); overflow: hidden; }
+.gallery__progress span { position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+[dir="rtl"] .gallery__progress span { transform-origin: right; }
+.gallery__btns { display: flex; gap: 8px; }
+@media (max-width: 599px) { .gallery__hint { display: none; } }
+
+/* Pinned walk (desktop): the room fills the screen while you walk */
+.gallery.is-pinned .gallery__pin { position: sticky; top: var(--header-h); --h: min(46vh, 480px); }
+.gallery.is-pinned .gallery__room { height: calc(100vh - var(--header-h) - 64px); display: flex; flex-direction: column; justify-content: center; }
+.gallery.is-pinned .gallery__wall { overflow: hidden; scroll-snap-type: none; padding-bottom: 0; flex: none; }
+.gallery.is-pinned .gallery__track { padding-top: calc(var(--h) * .38); padding-bottom: calc(var(--h) * .42); }
+.gallery.is-pinned .gallery__floor { height: calc((100vh - var(--header-h) - 64px - var(--h) * 1.8) / 2 + 8px); min-height: 12%; }
+.header-hidden .gallery.is-pinned .gallery__pin { top: 0; }
+.header-hidden .gallery.is-pinned .gallery__room { height: calc(100vh - 64px); }
+:lang(ar) .gallery__title { line-height: 1.45; font-weight: 500; }
+:lang(ar) .gallery__room-no { letter-spacing: 0; }
+@media (max-width: 599px) { .gallery__pin { --h: min(36vh, 230px); } .gallery__track { gap: 44px; } .gallery__plaque { width: 72vw; } }

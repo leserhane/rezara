@@ -421,6 +421,7 @@
       document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
     });
     if (focus) tab.focus();
+    layoutGalleries();
     if (lenis) lenis.resize();
     onScroll();
   }
@@ -666,12 +667,13 @@
       if (pinned) storiesFrame();
       parallaxFrame();
       eraProgress();
+      galleriesFrame();
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   let resizeT;
-  window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { layoutStories(); onScroll(); }, 120); });
-  window.addEventListener('load', () => { layoutStories(); onScroll(); });
+  window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { layoutStories(); layoutGalleries(); onScroll(); }, 120); });
+  window.addEventListener('load', () => { layoutStories(); layoutGalleries(); onScroll(); });
 
   /* ------------------------------------------------------------------
      Reduced motion — OS preference + in-page toggle
@@ -684,7 +686,7 @@
     motionBtn.disabled = osReduce.matches;
     if (osReduce.matches) motionBtn.title = t('motion.system');
     if (r) { stopLenis(); cursor.classList.remove('is-on'); } else startLenis();
-    layoutStories(); onScroll();
+    layoutStories(); layoutGalleries(); onScroll();
   }
   motionBtn.addEventListener('click', () => {
     const on = !root.classList.contains('reduce-motion');
@@ -1012,72 +1014,189 @@
   renderShelf();
 
   /* ------------------------------------------------------------------
-     ARTS COLLECTION — Orientalistes / Marocains (data: BAM_ART)
+     ARTS COLLECTION — a walk through gallery rooms (data: BAM_ART)
+     Each room is a wall of framed paintings. On desktop the room pins and
+     vertical scrolling walks along the wall; elsewhere the wall is swiped.
      ------------------------------------------------------------------ */
   const artEl = $('[data-art]');
   const artParts = Array.isArray(window.BAM_ART) ? window.BAM_ART : [];
   let artWorks = [];
-  const ART_RATIOS = ['4 / 5', '1 / 1', '3 / 4', '5 / 4', '4 / 5', '3 / 4'];
-  function artGrid(node, label) {
+  var galleryRooms = []; // var: read by layoutGalleries(), which may run from earlier code
+  const ART_RATIOS = ['4 / 5', '5 / 4', '3 / 4', '1 / 1', '4 / 3', '3 / 4'];
+  const ratioNum = (r) => { const [a, b] = String(r).split('/').map(Number); return b ? a / b : Number(r) || 0.8; };
+
+  function workHTML(w, i, label) {
+    if (w && w.src) {
+      const k = artWorks.push({ w, label }) - 1;
+      const cap = [L(w.artist), L(w.title)].filter(Boolean).join(' · ');
+      return `<figure class="gallery__work" style="--r:${ratioNum(w.ratio || '4 / 5')}">
+          <span class="gallery__glow" aria-hidden="true"></span>
+          <button type="button" class="gallery__frame" data-art-work="${k}" data-cursor="${esc(t('a.view'))}" aria-label="${esc(t('tl.enlarge', { x: cap || L(w.alt) }))}">
+            <img src="${esc(w.src)}" alt="${esc(L(w.alt))}" loading="lazy" draggable="false"></button>
+          <figcaption class="gallery__cartel">${L(w.artist) ? `<strong>${esc(L(w.artist))}</strong>` : ''}${L(w.title) ? `<em>${esc(L(w.title))}</em>` : ''}${[L(w.date), L(w.medium)].filter(Boolean).length ? `<span>${esc([L(w.date), L(w.medium)].filter(Boolean).join(', '))}</span>` : ''}</figcaption>
+        </figure>`;
+    }
+    return `<figure class="gallery__work gallery__work--empty" style="--r:${ratioNum(ART_RATIOS[i % ART_RATIOS.length])}" aria-hidden="true">
+        <span class="gallery__glow"></span>
+        <span class="gallery__frame"><span class="gallery__canvas"><svg class="slot__mark" viewBox="0 0 100 100"><use href="#diamond"/></svg></span></span>
+        <figcaption class="gallery__cartel"><em>${esc(t('art.workSoon'))}</em></figcaption>
+      </figure>`;
+  }
+  function roomHTML(node, num, title, style) {
     const works = node.works || [];
     const n = Math.max(node.slots || 0, works.length);
-    let html = '';
-    for (let i = 0; i < n; i++) {
-      const w = works[i];
-      if (w && w.src) {
-        const k = artWorks.push({ w, label }) - 1;
-        const cap = [L(w.artist), L(w.title)].filter(Boolean).join(' · ');
-        html += `<li class="art-work"><button type="button" class="art-work__btn" data-art-work="${k}" data-cursor="${esc(t('a.view'))}" aria-label="${esc(t('tl.enlarge', { x: cap || L(w.alt) }))}">
-            <img src="${esc(w.src)}" alt="${esc(L(w.alt))}" loading="lazy"${w.ratio ? ` style="aspect-ratio:${w.ratio}"` : ''}></button>
-            <p class="art-work__cap">${L(w.artist) ? `<strong>${esc(L(w.artist))}</strong>` : ''}${L(w.title) ? `<span>${esc(L(w.title))}</span>` : ''}${L(w.date) ? `<span class="art-work__date">${esc(L(w.date))}</span>` : ''}</p></li>`;
-      } else {
-        html += `<li class="art-work art-work--empty" aria-hidden="true"><span class="art-work__frame" style="aspect-ratio:${ART_RATIOS[i % ART_RATIOS.length]}">
-            <svg class="slot__mark" viewBox="0 0 100 100"><use href="#diamond"/></svg></span>
-            <p class="art-work__cap"><span>${esc(t('art.workSoon'))}</span></p></li>`;
-      }
-    }
+    let items = '';
+    for (let i = 0; i < n; i++) items += workHTML(works[i], i, title);
     const filled = works.filter((w) => w && w.src).length;
-    return `<ul class="art-grid" role="list" aria-label="${esc(t('art.works', { label, n: filled, total: n }))}">${html}</ul>`;
+    return `<div class="gallery gallery--${style}" id="art-${esc(node.id)}" data-gallery>
+        <div class="gallery__pin">
+          <div class="gallery__room">
+            <div class="gallery__wall" data-gallery-wall tabindex="0" role="group" aria-label="${esc(t('art.works', { label: title, n: filled, total: n }))}">
+              <div class="gallery__track" data-gallery-track>
+                <div class="gallery__plaque">
+                  <p class="gallery__room-no">${esc(t('art.room', { n: num }))}</p>
+                  <h4 class="gallery__title">${esc(title)}</h4>
+                  ${node.intro ? `<p class="gallery__intro">${esc(L(node.intro))}</p>` : ''}
+                </div>
+                ${items}
+              </div>
+            </div>
+            <div class="gallery__floor" aria-hidden="true"></div>
+          </div>
+          <div class="gallery__controls">
+            <p class="gallery__hint">${esc(t(desktop.matches && !reduced() ? 'art.walk' : 'art.swipe'))}</p>
+            <span class="gallery__progress" aria-hidden="true"><span></span></span>
+            <div class="gallery__btns">
+              <button type="button" class="icon-btn icon-btn--sm" data-gallery-step="-1" aria-label="${esc(t('art.prev'))}"><span aria-hidden="true" class="flip-rtl">←</span></button>
+              <button type="button" class="icon-btn icon-btn--sm" data-gallery-step="1" aria-label="${esc(t('art.next'))}"><span aria-hidden="true" class="flip-rtl">→</span></button>
+            </div>
+          </div>
+        </div>
+      </div>`;
   }
+
   function renderArt() {
     if (!artEl || !artParts.length) return;
     artWorks = [];
     const nav = [];
+    let room = 0;
     const parts = artParts.map((part, pi) => {
       const title = L(part.title);
-      nav.push(`<li><a href="#art-${esc(part.id)}"><span class="art-nav__num">${ROMAN[pi] || pi + 1}</span>${esc(title)}</a></li>`);
-      let body = '';
+      const style = part.id === 'orientalistes' ? 'classic' : 'modern';
+      nav.push(`<li><a href="#art-part-${esc(part.id)}"><span class="art-nav__num">${ROMAN[pi] || pi + 1}</span>${esc(title)}</a></li>`);
+      let body;
       if (part.groups) {
         body = part.groups.map((g) => {
           const gt = L(g.title);
           nav.push(`<li class="art-nav__sub"><a href="#art-${esc(g.id)}">${esc(gt)}</a></li>`);
-          const inner = g.schools
-            ? `<div class="art-schools">${g.schools.map((sc) => `<div class="art-school" id="art-${esc(sc.id)}">
-                <h5 class="art-school__title">${esc(L(sc.title))}</h5>
-                <p class="art-school__intro">${esc(L(sc.intro))}</p>
-                ${artGrid(sc, `${gt} — ${L(sc.title)}`)}</div>`).join('')}</div>`
-            : artGrid(g, gt);
+          if (!g.schools) return roomHTML(g, ++room, gt, style);
           return `<div class="art-group" id="art-${esc(g.id)}">
               <h4 class="art-group__title">${esc(gt)}</h4>
               ${g.intro ? `<p class="art-group__intro">${esc(L(g.intro))}</p>` : ''}
-              ${inner}</div>`;
+            </div>${g.schools.map((sc) => roomHTML(sc, ++room, L(sc.title), style)).join('')}`;
         }).join('');
       } else {
-        body = artGrid(part, title);
+        body = roomHTML({ ...part, id: part.id + '-salle' }, ++room, title, style);
       }
-      return `<section class="art-part" id="art-${esc(part.id)}" aria-labelledby="art-${esc(part.id)}-title">
+      return `<section class="art-part" id="art-part-${esc(part.id)}" aria-labelledby="art-${esc(part.id)}-title">
           <header class="art-part__head">
             <span class="art-part__num" aria-hidden="true">${ROMAN[pi] || pi + 1}</span>
             <h3 class="art-part__title" id="art-${esc(part.id)}-title">${esc(title)}</h3>
-            ${part.intro ? `<p class="art-part__intro">${esc(L(part.intro))}</p>` : ''}
+            ${part.groups && part.intro ? `<p class="art-part__intro">${esc(L(part.intro))}</p>` : ''}
           </header>
-          <div class="art-part__body">${body}</div>
+          ${body}
         </section>`;
     }).join('');
     artEl.innerHTML = `<nav class="art-nav" aria-label="${esc(t('art.nav'))}"><ol role="list">${nav.join('')}</ol></nav>${parts}`;
+    galleryRooms = $$('[data-gallery]', artEl).map((el) => ({
+      el, pin: $('.gallery__pin', el), wall: $('[data-gallery-wall]', el), track: $('[data-gallery-track]', el),
+      works: $$('.gallery__work', el), bar: $('.gallery__progress span', el), travel: 0, pinned: false,
+    }));
+    galleryRooms.forEach((r) => r.wall.addEventListener('scroll', () => { if (!r.pinned) galleryFrame(r); }, { passive: true }));
+    layoutGalleries();
   }
+
+  // Measure each room: pinned rooms get a scroll height equal to their walk.
+  function layoutGalleries() {
+    const pin = desktop.matches && !reduced();
+    galleryRooms.forEach((r) => {
+      if (!r.el.offsetParent) return; // tab hidden: measured when shown
+      r.pinned = pin;
+      r.el.classList.toggle('is-pinned', pin);
+      r.track.style.transform = '';
+      if (pin) {
+        r.wall.scrollLeft = 0;
+        r.travel = Math.max(0, r.track.scrollWidth - r.wall.clientWidth);
+        r.el.style.height = (r.pin.offsetHeight + r.travel) + 'px';
+      } else {
+        r.el.style.height = '';
+      }
+      galleryFrame(r);
+    });
+  }
+  function roomProgress(r) {
+    if (r.pinned) {
+      const range = r.el.offsetHeight - r.pin.offsetHeight;
+      return range > 0 ? clamp(-r.el.getBoundingClientRect().top / range) : 0;
+    }
+    const max = r.wall.scrollWidth - r.wall.clientWidth;
+    return max > 0 ? clamp(Math.abs(r.wall.scrollLeft) / max) : 0;
+  }
+  // Walk: move the wall, slide the floor faster for depth, light the
+  // painting in front of the visitor.
+  function galleryFrame(r) {
+    const rect = r.el.getBoundingClientRect();
+    if (rect.bottom < -50 || rect.top > window.innerHeight + 50) return;
+    const p = roomProgress(r);
+    if (r.pinned) {
+      const tx = (isRTL() ? p : -p) * r.travel;
+      r.track.style.transform = `translate3d(${tx.toFixed(1)}px,0,0)`;
+      r.pin.style.setProperty('--fx', (tx * 1.6).toFixed(1) + 'px');
+    } else {
+      r.pin.style.setProperty('--fx', ((isRTL() ? 1 : -1) * Math.abs(r.wall.scrollLeft) * 1.6).toFixed(1) + 'px');
+    }
+    r.bar.style.transform = `scaleX(${p.toFixed(4)})`;
+    const wr = r.wall.getBoundingClientRect();
+    const cx = wr.left + wr.width / 2;
+    r.works.forEach((w) => {
+      const b = w.getBoundingClientRect();
+      const d = Math.abs(b.left + b.width / 2 - cx) / (wr.width * 0.55);
+      w.style.setProperty('--f', (1 - Math.min(1, d)).toFixed(3));
+    });
+  }
+  function galleriesFrame() { galleryRooms.forEach((r) => { if (r.pinned) galleryFrame(r); }); }
+  function galleryGo(r, i) {
+    const items = [$('.gallery__plaque', r.el), ...r.works];
+    i = clamp(i, 0, items.length - 1);
+    const it = items[i];
+    if (r.pinned) {
+      const tr = r.track.getBoundingClientRect(), ir = it.getBoundingClientRect();
+      const dist = isRTL() ? tr.right - ir.right : ir.left - tr.left;
+      const target = dist + ir.width / 2 - r.wall.clientWidth / 2;
+      const x = clamp(target / (r.travel || 1));
+      const top = r.el.getBoundingClientRect().top + window.scrollY + x * (r.el.offsetHeight - r.pin.offsetHeight);
+      if (lenis) lenis.scrollTo(top, { duration: 1.2 });
+      else window.scrollTo({ top, behavior: reduced() ? 'auto' : 'smooth' });
+    } else {
+      it.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }
+  function galleryCurrent(r) {
+    const items = [$('.gallery__plaque', r.el), ...r.works];
+    const wr = r.wall.getBoundingClientRect(); const cx = wr.left + wr.width / 2;
+    let best = 0, bd = Infinity;
+    items.forEach((it, i) => { const b = it.getBoundingClientRect(); const d = Math.abs(b.left + b.width / 2 - cx); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
+
   if (artEl) {
     artEl.addEventListener('click', (e) => {
+      const step = e.target.closest('[data-gallery-step]');
+      if (step) {
+        const r = galleryRooms.find((x) => x.el.contains(step));
+        galleryGo(r, galleryCurrent(r) + Number(step.dataset.galleryStep));
+        return;
+      }
       const b = e.target.closest('[data-art-work]');
       if (!b) return;
       const { w, label } = artWorks[Number(b.dataset.artWork)];
@@ -1085,6 +1204,13 @@
         figures: [{ src: w.src, alt: L(w.alt), cls: 'photo' }],
         meta: label, title: [L(w.artist), L(w.title)].filter(Boolean).join(' · '),
         body: [L(w.date), L(w.medium), L(w.text)].filter(Boolean).join(' · '), returnTo: b });
+    });
+    // Keyboard focus inside a pinned room walks to that painting.
+    artEl.addEventListener('focusin', (e) => {
+      const f = e.target.closest('.gallery__frame');
+      if (!f) return;
+      const r = galleryRooms.find((x) => x.el.contains(f));
+      if (r && r.pinned) { r.wall.scrollLeft = 0; galleryGo(r, r.works.indexOf(f.closest('.gallery__work')) + 1); }
     });
     renderArt();
   }
