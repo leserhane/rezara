@@ -631,73 +631,20 @@
     <div class="container">
       <header class="section-head section-head--split">
         <div>
-          <p data-i18n="ev.eyebrow" class="eyebrow reveal">What’s on</p>
+          <p data-i18n="ev.eyebrow" class="eyebrow reveal">Exhibitions &amp; milestones</p>
           <h2 data-i18n="ev.title" class="section-title reveal" id="events-title" style="--i:1">Events <em>calendar</em></h2>
         </div>
         <div data-i18n-attr="aria-label:a.filters" class="filters reveal" style="--i:2" role="group" aria-label="Filter events by type" data-filters>
           <button data-i18n="ev.all" type="button" class="filter" aria-pressed="true" data-filter="all">All</button>
-          <button data-i18n="ev.talks" type="button" class="filter" aria-pressed="false" data-filter="talk">Talks</button>
-          <button data-i18n="ev.tours" type="button" class="filter" aria-pressed="false" data-filter="tour">Tours</button>
-          <button data-i18n="ev.workshops" type="button" class="filter" aria-pressed="false" data-filter="workshop">Workshops</button>
-          <button data-i18n="ev.family" type="button" class="filter" aria-pressed="false" data-filter="family">Family</button>
-          <button data-i18n="ev.music" type="button" class="filter" aria-pressed="false" data-filter="music">Music</button>
+          <button data-i18n="ev.f.current" type="button" class="filter" aria-pressed="false" data-filter="current">Now on</button>
+          <button data-i18n="ev.f.expo" type="button" class="filter" aria-pressed="false" data-filter="expo">Exhibitions</button>
+          <button data-i18n="ev.f.milestone" type="button" class="filter" aria-pressed="false" data-filter="milestone">Milestones</button>
         </div>
       </header>
       <p class="sr-only" aria-live="polite" data-events-live></p>
 
-      <ol class="events__list" data-events>
-        <li class="event" data-type="talk">
-          <time class="event__date" datetime="2026-10-08"><span class="event__day">08</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p data-i18n="ev.t.talk" class="event__type">Talk</p><h3 data-i18n="ev.1.title" class="event__title">Struck in Paris: the curator’s view</h3><p data-i18n="ev.1.desc" class="event__desc">The exhibition’s curator on commissioning a currency abroad.</p></div>
-          <p data-i18n="ev.time.aud1830" class="event__time">18:30 · Auditorium</p>
-        </li>
-        <li class="event" data-type="family">
-          <time class="event__date" datetime="2026-10-11"><span class="event__day">11</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p data-i18n="ev.family" class="event__type">Family</p><h3 data-i18n="ev.2.title" class="event__title">Design your own coin</h3><p data-i18n="ev.2.desc" class="event__desc">Rubbings, stamps and clay for ages 6–12. Parents welcome.</p></div>
-          <p data-i18n="ev.time.studio1030" class="event__time">10:30 · Learning studio</p>
-        </li>
-        <li class="event" data-type="tour">
-          <time class="event__date" datetime="2026-10-17"><span class="event__day">17</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p data-i18n="ev.t.tour" class="event__type">Tour</p><h3 data-i18n="ev.3.title" class="event__title">Twelve centuries in sixty minutes</h3><p data-i18n="ev.3.desc" class="event__desc">A guided walk through the numismatics galleries.</p></div>
-          <p data-i18n="ev.time.hall1100" class="event__time">11:00 · Main hall</p>
-        </li>
-        <li class="event" data-type="workshop">
-          <time class="event__date" datetime="2026-10-24"><span class="event__day">24</span><span class="event__mon">Oct</span></time>
-          <div class="event__body"><p data-i18n="ev.t.workshop" class="event__type">Workshop</p><h3 data-i18n="ev.4.title" class="event__title">Reading Maghrebi calligraphy on coins</h3><p data-i18n="ev.4.desc" class="event__desc">Learn to decipher mint names and dates with a magnifier in hand.</p></div>
-          <p data-i18n="ev.time.studio1400" class="event__time">14:00 · Learning studio</p>
-        </li>
-        <li class="event" data-type="music">
-          <time class="event__date" datetime="2026-11-06"><span class="event__day">06</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p data-i18n="ev.music" class="event__type">Music</p><h3 data-i18n="ev.5.title" class="event__title">Andalusian nights in the galleries</h3><p data-i18n="ev.5.desc" class="event__desc">A late opening with a chamber ensemble among the collections.</p></div>
-          <p data-i18n="ev.time.arts1930" class="event__time">19:30 · Arts galleries</p>
-        </li>
-        <li class="event" data-type="talk">
-          <time class="event__date" datetime="2026-11-12"><span class="event__day">12</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p data-i18n="ev.t.talk" class="event__type">Talk</p><h3 data-i18n="ev.6.title" class="event__title">What makes a banknote hard to fake?</h3><p data-i18n="ev.6.desc" class="event__desc">Security features explained, from watermark to hologram.</p></div>
-          <p data-i18n="ev.time.aud1830" class="event__time">18:30 · Auditorium</p>
-        </li>
-        <li class="event" data-type="tour">
-          <time class="event__date" datetime="2026-11-21"><span class="event__day">21</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p data-i18n="ev.t.tour" class="event__type">Tour</p><h3 data-i18n="ev.7.title" class="event__title">Modern Moroccan painting</h3><p data-i18n="ev.7.desc" class="event__desc">A walk through the Bank Al-Maghrib art collection.</p></div>
-          <p data-i18n="ev.time.arts1100" class="event__time">11:00 · Arts galleries</p>
-        </li>
-        <li class="event" data-type="family">
-          <time class="event__date" datetime="2026-11-29"><span class="event__day">29</span><span class="event__mon">Nov</span></time>
-          <div class="event__body"><p data-i18n="ev.family" class="event__type">Family</p><h3 data-i18n="ev.8.title" class="event__title">Treasure trail</h3><p data-i18n="ev.8.desc" class="event__desc">A self-guided hunt through the galleries, with a prize at the Boutique.</p></div>
-          <p data-i18n="ev.time.allday" class="event__time">All day · Free with entry</p>
-        </li>
-        <li class="event" data-type="workshop">
-          <time class="event__date" datetime="2026-12-05"><span class="event__day">05</span><span class="event__mon">Dec</span></time>
-          <div class="event__body"><p data-i18n="ev.t.workshop" class="event__type">Workshop</p><h3 data-i18n="ev.9.title" class="event__title">Photographing small objects</h3><p data-i18n="ev.9.desc" class="event__desc">Light, macro lenses and patience — shoot the collection like a pro.</p></div>
-          <p data-i18n="ev.time.studio1400" class="event__time">14:00 · Learning studio</p>
-        </li>
-        <li class="event" data-type="music">
-          <time class="event__date" datetime="2026-12-18"><span class="event__day">18</span><span class="event__mon">Dec</span></time>
-          <div class="event__body"><p data-i18n="ev.music" class="event__type">Music</p><h3 data-i18n="ev.10.title" class="event__title">Oud at dusk</h3><p data-i18n="ev.10.desc" class="event__desc">Solo recital to close the year.</p></div>
-          <p data-i18n="ev.time.hall1900" class="event__time">19:00 · Main hall</p>
-        </li>
-      </ol>
-      <p data-i18n="ev.empty" class="events__empty" data-events-empty hidden>No events of this type are scheduled yet — check back soon.</p>
+      <ol class="events__list" data-events></ol>
+      <p data-i18n="ev.empty" class="events__empty" data-events-empty hidden>Nothing to show in this category for now.</p>
     </div>
   </section>
 
@@ -774,6 +721,7 @@
 <script src="i18n.js" defer></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
 <script src="collection-data.js" defer></script>
+<script src="agenda-data.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

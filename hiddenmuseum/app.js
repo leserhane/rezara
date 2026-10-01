@@ -995,26 +995,61 @@
      EVENTS — filter by type
      ------------------------------------------------------------------ */
   const filterBtns = $$('[data-filter]');
-  const eventItems = $$('[data-events] .event');
+  const eventsList = $('[data-events]');
   const eventsEmpty = $('[data-events-empty]');
   const eventsLive = $('[data-events-live]');
-  function renderEventDates() {
-    const fmt = new Intl.DateTimeFormat(I18N.locale(), { month: 'short' });
-    eventItems.forEach((el) => {
-      const d = new Date($('time', el).getAttribute('datetime') + 'T12:00:00');
-      $('.event__mon', el).textContent = fmt.format(d);
+  const AGENDA = window.BAM_AGENDA || [];
+  let eventFilter = 'all';
+  const isoDate = (s) => new Date(s + 'T12:00:00');
+  function agendaStatus(ev) {
+    if (!ev.start) return '';
+    const now = new Date(); now.setHours(12, 0, 0, 0);
+    if (now < isoDate(ev.start)) return 'upcoming';
+    return ev.end && now > isoDate(ev.end) ? 'past' : 'current';
+  }
+  function agendaRange(ev) {
+    const a = isoDate(ev.start), b = ev.end ? isoDate(ev.end) : null;
+    const sameYear = b && a.getFullYear() === b.getFullYear();
+    const fa = new Intl.DateTimeFormat(I18N.locale(), sameYear ? { day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short', year: 'numeric' });
+    const fb = new Intl.DateTimeFormat(I18N.locale(), { day: 'numeric', month: 'short', year: 'numeric' });
+    return b ? `${fa.format(a)} – ${fb.format(b)}` : fb.format(a);
+  }
+  function eventHTML(ev) {
+    const status = agendaStatus(ev);
+    const year = ev.start ? isoDate(ev.start).getFullYear() : ev.year;
+    const date = year
+      ? `<time class="event__date" datetime="${ev.start || year}"><span class="event__day">${year}</span>${ev.start ? `<span class="event__mon event__range">${esc(agendaRange(ev))}</span>` : ''}</time>`
+      : `<span class="event__date event__date--archive"><svg class="event__mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#diamond"/></svg><span class="event__mon">${esc(t('ev.archive'))}</span></span>`;
+    const more = ev.more ? `<details class="event__more"><summary><span class="event__more-open">${esc(t('ev.more'))}</span><span class="event__more-close">${esc(t('ev.less'))}</span></summary><p>${esc(L(ev.more))}</p></details>` : '';
+    return `<li class="event event--${ev.type}${status ? ' is-' + status : ''}" data-type="${ev.type}" data-status="${status}">
+      ${date}
+      <div class="event__body"><p class="event__type">${esc(t('ev.k.' + ev.type))}${status ? ` <span class="event__status">${esc(t('ev.s.' + status))}</span>` : ''}</p>
+        <h3 class="event__title">${esc(L(ev.title))}</h3>${ev.desc ? `<p class="event__desc">${esc(L(ev.desc))}</p>` : ''}${more}</div>
+      <p class="event__time">${ev.place ? esc(L(ev.place)) : ''}</p>
+    </li>`;
+  }
+  const showEvent = (el) => eventFilter === 'all' || (eventFilter === 'current' ? el.dataset.status === 'current' : el.dataset.type === eventFilter);
+  function renderAgenda() {
+    const open = new Set($$('.event__more[open]', eventsList).map((d) => d.closest('.event').dataset.id));
+    eventsList.innerHTML = AGENDA.map(eventHTML).join('');
+    $$('.event', eventsList).forEach((el, i) => {
+      el.dataset.id = AGENDA[i].id;
+      el.hidden = !showEvent(el);
+      const det = $('.event__more', el);
+      if (det && open.has(AGENDA[i].id)) det.open = true;
     });
+    eventsEmpty.hidden = $$('.event', eventsList).some((el) => !el.hidden);
   }
   filterBtns.forEach((btn) => btn.addEventListener('click', () => {
-    const type = btn.dataset.filter;
+    eventFilter = btn.dataset.filter;
     filterBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-    const show = (el) => type === 'all' || el.dataset.type === type;
-    const leaving = eventItems.filter((el) => !el.hidden && !show(el));
+    const items = $$('.event', eventsList);
+    const leaving = items.filter((el) => !el.hidden && !showEvent(el));
     leaving.forEach((el) => el.classList.add('is-leaving'));
     setTimeout(() => {
       let n = 0;
-      eventItems.forEach((el, i) => {
-        const vis = show(el);
+      items.forEach((el) => {
+        const vis = showEvent(el);
         const wasHidden = el.hidden;
         el.hidden = !vis;
         el.classList.remove('is-leaving', 'is-entering');
@@ -1025,6 +1060,7 @@
       if (lenis) lenis.resize();
     }, leaving.length && !reduced() ? 320 : 0);
   }));
+  eventsList.addEventListener('toggle', () => { if (lenis) lenis.resize(); }, true);
 
   /* ------------------------------------------------------------------
      Newsletter (front-end only)
@@ -1341,7 +1377,7 @@
     nextLabel();
     if (state.step === 'done') renderDone();
     if (state.emailErr) $('[data-error]', stepsEls[3]).textContent = t('tix.emailErr');
-    renderEventDates();
+    renderAgenda();
     if (newsMsg.dataset.key) newsMsg.textContent = t(newsMsg.dataset.key);
     applyMotion(); // also re-measures the Stories rail, whose width depends on the text
     if (lenis) lenis.resize();

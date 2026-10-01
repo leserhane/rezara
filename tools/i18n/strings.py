@@ -475,3 +475,24 @@ JS += [
  ("tix.tourFull", "No guided tour is available at {time}: both guides are already booked. Please choose another time.", "La visite guidée n’est pas disponible pour le créneau de {time} : nos deux guides sont déjà réservés. Merci de choisir un autre horaire.", "الجولة بمرافقة مرشد غير متاحة في موعد {time}: المرشدان محجوزان. يرجى اختيار موعد آخر.", "La visita guiada no está disponible a las {time}: nuestros dos guías ya están reservados. Elija otro horario."),
  ("tix.tourFullNow", "This time slot has just been fully booked for guided tours. Your tickets are kept; choose another time or continue without a guide.", "Ce créneau vient d’être complet pour les visites guidées. Vos billets sont conservés : choisissez un autre horaire ou continuez sans guide.", "اكتمل هذا الموعد للتو بالنسبة للجولات المرشدة. تم الاحتفاظ بتذاكركم: اختاروا موعداً آخر أو تابعوا دون مرشد.", "Este horario acaba de completarse para visitas guiadas. Se conservan sus entradas: elija otro horario o continúe sin guía."),
 ]
+
+# --- Agenda culturel: real exhibitions and milestones ---
+HTML += [
+ ("ev.eyebrow", "Exhibitions &amp; milestones", "Expositions et temps forts", "معارض ومحطات بارزة", "Exposiciones e hitos"),
+ ("ev.f.current", "Now on", "En cours", "جارية حالياً", "En curso"),
+ ("ev.f.expo", "Exhibitions", "Expositions", "المعارض", "Exposiciones"),
+ ("ev.f.milestone", "Milestones", "Temps forts", "محطات بارزة", "Hitos"),
+ ("ev.empty", "Nothing to show in this category for now.", "Rien à afficher dans cette catégorie pour le moment.", "لا شيء للعرض في هذه الفئة حالياً.", "Por ahora no hay nada en esta categoría."),
+]
+JS += [
+ ("ev.k.expo", "Temporary exhibition", "Exposition temporaire", "معرض مؤقت", "Exposición temporal"),
+ ("ev.k.milestone", "Milestone", "Temps fort", "محطة بارزة", "Hito"),
+ ("ev.s.current", "Now on", "En cours", "جارٍ حالياً", "En curso"),
+ ("ev.s.upcoming", "Coming soon", "À venir", "قريباً", "Próximamente"),
+ ("ev.s.past", "Ended", "Terminée", "انتهى", "Finalizada"),
+ ("ev.archive", "Archive", "Archives", "أرشيف", "Archivo"),
+ ("ev.more", "Read more", "Lire la suite", "اقرأ المزيد", "Leer más"),
+ ("ev.less", "Show less", "Réduire", "عرض أقل", "Mostrar menos"),
+ ("ev.shown.one", "{n} item shown.", "{n} élément affiché.", "عدد العناصر المعروضة: {n}.", "{n} elemento mostrado."),
+ ("ev.shown.other", "{n} items shown.", "{n} éléments affichés.", "عدد العناصر المعروضة: {n}.", "{n} elementos mostrados."),
+]
