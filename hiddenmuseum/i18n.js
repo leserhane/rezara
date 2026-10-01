@@ -194,6 +194,9 @@ window.BAM_STRINGS = {
   "art.w6": "Œuvre 06",
   "art.w7": "Œuvre 07",
   "art.w8": "Œuvre 08",
+  "shop.see": "See the coins <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
+  "shelf.title": "Commemorative coins",
+  "shelf.lede": "Silver pieces struck for the Kingdom’s great moments. Select a coin to turn it in your hand.",
   "meta.title": "Musées de Bank Al-Maghrib — Numismatics, Arts & Boutique",
   "meta.desc": "Walk through twelve centuries of Moroccan money and art at the Musées de Bank Al-Maghrib in Rabat. Current exhibitions, collection highlights, events and tickets.",
   "lang.label": "Language",
@@ -249,6 +252,7 @@ window.BAM_STRINGS = {
   "news.ok": "Thank you — the first letter arrives next month.",
   "news.err": "Please enter a valid email address.",
   "addr": "Musées de Bank Al-Maghrib<br>Avenue Mohammed V<br>Rabat, Morocco",
+  "shelf.rail": "Commemorative coins — {n} pieces",
   "a.brand": "Musées de Bank Al-Maghrib — back to top",
   "a.navPrimary": "Primary",
   "a.lookCloser": "Look closer",
@@ -287,7 +291,9 @@ window.BAM_STRINGS = {
   "a.summary": "Booking summary",
   "a.filters": "Filter events by type",
   "a.close": "Close zoom view",
-  "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب"
+  "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب",
+  "a.railLeft": "Scroll photos left",
+  "a.railRight": "Scroll photos right"
  },
  "fr": {
   "nav.menu": "Menu",
@@ -482,6 +488,9 @@ window.BAM_STRINGS = {
   "art.w6": "Œuvre 06",
   "art.w7": "Œuvre 07",
   "art.w8": "Œuvre 08",
+  "shop.see": "Voir les pièces <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
+  "shelf.title": "Pièces commémoratives",
+  "shelf.lede": "Des pièces d’argent frappées pour les grands moments du Royaume. Sélectionnez une pièce pour la faire tourner.",
   "meta.title": "Musées de Bank Al-Maghrib — Numismatique, Arts et Boutique",
   "meta.desc": "Parcourez douze siècles de monnaie et d’art marocains aux Musées de Bank Al-Maghrib à Rabat. Expositions, collections, agenda et billetterie.",
   "lang.label": "Langue",
@@ -537,6 +546,7 @@ window.BAM_STRINGS = {
   "news.ok": "Merci ! La première lettre arrivera le mois prochain.",
   "news.err": "Veuillez saisir une adresse e-mail valide.",
   "addr": "Musées de Bank Al-Maghrib<br>Avenue Mohammed V<br>Rabat, Maroc",
+  "shelf.rail": "Pièces commémoratives — {n} pièces",
   "a.brand": "Musées de Bank Al-Maghrib — retour en haut",
   "a.navPrimary": "Navigation principale",
   "a.lookCloser": "Regarder de près",
@@ -575,7 +585,9 @@ window.BAM_STRINGS = {
   "a.summary": "Récapitulatif de la réservation",
   "a.filters": "Filtrer les événements par type",
   "a.close": "Fermer l’agrandissement",
-  "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب"
+  "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب",
+  "a.railLeft": "Faire défiler vers la gauche",
+  "a.railRight": "Faire défiler vers la droite"
  },
  "ar": {
   "nav.menu": "القائمة",
@@ -770,6 +782,9 @@ window.BAM_STRINGS = {
   "art.w6": "عمل 06",
   "art.w7": "عمل 07",
   "art.w8": "عمل 08",
+  "shop.see": "اكتشف القطع <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
+  "shelf.title": "القطع النقدية التذكارية",
+  "shelf.lede": "قطع فضية سُكّت احتفاءً باللحظات الكبرى للمملكة. اختر قطعة لتقلّبها بين يديك.",
   "meta.title": "متاحف بنك المغرب — المسكوكات والفنون والمتجر",
   "meta.desc": "رحلة عبر اثني عشر قرناً من النقود والفن المغربيين في متاحف بنك المغرب بالرباط. المعارض والمجموعات والفعاليات والتذاكر.",
   "lang.label": "اللغة",
@@ -825,6 +840,7 @@ window.BAM_STRINGS = {
   "news.ok": "شكراً لك، ستصلك الرسالة الأولى الشهر المقبل.",
   "news.err": "يرجى إدخال بريد إلكتروني صحيح.",
   "addr": "متاحف بنك المغرب<br>شارع محمد الخامس<br>الرباط، المغرب",
+  "shelf.rail": "القطع النقدية التذكارية — {n} قطع",
   "a.brand": "متاحف بنك المغرب — العودة إلى الأعلى",
   "a.navPrimary": "التنقل الرئيسي",
   "a.lookCloser": "انظر عن قرب",
@@ -863,7 +879,9 @@ window.BAM_STRINGS = {
   "a.summary": "ملخّص الحجز",
   "a.filters": "تصفية الفعاليات حسب النوع",
   "a.close": "إغلاق العرض المكبّر",
-  "a.logo": "متحف بنك المغرب — Musée de Bank Al-Maghrib"
+  "a.logo": "متحف بنك المغرب — Musée de Bank Al-Maghrib",
+  "a.railLeft": "تمرير الصور إلى اليسار",
+  "a.railRight": "تمرير الصور إلى اليمين"
  },
  "es": {
   "nav.menu": "Menú",
@@ -1058,6 +1076,9 @@ window.BAM_STRINGS = {
   "art.w6": "Obra 06",
   "art.w7": "Obra 07",
   "art.w8": "Obra 08",
+  "shop.see": "Ver las monedas <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>",
+  "shelf.title": "Monedas conmemorativas",
+  "shelf.lede": "Piezas de plata acuñadas para los grandes momentos del Reino. Elige una moneda para girarla en tu mano.",
   "meta.title": "Musées de Bank Al-Maghrib — Numismática, Artes y Tienda",
   "meta.desc": "Recorre doce siglos de dinero y arte marroquíes en los Musées de Bank Al-Maghrib, en Rabat. Exposiciones, colecciones, agenda y entradas.",
   "lang.label": "Idioma",
@@ -1113,6 +1134,7 @@ window.BAM_STRINGS = {
   "news.ok": "¡Gracias! La primera carta llegará el mes que viene.",
   "news.err": "Introduce un correo electrónico válido.",
   "addr": "Musées de Bank Al-Maghrib<br>Avenida Mohammed V<br>Rabat, Marruecos",
+  "shelf.rail": "Monedas conmemorativas — {n} piezas",
   "a.brand": "Musées de Bank Al-Maghrib — volver arriba",
   "a.navPrimary": "Navegación principal",
   "a.lookCloser": "Mirar de cerca",
@@ -1151,7 +1173,9 @@ window.BAM_STRINGS = {
   "a.summary": "Resumen de la reserva",
   "a.filters": "Filtrar actividades por tipo",
   "a.close": "Cerrar la ampliación",
-  "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب"
+  "a.logo": "Musée de Bank Al-Maghrib — متحف بنك المغرب",
+  "a.railLeft": "Desplazar fotos a la izquierda",
+  "a.railRight": "Desplazar fotos a la derecha"
  }
 };
 

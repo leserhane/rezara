@@ -1200,3 +1200,23 @@ html.reduce-motion { scroll-behavior: auto; }
 :lang(ar) .summary__title, :lang(ar) .step__legend, :lang(ar) .tile__cap h3, :lang(ar) .group__title,
 :lang(ar) .summary__total strong, :lang(ar) .event__day { font-family: var(--serif); line-height: 1.5; }
 :lang(ar) .step__legend .step__sub, :lang(ar) .group__count { font-family: var(--sans); }
+
+/* Boutique — commemorative coins shelf */
+.shop__link { font-size: .9rem; margin-top: 1em; }
+.shelf {
+  margin-top: clamp(48px, 7vw, 96px);
+  padding: clamp(28px, 4vw, 48px);
+  border: 1px solid var(--line);
+  background: radial-gradient(120% 90% at 50% 0%, #1d1915 0%, var(--bg-2) 60%);
+  scroll-margin-top: calc(var(--header-h) + 24px);
+  outline: none;
+}
+.shelf__head { display: grid; gap: 10px; margin-bottom: clamp(24px, 3vw, 36px); }
+@media (min-width: 900px) { .shelf__head { grid-template-columns: 1fr 1.2fr; align-items: end; } }
+.shelf__title { font-family: var(--serif); font-weight: 300; font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.05; }
+.shelf__lede { color: var(--muted); max-width: 52ch; }
+.slot--shop { width: clamp(190px, 19vw, 250px); }
+.slot--shop .slot__frame { background: radial-gradient(60% 55% at 50% 45%, #2b2824 0%, #161412 70%, #100e0d 100%); }
+.slot--shop .coin3d { width: 80%; }
+.slot--shop .slot__cap { color: var(--ink); font-size: .84rem; }
+:lang(ar) .shelf__title { line-height: 1.45; font-weight: 500; }

@@ -414,6 +414,7 @@
           <p class="shop__num" aria-hidden="true">01</p>
           <h3 data-i18n="shop.1" class="shop__title" lang="fr">Pièces commémoratives</h3>
           <p data-i18n="shop.1.text" class="shop__desc">Coins struck to mark the great moments of the Kingdom, in proof and uncirculated finishes.</p>
+          <a data-i18n="shop.see" class="text-link shop__link" href="#shop-coins">See the coins <span aria-hidden="true" class="flip-rtl">→</span></a>
         </li>
         <li class="shop__item reveal" style="--i:1">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -458,6 +459,20 @@
           <p data-i18n="shop.5.text" class="shop__desc">Catalogues, numismatic studies and art books published by the museum.</p>
         </li>
       </ul>
+
+      <div class="shelf" id="shop-coins" tabindex="-1">
+        <div class="shelf__head">
+          <h3 data-i18n="shelf.title" class="shelf__title reveal">Commemorative coins</h3>
+          <p data-i18n="shelf.lede" class="shelf__lede reveal" style="--i:1">Silver pieces struck for the Kingdom’s great moments. Select a coin to turn it in your hand.</p>
+        </div>
+        <div class="rail shelf__rail">
+          <ul class="rail__track" role="list" tabindex="0" data-shelf></ul>
+          <div class="rail__btns">
+            <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
+            <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 

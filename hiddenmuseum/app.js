@@ -953,6 +953,44 @@
   });
 
   /* ------------------------------------------------------------------
+     BOUTIQUE — commemorative coins shelf (data: BAM_SHOP_COINS)
+     ------------------------------------------------------------------ */
+  const shelf = $('[data-shelf]');
+  const shopCoins = Array.isArray(window.BAM_SHOP_COINS) ? window.BAM_SHOP_COINS : [];
+  function renderShelf() {
+    if (!shelf) return;
+    $$('.coin3d', shelf).forEach((c) => spinObs.unobserve(c));
+    shelf.setAttribute('aria-label', t('shelf.rail', { n: shopCoins.length }));
+    shelf.innerHTML = shopCoins.map((p, i) => {
+      const cap = L(p.caption), alt = L(p.alt);
+      return `<li class="slot slot--coin slot--shop"><button type="button" class="slot__btn" data-shop-coin="${i}" data-cursor="${esc(t('a.zoom'))}" aria-label="${esc(t('tl.enlarge', { x: cap || alt }))}">
+          <span class="slot__frame">${p.reverse
+            ? `<span class="coin3d" style="--d:${(-(i * 3.1) % 16).toFixed(1)}s">${coinMarkup(esc(p.src), esc(p.reverse), esc(alt), 6)}</span>`
+            : `<img src="${esc(p.src)}" alt="${esc(alt)}" loading="lazy">`}</span></button>
+          <p class="slot__cap">${esc(cap)}</p></li>`;
+    }).join('');
+    $$('.coin3d', shelf).forEach((c) => spinObs.observe(c));
+  }
+  if (shelf) {
+    const shelfBox = shelf.closest('.shelf');
+    shelfBox.addEventListener('click', (e) => {
+      const rb = e.target.closest('[data-rail]');
+      if (rb) {
+        shelf.scrollBy({ left: Number(rb.dataset.rail) * shelf.clientWidth * 0.8, behavior: reduced() ? 'auto' : 'smooth' });
+        return;
+      }
+      const b = e.target.closest('[data-shop-coin]');
+      if (!b) return;
+      const p = shopCoins[Number(b.dataset.shopCoin)];
+      openLightbox({
+        coin: p.reverse ? { front: p.src, back: p.reverse, alt: L(p.alt) } : null,
+        figures: p.reverse ? [] : [{ src: p.src, alt: L(p.alt), cls: 'coin' }],
+        meta: t('shelf.title'), title: L(p.caption), body: L(p.text), returnTo: b });
+    });
+    renderShelf();
+  }
+
+  /* ------------------------------------------------------------------
      LANGUAGE — flag menu; everything drawn by JS is redrawn on change
      ------------------------------------------------------------------ */
   const langBox = $('[data-lang]');
@@ -995,6 +1033,7 @@
     makeFormatters();
     if (activePanel > -1) caption.textContent = panels[activePanel].dataset.caption;
     renderTimeline();
+    renderShelf();
     renderCal();
     updateSummary();
     nextLabel();

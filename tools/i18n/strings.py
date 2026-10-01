@@ -358,3 +358,16 @@ HTML += [
 ]
 for i in range(1, 9):
     HTML.append((f"art.w{i}", f"Œuvre 0{i}", f"Œuvre 0{i}", f"عمل 0{i}", f"Obra 0{i}"))
+
+HTML += [
+ ("shop.see", "See the coins <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Voir les pièces <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "اكتشف القطع <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>", "Ver las monedas <span aria-hidden=\"true\" class=\"flip-rtl\">→</span>"),
+ ("shelf.title", "Commemorative coins", "Pièces commémoratives", "القطع النقدية التذكارية", "Monedas conmemorativas"),
+ ("shelf.lede", "Silver pieces struck for the Kingdom’s great moments. Select a coin to turn it in your hand.", "Des pièces d’argent frappées pour les grands moments du Royaume. Sélectionnez une pièce pour la faire tourner.", "قطع فضية سُكّت احتفاءً باللحظات الكبرى للمملكة. اختر قطعة لتقلّبها بين يديك.", "Piezas de plata acuñadas para los grandes momentos del Reino. Elige una moneda para girarla en tu mano."),
+]
+ATTR += [
+ ("a.railLeft", "aria-label", "Scroll photos left", "Faire défiler vers la gauche", "تمرير الصور إلى اليسار", "Desplazar fotos a la izquierda"),
+ ("a.railRight", "aria-label", "Scroll photos right", "Faire défiler vers la droite", "تمرير الصور إلى اليمين", "Desplazar fotos a la derecha"),
+]
+JS += [
+ ("shelf.rail", "Commemorative coins — {n} pieces", "Pièces commémoratives — {n} pièces", "القطع النقدية التذكارية — {n} قطع", "Monedas conmemorativas — {n} piezas"),
+]

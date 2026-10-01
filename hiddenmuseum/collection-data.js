@@ -217,3 +217,28 @@ window.BAM_COLLECTION = [
     ]
   }
 ];
+
+/* ==========================================================================
+   Boutique — commemorative coins shelf
+   --------------------------------------------------------------------------
+   Same photo format as the timeline: { src, reverse?, alt, caption, text? }.
+   src is the obverse (portrait side); reverse is the commemorative design.
+   Add a coin by putting its images in assets/boutique/ and adding an entry.
+   ========================================================================== */
+window.BAM_SHOP_COINS = [
+  { src: 'assets/boutique/marche-verte-1976-a.webp', reverse: 'assets/boutique/marche-verte-1976-b.webp',
+    alt: { fr: 'Pièce d’argent de 50 dirhams de 1976 : profil de Hassan II et, au revers, des mains portant des drapeaux.', ar: 'قطعة فضية من فئة 50 درهماً لسنة 1976: صورة جانبية للحسن الثاني، وعلى الظهر أيادٍ تحمل الأعلام.', en: 'Silver 50 dirham coin of 1976: profile of Hassan II and, on the reverse, hands carrying flags.', es: 'Moneda de plata de 50 dírhams de 1976: perfil de Hasán II y, en el reverso, manos que portan banderas.' },
+    caption: { fr: 'Marche verte · 50 dirhams · 1976 / 1396 H.', ar: 'المسيرة الخضراء · 50 درهماً · 1976 / 1396 هـ', en: 'Green March · 50 dirhams · 1976 / AH 1396', es: 'Marcha Verde · 50 dírhams · 1976 / 1396 H.' } },
+  { src: 'assets/boutique/jeux-med-1983-a.webp', reverse: 'assets/boutique/jeux-med-1983-b.webp',
+    alt: { fr: 'Pièce d’argent de 100 dirhams de 1983 : profil de Hassan II et, au revers, trois anneaux au-dessus des vagues.', ar: 'قطعة فضية من فئة 100 درهم لسنة 1983: صورة جانبية للحسن الثاني، وعلى الظهر ثلاث حلقات فوق الأمواج.', en: 'Silver 100 dirham coin of 1983: profile of Hassan II and, on the reverse, three rings above waves.', es: 'Moneda de plata de 100 dírhams de 1983: perfil de Hasán II y, en el reverso, tres anillos sobre las olas.' },
+    caption: { fr: '9es Jeux méditerranéens · 100 dirhams · 1983 / 1403 H.', ar: 'الدورة التاسعة لألعاب البحر الأبيض المتوسط · 100 درهم · 1983 / 1403 هـ', en: '9th Mediterranean Games · 100 dirhams · 1983 / AH 1403', es: 'IX Juegos Mediterráneos · 100 dírhams · 1983 / 1403 H.' } },
+  { src: 'assets/boutique/francophonie-1989-a.webp', reverse: 'assets/boutique/francophonie-1989-b.webp',
+    alt: { fr: 'Pièce d’argent de 200 dirhams de 1989 : profil de Hassan II et, au revers, l’emblème des premiers Jeux de la Francophonie.', ar: 'قطعة فضية من فئة 200 درهم لسنة 1989: صورة جانبية للحسن الثاني، وعلى الظهر شعار الألعاب الفرنكوفونية الأولى.', en: 'Silver 200 dirham coin of 1989: profile of Hassan II and, on the reverse, the emblem of the first Jeux de la Francophonie.', es: 'Moneda de plata de 200 dírhams de 1989: perfil de Hasán II y, en el reverso, el emblema de los primeros Juegos de la Francofonía.' },
+    caption: { fr: '1ers Jeux de la Francophonie · 200 dirhams · 1989 / 1409 H.', ar: 'الألعاب الفرنكوفونية الأولى · 200 درهم · 1989 / 1409 هـ', en: '1st Jeux de la Francophonie · 200 dirhams · 1989 / AH 1409', es: 'I Juegos de la Francofonía · 200 dírhams · 1989 / 1409 H.' } },
+  { src: 'assets/boutique/rabat-1995-b.webp',
+    alt: { fr: 'Pièce d’argent de 200 dirhams de 1995 montrant la tour Hassan et le mausolée Mohammed V à Rabat.', ar: 'قطعة فضية من فئة 200 درهم لسنة 1995 تُظهر صومعة حسان وضريح محمد الخامس بالرباط.', en: 'Silver 200 dirham coin of 1995 showing the Hassan Tower and the Mausoleum of Mohammed V in Rabat.', es: 'Moneda de plata de 200 dírhams de 1995 con la torre Hasán y el mausoleo de Mohammed V en Rabat.' },
+    caption: { fr: '8e centenaire de la ville de Rabat · 200 dirhams · 1995 / 1416 H.', ar: 'الذكرى المئوية الثامنة لمدينة الرباط · 200 درهم · 1995 / 1416 هـ', en: '8th centenary of the city of Rabat · 200 dirhams · 1995 / AH 1416', es: 'VIII centenario de la ciudad de Rabat · 200 dírhams · 1995 / 1416 H.' } },
+  { src: 'assets/boutique/m6-2011-a.webp', reverse: 'assets/boutique/m6-2011-b.webp',
+    alt: { fr: 'Pièce d’argent de 250 dirhams de 2011 : portrait de Mohammed VI et, au revers, un monument sous les armoiries du Royaume.', ar: 'قطعة فضية من فئة 250 درهماً لسنة 2011: صورة محمد السادس، وعلى الظهر معلمة تحت شعار المملكة.', en: 'Silver 250 dirham coin of 2011: portrait of Mohammed VI and, on the reverse, a monument beneath the arms of the Kingdom.', es: 'Moneda de plata de 250 dírhams de 2011: retrato de Mohammed VI y, en el reverso, un monumento bajo el escudo del Reino.' },
+    caption: { fr: 'Mohammed VI · 250 dirhams · 2011 / 1432 H.', ar: 'محمد السادس · 250 درهماً · 2011 / 1432 هـ', en: 'Mohammed VI · 250 dirhams · 2011 / AH 1432', es: 'Mohammed VI · 250 dírhams · 2011 / 1432 H.' } }
+];
