@@ -507,10 +507,10 @@ window.BAM_SHOP_NOTES = [
       "es": "Billete de 50 dírhams de Bank Al-Maghrib con el retrato de Hasán II ante una ciudad costera."
     },
     "caption": {
-      "fr": "Hassan II · 50 dirhams",
-      "ar": "الحسن الثاني · 50 درهماً",
-      "en": "Hassan II · 50 dirhams",
-      "es": "Hasán II · 50 dírhams"
+      "fr": "Hassan II · 50 dirhams · vue côtière",
+      "ar": "الحسن الثاني · 50 درهماً · منظر ساحلي",
+      "en": "Hassan II · 50 dirhams · coastal view",
+      "es": "Hasán II · 50 dírhams · vista costera"
     }
   },
   {
@@ -541,6 +541,36 @@ window.BAM_SHOP_NOTES = [
       "ar": "الحسن الثاني · 10 دراهم · 1970 / 1390 هـ",
       "en": "Hassan II · 10 dirhams · 1970 / AH 1390",
       "es": "Hasán II · 10 dírhams · 1970 / 1390 H."
+    }
+  },
+  {
+    "src": "assets/boutique/billets/hassan2-50dh.webp",
+    "alt": {
+      "fr": "Billet vert de 50 dirhams au portrait de Hassan II, avec une vue de ville.",
+      "ar": "ورقة نقدية خضراء من فئة 50 درهماً تحمل صورة الحسن الثاني ومنظراً لمدينة.",
+      "en": "Green 50 dirham note with a portrait of Hassan II and a city view.",
+      "es": "Billete verde de 50 dírhams con el retrato de Hasán II y una vista de ciudad."
+    },
+    "caption": {
+      "fr": "Hassan II · 50 dirhams · vue de ville",
+      "ar": "الحسن الثاني · 50 درهماً · منظر مدينة",
+      "en": "Hassan II · 50 dirhams · city view",
+      "es": "Hasán II · 50 dírhams · vista de ciudad"
+    }
+  },
+  {
+    "src": "assets/boutique/billets/hassan2-100dh.webp",
+    "alt": {
+      "fr": "Billet de 100 dirhams de 1985 au portrait de Hassan II, avec le siège de Bank Al-Maghrib.",
+      "ar": "ورقة نقدية من فئة 100 درهم لسنة 1985 تحمل صورة الحسن الثاني ومقر بنك المغرب.",
+      "en": "100 dirham note of 1985 with a portrait of Hassan II and the Bank Al-Maghrib headquarters.",
+      "es": "Billete de 100 dírhams de 1985 con el retrato de Hasán II y la sede de Bank Al-Maghrib."
+    },
+    "caption": {
+      "fr": "Hassan II · 100 dirhams · 1985 / 1405 H.",
+      "ar": "الحسن الثاني · 100 درهم · 1985 / 1405 هـ",
+      "en": "Hassan II · 100 dirhams · 1985 / AH 1405",
+      "es": "Hasán II · 100 dírhams · 1985 / 1405 H."
     }
   }
 ];
