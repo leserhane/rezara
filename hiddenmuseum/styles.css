@@ -1229,3 +1229,10 @@ html.reduce-motion { scroll-behavior: auto; }
 .lightbox__media img.photo { border-radius: 2px; }
 .lightbox__media figure:only-child { width: 100%; }
 .lightbox__media figure:only-child img.photo { width: min(100%, 760px); margin-inline: auto; }
+/* Collector's tools: product photos on white sit on light "studio" cards */
+.slot--product.slot--shop { width: clamp(200px, 20vw, 260px); }
+.slot--product.slot--shop .slot__frame { aspect-ratio: 1; background: #f3efe8; border-color: transparent; padding: 18px; }
+.slot--product.slot--shop .slot__frame > img { width: 100%; height: 100%; max-height: none; object-fit: contain; mix-blend-mode: multiply; filter: none; }
+.slot--product .slot__btn:hover .slot__frame, .slot--product .slot__btn:focus-visible .slot__frame { border-color: var(--accent); }
+.slot--product .slot__btn:hover .slot__frame > img, .slot--product .slot__btn:focus-visible .slot__frame > img { transform: scale(1.05); }
+.lightbox__media img.product { background: #f3efe8; padding: clamp(16px, 3vw, 40px); max-height: 72vh; object-fit: contain; }

@@ -574,3 +574,82 @@ window.BAM_SHOP_NOTES = [
     }
   }
 ];
+
+/* Boutique — collector's tools shelf (product photos on white). */
+window.BAM_SHOP_TOOLS = [
+  {
+    "src": "assets/boutique/outils/loupe-socle.webp",
+    "alt": {
+      "fr": "Loupe à monture dorée posée sur un socle en bois.",
+      "ar": "عدسة مكبّرة بإطار ذهبي على قاعدة خشبية.",
+      "en": "Gold-rimmed magnifying glass resting on a wooden stand.",
+      "es": "Lupa de montura dorada sobre un soporte de madera."
+    },
+    "caption": {
+      "fr": "Loupe sur socle en bois",
+      "ar": "عدسة مكبّرة على قاعدة خشبية",
+      "en": "Magnifying glass on a wooden stand",
+      "es": "Lupa con soporte de madera"
+    }
+  },
+  {
+    "src": "assets/boutique/outils/pied-a-coulisse.webp",
+    "alt": {
+      "fr": "Pied à coulisse numérique à écran, pour mesurer le diamètre et l’épaisseur des pièces.",
+      "ar": "قدمة قنوية رقمية بشاشة لقياس قطر القطع النقدية وسمكها.",
+      "en": "Digital caliper with a display, for measuring the diameter and thickness of coins.",
+      "es": "Calibre digital con pantalla para medir el diámetro y el grosor de las monedas."
+    },
+    "caption": {
+      "fr": "Pied à coulisse numérique",
+      "ar": "قدمة قنوية رقمية",
+      "en": "Digital caliper",
+      "es": "Calibre digital"
+    }
+  },
+  {
+    "src": "assets/boutique/outils/etuis-carton.webp",
+    "alt": {
+      "fr": "Étuis en carton blanc à fenêtre transparente, chacun contenant une pièce.",
+      "ar": "حوافظ من الكرتون الأبيض بنافذة شفافة، تحتوي كل منها على قطعة نقدية.",
+      "en": "White cardboard holders with clear windows, each holding a coin.",
+      "es": "Cartones blancos con ventana transparente, cada uno con una moneda."
+    },
+    "caption": {
+      "fr": "Étuis cartonnés pour pièces",
+      "ar": "حوافظ كرتونية للقطع النقدية",
+      "en": "Cardboard coin holders",
+      "es": "Cartones portamonedas"
+    }
+  },
+  {
+    "src": "assets/boutique/outils/pochettes.webp",
+    "alt": {
+      "fr": "Pochettes plastiques transparentes de plusieurs formats, pour billets et documents.",
+      "ar": "أغلفة بلاستيكية شفافة بمقاسات مختلفة للأوراق النقدية والوثائق.",
+      "en": "Clear plastic sleeves in several sizes, for banknotes and documents.",
+      "es": "Fundas de plástico transparente de varios tamaños, para billetes y documentos."
+    },
+    "caption": {
+      "fr": "Pochettes de protection transparentes",
+      "ar": "أغلفة حماية شفافة",
+      "en": "Clear protective sleeves",
+      "es": "Fundas protectoras transparentes"
+    }
+  },
+  {
+    "src": "assets/boutique/outils/plateau-velours.webp",
+    "alt": {
+      "fr": "Plateau en velours noir à alvéoles, garni de pièces dorées.",
+      "ar": "صينية من المخمل الأسود بخانات تضم قطعاً نقدية ذهبية.",
+      "en": "Black velvet tray with compartments, holding gold-coloured coins.",
+      "es": "Bandeja de terciopelo negro con compartimentos y monedas doradas."
+    },
+    "caption": {
+      "fr": "Plateau à monnaies en velours",
+      "ar": "صينية مخملية للقطع النقدية",
+      "en": "Velvet coin tray",
+      "es": "Bandeja de terciopelo para monedas"
+    }
+  }
+];

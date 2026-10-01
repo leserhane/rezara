@@ -438,6 +438,7 @@
           <p class="shop__num" aria-hidden="true">03</p>
           <h3 data-i18n="shop.3" class="shop__title" lang="fr">Outils pour collectionneurs</h3>
           <p data-i18n="shop.3.text" class="shop__desc">Loupes, capsules, albums and gloves — everything to study and protect a collection.</p>
+          <a data-i18n="shop.seeTools" class="text-link shop__link" href="#shop-tools">See the tools <span aria-hidden="true" class="flip-rtl">→</span></a>
         </li>
         <li class="shop__item reveal" style="--i:3">
           <svg class="picto" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -482,6 +483,20 @@
         </div>
         <div class="rail shelf__rail">
           <ul class="rail__track" role="list" tabindex="0" data-shelf="notes"></ul>
+          <div class="rail__btns">
+            <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
+            <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shelf" id="shop-tools" tabindex="-1">
+        <div class="shelf__head">
+          <h3 data-i18n="tools.title" class="shelf__title reveal">Collector’s tools</h3>
+          <p data-i18n="tools.lede" class="shelf__lede reveal" style="--i:1">Everything to observe, measure and protect a collection: loupes, callipers, holders, sleeves and trays.</p>
+        </div>
+        <div class="rail shelf__rail">
+          <ul class="rail__track" role="list" tabindex="0" data-shelf="tools"></ul>
           <div class="rail__btns">
             <button data-i18n-attr="aria-label:a.railLeft" type="button" class="icon-btn icon-btn--sm" data-rail="-1" aria-label="Scroll photos left"><span aria-hidden="true">←</span></button>
             <button data-i18n-attr="aria-label:a.railRight" type="button" class="icon-btn icon-btn--sm" data-rail="1" aria-label="Scroll photos right"><span aria-hidden="true">→</span></button>
