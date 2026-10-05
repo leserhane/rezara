@@ -5,6 +5,9 @@
   // password (secret MUSEUM_PASSWORD) before serving anything there, and
   // keeps guided-tour bookings in the Tours Durable Object.
   "main": "worker/index.js",
+  // Keep variables set in the Cloudflare dashboard when this file is deployed,
+  // so a MUSEUM_PASSWORD entered there survives every push.
+  "keep_vars": true,
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
