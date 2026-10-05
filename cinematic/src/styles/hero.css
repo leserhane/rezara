@@ -1,0 +1,197 @@
+/**
+ * The hero is a normal, fixed-height section — not a scroll-driven
+ * track. The glasses behind it run on their own WebGL animation loop
+ * (see src/three/HeroScene.js) and never read scroll position; nothing
+ * here hijacks native scrolling or pins anything via JS.
+ */
+
+.hero {
+  position: relative;
+  height: 100svh;
+  min-height: 560px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  background: radial-gradient(120% 90% at 70% 20%, #3a2c22 0%, var(--color-charcoal) 60%, var(--color-charcoal-soft) 100%);
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__overlay {
+  position: relative;
+  z-index: 2;
+  padding: calc(var(--header-height) + 2rem) var(--gutter) clamp(2.5rem, 6vh, 4.5rem);
+  max-width: 720px;
+}
+
+.hero__eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-beige);
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: heroRise 0.8s var(--ease-editorial) 0.05s both;
+}
+
+.hero__heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.1rem, 6vw, 4.4rem);
+  line-height: 1.04;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+}
+
+.hero__heading span {
+  display: block;
+  opacity: 0;
+  animation: heroRise 0.8s var(--ease-editorial) both;
+}
+
+.hero__heading span:nth-child(1) {
+  animation-delay: 0.12s;
+}
+.hero__heading span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.hero__heading span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+.hero__body {
+  margin-top: 1.4rem;
+  max-width: 30ch;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  opacity: 0;
+  animation: heroRise 0.8s var(--ease-editorial) 0.38s both;
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2.1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+  background: var(--color-ivory);
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  opacity: 0;
+  animation: heroRise 0.8s var(--ease-editorial) 0.48s both;
+  transition: transform 0.3s var(--ease-editorial), background 0.3s ease;
+}
+
+.hero__cta:hover {
+  transform: translateY(-2px);
+}
+
+.hero__cta span {
+  display: inline;
+  animation: none;
+  opacity: 1;
+  transition: transform 0.3s var(--ease-editorial);
+}
+
+.hero__cta:hover span {
+  transform: translateX(3px);
+}
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.75rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: heroRise 0.8s var(--ease-editorial) 0.6s both;
+  transition: opacity 0.4s ease;
+}
+
+.scroll-hint.is-hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.scroll-hint__line {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--color-beige), transparent);
+  animation: scrollHint 1.8s ease-in-out infinite;
+}
+
+@keyframes scrollHint {
+  0%,
+  100% {
+    transform: scaleY(0.6);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@media (max-height: 520px) {
+  .hero__overlay {
+    padding-top: calc(var(--header-height) + 1rem);
+    padding-bottom: 1.1rem;
+  }
+
+  .hero__heading {
+    font-size: clamp(1.3rem, 4.6vw, 2rem);
+  }
+
+  .hero__body {
+    margin-top: 0.6rem;
+  }
+
+  .hero__cta {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .scroll-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__eyebrow,
+  .hero__heading span,
+  .hero__body,
+  .hero__cta,
+  .scroll-hint {
+    animation: none;
+    opacity: 1;
+  }
+}

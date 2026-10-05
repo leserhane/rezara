@@ -3,11 +3,19 @@
   padding: clamp(4rem, 10vh, 8rem) var(--gutter);
 }
 
+.section--soft {
+  background: var(--color-charcoal-soft);
+}
+
 .section__eyebrow {
   font-size: 0.72rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--color-beige);
+}
+
+.section__eyebrow-tag {
+  color: var(--color-text-muted);
 }
 
 .section__title {

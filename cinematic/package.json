@@ -2,16 +2,17 @@
   "name": "optimum-optic-cinematic",
   "version": "0.1.0",
   "private": true,
-  "description": "Scroll-scrubbed canvas cinematic landing page prototype for Optimum Optic. Zero animation libraries — vanilla JS canvas engine only.",
+  "description": "Landing page prototype for Optimum Optic — an auto-playing WebGL 3D glasses hero (Three.js) above static editorial sections.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "generate-frames": "node scripts/generate-frames.mjs"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.4.11",
-    "sharp": "^0.35.5"
+    "vite": "^5.4.11"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
   }
 }

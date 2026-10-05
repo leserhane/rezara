@@ -8,7 +8,7 @@
 <title>Optimum Optic — Le regard qui vous ressemble</title>
 <meta
   name="description"
-  content="Optimum Optic, opticien et lunetterie premium à Rabat. Une expérience cinématique pour découvrir une collection pensée pour votre style, votre vision et votre personnalité."
+  content="Optimum Optic, opticien et lunetterie premium à Rabat. Découvrez une collection pensée pour votre style, votre vision et votre personnalité."
 />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,7 +23,7 @@
 <meta property="og:title" content="Optimum Optic — Le regard qui vous ressemble" />
 <meta
   property="og:description"
-  content="Une expérience cinématique pour découvrir la collection Optimum Optic — optique, solaire, signature."
+  content="Découvrez la collection Optimum Optic — optique, solaire, signature."
 />
 <meta name="twitter:card" content="summary_large_image" />
 
@@ -41,25 +41,6 @@
 <body>
   <a href="#main" class="skip-link">Aller au contenu</a>
   <div class="grain-overlay" aria-hidden="true"></div>
-
-  <div class="preloader" data-preloader role="status" aria-live="polite">
-    <div class="preloader__mark">
-      <svg class="brand-mark" viewBox="0 0 100 58" aria-hidden="true" focusable="false">
-        <circle cx="33.5" cy="29" r="27" />
-        <circle cx="66.5" cy="29" r="27" />
-      </svg>
-      <p class="preloader__wordmark"><span>Optimum</span><span>Optic</span></p>
-    </div>
-    <div class="preloader__status">
-      <p class="preloader__caption">Preparing your view</p>
-      <div class="preloader__row">
-        <span class="preloader__percent" data-preloader-percent>00</span>
-      </div>
-      <div class="preloader__bar">
-        <div class="preloader__bar-fill" data-preloader-bar></div>
-      </div>
-    </div>
-  </div>
 
   <header class="site-header">
     <span class="site-header__brand">
@@ -93,26 +74,56 @@
   </header>
 
   <main id="main">
-    <section class="cinematic-track" data-cinematic-track aria-label="Séquence cinématique Optimum Optic">
-      <div class="cinematic-sticky">
-        <canvas class="cinematic-canvas" data-cinematic-canvas role="img" aria-label="Séquence visuelle Optimum Optic évoluant avec le défilement"></canvas>
+    <section class="hero">
+      <canvas
+        class="hero__canvas"
+        data-hero-canvas
+        role="img"
+        aria-label="Lunettes Optimum Optic en rotation 3D, passant du verre optique au verre solaire"
+      ></canvas>
 
-        <div class="cinematic-overlay">
-          <div class="chapter-root" data-chapter-root></div>
-        </div>
-
-        <div class="cinematic-hud" aria-hidden="true">
-          <span class="cinematic-hud__counter" data-chapter-counter>01 / 06</span>
-          <div class="cinematic-hud__track">
-            <div class="cinematic-hud__fill" data-progress-fill></div>
-          </div>
-        </div>
-
-        <div class="scroll-hint" data-scroll-hint aria-hidden="true">
-          <span>Scroll</span>
-          <span class="scroll-hint__line"></span>
-        </div>
+      <div class="hero__overlay">
+        <p class="hero__eyebrow">01 — The Arrival</p>
+        <h1 class="hero__heading">
+          <span>LE REGARD</span>
+          <span>QUI VOUS</span>
+          <span>RESSEMBLE</span>
+        </h1>
+        <p class="hero__body">Eyewear selected around your style, your vision and your personality.</p>
+        <a class="hero__cta" href="#collection" data-cursor="link">EXPLORE COLLECTION<span aria-hidden="true">→</span></a>
       </div>
+
+      <div class="scroll-hint" data-scroll-hint aria-hidden="true">
+        <span>Scroll</span>
+        <span class="scroll-hint__line"></span>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="editorial-collection-heading">
+      <p class="section__eyebrow">SUNGLASSES <span class="section__eyebrow-tag">· POLARIZED COLLECTION</span></p>
+      <h2 class="section__title" id="editorial-collection-heading">UNE COLLECTION<br />PENSÉE POUR<br />CHAQUE REGARD</h2>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="editorial-detail-heading">
+      <p class="section__eyebrow">OPTICAL <span class="section__eyebrow-tag">· PRECISION &amp; STYLE</span></p>
+      <h2 class="section__title" id="editorial-detail-heading">CHAQUE DÉTAIL<br />COMPTE</h2>
+    </section>
+
+    <section class="section" aria-labelledby="editorial-fit-heading">
+      <p class="section__eyebrow">SIGNATURE <span class="section__eyebrow-tag">· YOUR EVERYDAY FRAME</span></p>
+      <h2 class="section__title" id="editorial-fit-heading">UN AJUSTEMENT<br />PARFAIT</h2>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="editorial-light-heading">
+      <p class="section__eyebrow">05 — The Light</p>
+      <h2 class="section__title" id="editorial-light-heading">LA LUMIÈRE<br />RÉVÈLE<br />LA PRÉCISION</h2>
+      <p class="section__lede">Lenses engineered for clarity in every light.</p>
+    </section>
+
+    <section class="section" aria-labelledby="editorial-signature-heading">
+      <p class="section__eyebrow">06 — Your Signature</p>
+      <h2 class="section__title" id="editorial-signature-heading">VOTRE<br />SIGNATURE</h2>
+      <p class="section__lede">Optimum Optic — le regard qui vous ressemble.</p>
     </section>
 
     <section id="store" class="section storefront" aria-labelledby="storefront-heading">
