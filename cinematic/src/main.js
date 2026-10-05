@@ -41,8 +41,17 @@ if (heroCanvas && isWebGLAvailable()) {
   // Three.js (~140KB gzipped) is only worth fetching once we know WebGL
   // actually works here — load it lazily so it never blocks first paint
   // or the rest of the page's interactivity.
-  import("./three/HeroScene.js").then(({ HeroScene }) => {
+  import("./three/HeroScene.js").then(async ({ HeroScene }) => {
     const scene = new HeroScene(heroCanvas);
+    try {
+      await scene.load();
+    } catch (err) {
+      // Model failed to fetch/parse: hide the canvas rather than leave a
+      // blank/broken WebGL surface sitting over the hero copy.
+      console.error("Hero 3D model failed to load:", err);
+      heroCanvas.style.display = "none";
+      return;
+    }
 
     if (reducedMotion) {
       scene.renderStatic();

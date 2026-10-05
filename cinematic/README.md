@@ -14,28 +14,34 @@ seen — see "What changed" below.
 
 ## The 3D hero
 
-`src/three/HeroScene.js` builds a pair of glasses entirely from Three.js
-primitives (`TorusGeometry` rims, `TubeGeometry` bridge/temples, a
-`CircleGeometry` lens pane) — there's no external 3D model/asset to
-source or license, every shape is procedural. It runs on its own
-`requestAnimationFrame` loop, independent of scroll position:
+`src/three/HeroScene.js` loads a real supplied 3D model
+(`public/models/monture.glb`, via Three.js's `GLTFLoader`) — not
+procedural geometry. It runs on its own `requestAnimationFrame` loop,
+independent of scroll position:
 
-- The whole group auto-rotates continuously around Y (with a small Z-axis
-  wobble for life).
-- The lens material cycles between a clear "optical" look and a dark
-  "sunglasses" tint on a smooth ~9s loop (`LOOP_SECONDS` in
-  `HeroScene.js`), via `MeshPhysicalMaterial` color/opacity interpolation
-  — not a swapped texture.
+- The model auto-rotates continuously around Y, one full turn every 12
+  seconds (`TURN_SECONDS`). The camera is framed to the model's actual
+  bounding sphere on load, so it fills the canvas regardless of the
+  asset's authored scale.
+- The lens material cycles between a clear "Optique" look and a dark
+  "Solaire" tint once per turn, timed to flip as the model's face swings
+  back toward the camera (`FLIP_LEAD`/`MIX_SPEED` in `HeroScene.js`), via
+  direct material color/opacity interpolation on the lens meshes
+  (`Verre_Droit`/`Verre_Gauche`) — not a swapped texture. The two tint
+  values are the model's own embedded material definitions
+  ("Verre_Optique"/"Verre_Solaire"), not invented. This mirrors the
+  behavior already authored into the source demo this model was
+  extracted from.
 - An `IntersectionObserver` in `main.js` pauses the render loop whenever
   the hero scrolls out of view, so it never burns GPU/battery for a
   section the visitor isn't looking at.
 - `isWebGLAvailable()` feature-detects WebGL before mounting anything; if
   it's unavailable the canvas is hidden and the hero's CSS background
   gradient carries the scene — the headline and copy already convey the
-  brand without it.
+  brand without it. The same fallback fires if the GLB fails to load.
 - Under `prefers-reduced-motion: reduce`, `HeroScene.renderStatic()`
-  draws one still frame (a fixed rotation, lenses held at a mid-tint)
-  instead of starting the loop.
+  draws one still frame (a fixed, slightly turned angle, lenses held at
+  a mid-tint) instead of starting the loop.
 
 Three.js is a real dependency here (`package.json`), which is a
 deliberate exception to this prototype's earlier "zero animation
@@ -65,6 +71,16 @@ there was no way around that once "real 3D" was the ask.
   frame sequence to decode, a blocking preloader had nothing left to
   justify it.
 
+## The 3D model asset
+
+`public/models/monture.glb` is a real glTF 2.0 model supplied directly
+(not generated or scraped) — a pair of glasses authored with a
+`KHR_materials_variants` extension exposing an "Optique"/"Solaire" lens
+pair, which is what the hero's lens-tint behavior is built around. If
+this model is ever swapped for a different one, keep the mesh names
+(`Verre_Droit`/`Verre_Gauche`) or update the names `HeroScene.js` looks
+for in its `model.traverse()` call.
+
 ## Also placeholder: business details
 
 Address, hours, phone, email, and Instagram in `index.html` are all
@@ -90,7 +106,7 @@ in `PRODUCT_PLACEHOLDERS`.
 index.html                    Semantic markup, SEO/OG meta, JSON-LD
 src/
   three/
-    HeroScene.js               Procedural 3D glasses, auto-rotate + lens-tint loop
+    HeroScene.js               Loads public/models/monture.glb, auto-rotate + lens-tint loop
   components/
     products.js                 Product grid renderer
     cursor.js                   Subtle desktop-only custom cursor

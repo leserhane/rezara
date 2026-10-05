@@ -1,25 +1,40 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 /**
- * A self-contained, auto-playing WebGL hero: a procedurally built pair
- * of glasses (no external 3D asset — every shape is primitives/tubes)
- * that spins continuously and cycles its lens material between a clear
- * "optical" look and a dark "sunglasses" tint. Nothing here is tied to
- * scroll position; it runs on its own timeline from the moment it
- * starts and never needs the user to scroll to see it move.
+ * A self-contained, auto-playing WebGL hero built around a real supplied
+ * 3D model (public/models/monture.glb) — not procedural geometry. The
+ * model spins continuously and cycles its lens material between a clear
+ * "Optique" look and a dark "Solaire" tint once per full turn, mirroring
+ * the behavior already authored into the source file this was extracted
+ * from (see the "Alterner à chaque tour" demo). Nothing here reads
+ * scroll position; it runs on its own clock from the moment it starts.
+ *
+ * The two lens materials' color/opacity values below are the model's own
+ * (read from its embedded glTF material defs — "Verre_Optique" and
+ * "Verre_Solaire"), not invented.
  */
 
-const METAL_COLOR = 0xb8a98c; // --color-metal
-const HINGE_COLOR = 0xd9c8ae; // --color-beige
-// Against the hero's dark backdrop, a low-opacity light color and a
-// high-opacity dark color both just read as "dark" — there's nothing
-// bright behind the lens for a truly transparent pane to reveal. The
-// clear/optical state instead needs real brightness (opacity + a light
-// color) so it visibly reads as glass, not just "less black" than the
-// tinted state.
-const LENS_CLEAR = { color: 0xfaf6ee, opacity: 0.28 };
-const LENS_TINT = { color: 0x0d0a08, opacity: 0.95 };
-const LOOP_SECONDS = 9;
+const MODEL_URL = `${import.meta.env.BASE_URL}models/monture.glb`;
+
+const LENS_OPTIQUE = { color: new THREE.Color(0.93, 0.97, 1.0), opacity: 0.08 };
+const LENS_SOLAIRE = { color: new THREE.Color(0.13, 0.14, 0.16), opacity: 0.9 };
+
+// The model's own baked "Rotation" animation is a uniform 0->360°
+// turn over exactly this many seconds (read from its keyframe times) —
+// applied manually here (not via AnimationMixer) since it's just a
+// constant-speed spin, no need for the extra machinery.
+const TURN_SECONDS = 12;
+// How much of a turn before the face returns to center that the lens
+// should start swapping, and how fast the swap itself blends — both
+// values taken directly from the source demo's own logic so the timing
+// matches what it was tuned for.
+const FLIP_LEAD = 0.7;
+const MIX_SPEED = 0.62;
+
+function ease(t) {
+  return t * t * (3 - 2 * t);
+}
 
 export class HeroScene {
   constructor(canvas) {
@@ -27,6 +42,11 @@ export class HeroScene {
     this.clock = new THREE.Clock();
     this._raf = 0;
     this._running = false;
+    this._ready = false;
+
+    this.mode = 0; // 0 = Optique (clear), 1 = Solaire (tinted)
+    this.mix = 0;
+    this._turnsSeen = 0;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -37,14 +57,12 @@ export class HeroScene {
     this.renderer.setClearColor(0x000000, 0);
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-    this.camera.position.set(0, 0.1, 6.4);
-    this.camera.lookAt(0, 0, 0);
+    this.camera = new THREE.PerspectiveCamera(24, 1, 0.01, 50);
 
     this._buildLights();
-    this.lenses = [];
-    this.group = this._buildGlasses();
-    this.scene.add(this.group);
+    this.lensMaterials = [];
+    this.pivot = new THREE.Group();
+    this.scene.add(this.pivot);
 
     this._resizeObserver = new ResizeObserver(() => this.resize());
     this._resizeObserver.observe(canvas);
@@ -52,110 +70,66 @@ export class HeroScene {
   }
 
   _buildLights() {
-    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-    const key = new THREE.DirectionalLight(0xffe9cf, 1.15);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+    const key = new THREE.DirectionalLight(0xffe9cf, 1.6);
     key.position.set(3, 4, 5);
-    const rim = new THREE.DirectionalLight(0xd9c8ae, 0.55);
+    const rim = new THREE.DirectionalLight(0xd9c8ae, 0.7);
     rim.position.set(-4, -1.5, -3);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.3);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.45);
     fill.position.set(-2, 2, 4);
     this.scene.add(ambient, key, rim, fill);
   }
 
-  _lensMaterial() {
-    // Unlit on purpose: a physically-lit lens (roughness/clearcoat)
-    // picks up enough ambient + specular brightness that a dark, opaque
-    // "tinted" state and a pale, translucent "clear" state end up
-    // reading as the same medium grey once lighting interacts with
-    // them. A flat, fully-controlled color+opacity makes the two states
-    // unambiguous regardless of surrounding light.
-    return new THREE.MeshBasicMaterial({
-      color: LENS_CLEAR.color,
-      transparent: true,
-      opacity: LENS_CLEAR.opacity,
-      side: THREE.DoubleSide,
+  /** Loads the real model and frames the camera to it. Resolves once the
+   * scene is ready to render. */
+  async load() {
+    const loader = new GLTFLoader();
+    const gltf = await loader.loadAsync(MODEL_URL);
+    const model = gltf.scene;
+    this.pivot.add(model);
+
+    model.traverse((obj) => {
+      if (!obj.isMesh) return;
+      if (obj.name === "Verre_Droit" || obj.name === "Verre_Gauche") {
+        obj.material.transparent = true;
+        obj.material.depthWrite = false;
+        if (!this.lensMaterials.includes(obj.material)) {
+          this.lensMaterials.push(obj.material);
+        }
+      }
     });
+    this._applyLensMix(0);
+
+    this._frameCamera(model);
+    this._ready = true;
   }
 
-  _metalMaterial() {
-    return new THREE.MeshStandardMaterial({
-      color: METAL_COLOR,
-      metalness: 0.78,
-      roughness: 0.26,
-    });
+  /** Positions the camera so the model fills the frame regardless of its
+   * authored scale/units, based on its actual bounding sphere. Shifting
+   * the model itself (not the pivot) by -center puts the model's own
+   * center at the pivot's local origin, so spinning the pivot rotates it
+   * in place — shifting the pivot's position instead would leave the
+   * model offset from the rotation axis and make it orbit in a circle. */
+  _frameCamera(model) {
+    const box = new THREE.Box3().setFromObject(model);
+    const sphere = box.getBoundingSphere(new THREE.Sphere());
+    this._radius = sphere.radius || 0.1;
+    model.position.sub(sphere.center);
+    this._placeCamera();
   }
 
-  _hingeMaterial() {
-    return new THREE.MeshStandardMaterial({
-      color: HINGE_COLOR,
-      metalness: 0.5,
-      roughness: 0.35,
-    });
-  }
-
-  _buildLens(x) {
-    const geo = new THREE.CircleGeometry(0.78, 48);
-    const mesh = new THREE.Mesh(geo, this._lensMaterial());
-    mesh.position.x = x;
-    this.lenses.push(mesh);
-    return mesh;
-  }
-
-  _buildRim(x) {
-    const geo = new THREE.TorusGeometry(0.8, 0.045, 16, 64);
-    const mesh = new THREE.Mesh(geo, this._metalMaterial());
-    mesh.position.x = x;
-    return mesh;
-  }
-
-  _tube(points, radius) {
-    const curve = new THREE.CatmullRomCurve3(points);
-    const geo = new THREE.TubeGeometry(curve, 24, radius, 8, false);
-    return new THREE.Mesh(geo, this._metalMaterial());
-  }
-
-  _buildBridge() {
-    return this._tube(
-      [
-        new THREE.Vector3(-0.68, 0.14, 0.02),
-        new THREE.Vector3(0, 0.26, 0.08),
-        new THREE.Vector3(0.68, 0.14, 0.02),
-      ],
-      0.035
-    );
-  }
-
-  _buildTemple(sign) {
-    const rimX = 0.95 * sign;
-    return this._tube(
-      [
-        new THREE.Vector3(rimX + 0.78 * sign, 0, 0),
-        new THREE.Vector3(rimX + 1.0 * sign, -0.04, -1.0),
-        new THREE.Vector3(rimX + 0.92 * sign, -0.16, -2.15),
-      ],
-      0.032
-    );
-  }
-
-  _buildHinge(sign) {
-    const geo = new THREE.SphereGeometry(0.06, 16, 16);
-    const mesh = new THREE.Mesh(geo, this._hingeMaterial());
-    mesh.position.set((0.95 + 0.78) * sign, 0, 0);
-    return mesh;
-  }
-
-  _buildGlasses() {
-    const group = new THREE.Group();
-    const leftX = -0.95;
-    const rightX = 0.95;
-
-    group.add(this._buildRim(leftX), this._buildRim(rightX));
-    group.add(this._buildLens(leftX), this._buildLens(rightX));
-    group.add(this._buildBridge());
-    group.add(this._buildTemple(-1), this._buildTemple(1));
-    group.add(this._buildHinge(-1), this._buildHinge(1));
-
-    return group;
+  _placeCamera() {
+    if (!this._radius) return;
+    const aspect = this.camera.aspect || 1;
+    const fov = THREE.MathUtils.degToRad(this.camera.fov);
+    const halfFov = Math.atan(Math.tan(fov / 2) * aspect);
+    const limitingHalfAngle = Math.min(halfFov, (fov / 2) * 1.9);
+    const dist = (this._radius / Math.sin(limitingHalfAngle)) * 1.15;
+    this.camera.position.set(0, this._radius * 0.12, dist);
+    this.camera.lookAt(0, 0, 0);
+    this.camera.near = Math.max(0.01, dist - this._radius * 4);
+    this.camera.far = dist + this._radius * 4;
+    this.camera.updateProjectionMatrix();
   }
 
   resize() {
@@ -167,15 +141,16 @@ export class HeroScene {
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+    this._placeCamera();
   }
 
-  /** t: 0 = clear optical lens, 1 = fully tinted sunglasses lens. */
-  _applyLensTint(t) {
-    const color = new THREE.Color(LENS_CLEAR.color).lerp(new THREE.Color(LENS_TINT.color), t);
-    const opacity = THREE.MathUtils.lerp(LENS_CLEAR.opacity, LENS_TINT.opacity, t);
-    for (const lens of this.lenses) {
-      lens.material.color.copy(color);
-      lens.material.opacity = opacity;
+  /** e: 0 = fully "Optique" (clear), 1 = fully "Solaire" (tinted). */
+  _applyLensMix(e) {
+    const color = LENS_OPTIQUE.color.clone().lerp(LENS_SOLAIRE.color, e);
+    const opacity = THREE.MathUtils.lerp(LENS_OPTIQUE.opacity, LENS_SOLAIRE.opacity, e);
+    for (const material of this.lensMaterials) {
+      material.color.copy(color);
+      material.opacity = opacity;
     }
   }
 
@@ -183,22 +158,34 @@ export class HeroScene {
     this.renderer.render(this.scene, this.camera);
   }
 
-  /** Starts the autonomous rotate + lens-tint loop. Never reads scroll
+  /** Starts the autonomous rotate + lens-swap loop. Never reads scroll
    * position or any other page state — it runs purely on its own clock. */
   start() {
-    if (this._running) return;
+    if (this._running || !this._ready) return;
     this._running = true;
     this.clock.start();
+    let last = 0;
 
     const loop = () => {
       if (!this._running) return;
       const elapsed = this.clock.getElapsedTime();
-      this.group.rotation.y = elapsed * 0.5;
-      this.group.rotation.x = Math.sin(elapsed * 0.35) * 0.06;
+      const dt = Math.min(0.05, elapsed - last || 0);
+      last = elapsed;
 
-      const phase = (elapsed % LOOP_SECONDS) / LOOP_SECONDS;
-      const t = (1 - Math.cos(phase * Math.PI * 2)) / 2; // smooth 0->1->0
-      this._applyLensTint(t);
+      const yaw = (elapsed / TURN_SECONDS) * Math.PI * 2;
+      this.pivot.rotation.y = yaw;
+
+      // Flip the moment a full turn completes (matching the source
+      // model's own "swap when the face comes back around" timing).
+      const turns = Math.floor((yaw + FLIP_LEAD) / (Math.PI * 2));
+      if (turns !== this._turnsSeen) {
+        this._turnsSeen = turns;
+        this.mode = 1 - this.mode;
+      }
+
+      const delta = THREE.MathUtils.clamp(this.mode - this.mix, -dt * MIX_SPEED, dt * MIX_SPEED);
+      this.mix += delta;
+      this._applyLensMix(ease(this.mix));
 
       this._renderFrame();
       this._raf = requestAnimationFrame(loop);
@@ -214,9 +201,9 @@ export class HeroScene {
   /** prefers-reduced-motion fallback: one still frame, no spin, lenses
    * held at a mid-tint so the "optical to sun" idea still reads. */
   renderStatic() {
-    this.group.rotation.y = 0.5;
-    this.group.rotation.x = 0.03;
-    this._applyLensTint(0.5);
+    if (!this._ready) return;
+    this.pivot.rotation.y = 0.3;
+    this._applyLensMix(0.5);
     this._renderFrame();
   }
 
@@ -230,4 +217,3 @@ export class HeroScene {
     this.renderer.dispose();
   }
 }
-
