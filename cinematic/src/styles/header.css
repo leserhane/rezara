@@ -16,7 +16,12 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(rgba(10, 8, 6, 0.55), transparent);
+  /* Solid, not a fade-to-transparent: chapter text now scrolls directly
+     underneath the fixed header for the whole 6-chapter stage (not just
+     a single hero), so a see-through header would show that text
+     bleeding through behind the nav. */
+  background: rgba(26, 22, 19, 0.92);
+  backdrop-filter: blur(6px);
   pointer-events: none;
 }
 

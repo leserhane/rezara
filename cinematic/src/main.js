@@ -1,5 +1,6 @@
 import "./styles/main.css";
 import { isWebGLAvailable } from "./three/webgl-check.js";
+import { bindScrollStage } from "./utils/scrollStage.js";
 import { renderProductCards } from "./components/products.js";
 import { initCursor } from "./components/cursor.js";
 
@@ -36,8 +37,9 @@ if (scrollHintEl) {
 }
 
 const heroCanvas = document.querySelector("[data-hero-canvas]");
+const scrollStageEl = document.querySelector("[data-scroll-stage]");
 
-if (heroCanvas && isWebGLAvailable()) {
+if (heroCanvas && scrollStageEl && isWebGLAvailable()) {
   // Three.js (~140KB gzipped) is only worth fetching once we know WebGL
   // actually works here — load it lazily so it never blocks first paint
   // or the rest of the page's interactivity.
@@ -55,14 +57,30 @@ if (heroCanvas && isWebGLAvailable()) {
 
     if (reducedMotion) {
       scene.renderStatic();
-    } else {
-      // Only spend GPU time while the hero is actually on screen.
-      const io = new IntersectionObserver(
-        ([entry]) => (entry.isIntersecting ? scene.start() : scene.pause()),
-        { threshold: 0 }
-      );
-      io.observe(heroCanvas);
+      return;
     }
+
+    // Only track scroll and spend GPU time while some part of the
+    // 6-chapter stage is actually on screen.
+    let unbindScroll = null;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          scene.start();
+          if (!unbindScroll) {
+            unbindScroll = bindScrollStage(scrollStageEl, (p) => scene.setProgress(p));
+          }
+        } else {
+          scene.pause();
+          if (unbindScroll) {
+            unbindScroll();
+            unbindScroll = null;
+          }
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(scrollStageEl);
   });
 } else if (heroCanvas) {
   // No WebGL in this browser: hide the canvas and let the hero's own

@@ -1,34 +1,9 @@
 /**
- * The hero is a normal, fixed-height section — not a scroll-driven
- * track. The glasses behind it run on their own WebGL animation loop
- * (see src/three/HeroScene.js) and never read scroll position; nothing
- * here hijacks native scrolling or pins anything via JS.
+ * Chapter 1's text (the opening headline) — laid out by `.chapter` in
+ * scroll-stage.css, which every chapter shares. These rules are only the
+ * parts unique to chapter 1: the larger heading, the one-shot entrance
+ * animation on load, and the CTA button.
  */
-
-.hero {
-  position: relative;
-  height: 100svh;
-  min-height: 560px;
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-  background: radial-gradient(120% 90% at 70% 20%, #3a2c22 0%, var(--color-charcoal) 60%, var(--color-charcoal-soft) 100%);
-}
-
-.hero__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.hero__overlay {
-  position: relative;
-  z-index: 2;
-  padding: calc(var(--header-height) + 2rem) var(--gutter) clamp(2.5rem, 6vh, 4.5rem);
-  max-width: 720px;
-}
 
 .hero__eyebrow {
   font-size: 0.72rem;
@@ -162,11 +137,6 @@
 }
 
 @media (max-height: 520px) {
-  .hero__overlay {
-    padding-top: calc(var(--header-height) + 1rem);
-    padding-bottom: 1.1rem;
-  }
-
   .hero__heading {
     font-size: clamp(1.3rem, 4.6vw, 2rem);
   }

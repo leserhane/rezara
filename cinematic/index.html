@@ -74,56 +74,60 @@
   </header>
 
   <main id="main">
-    <section class="hero">
-      <canvas
-        class="hero__canvas"
-        data-hero-canvas
-        role="img"
-        aria-label="Lunettes Optimum Optic en rotation 3D, passant du verre optique au verre solaire"
-      ></canvas>
+    <section class="scroll-stage" data-scroll-stage>
+      <div class="scroll-stage__content">
+        <section class="chapter" aria-labelledby="chapter-1-heading">
+          <p class="hero__eyebrow">01 — The Arrival</p>
+          <h1 class="hero__heading" id="chapter-1-heading">
+            <span>LE REGARD</span>
+            <span>QUI VOUS</span>
+            <span>RESSEMBLE</span>
+          </h1>
+          <p class="hero__body">Eyewear selected around your style, your vision and your personality.</p>
+          <a class="hero__cta" href="#collection" data-cursor="link">EXPLORE COLLECTION<span aria-hidden="true">→</span></a>
+        </section>
 
-      <div class="hero__overlay">
-        <p class="hero__eyebrow">01 — The Arrival</p>
-        <h1 class="hero__heading">
-          <span>LE REGARD</span>
-          <span>QUI VOUS</span>
-          <span>RESSEMBLE</span>
-        </h1>
-        <p class="hero__body">Eyewear selected around your style, your vision and your personality.</p>
-        <a class="hero__cta" href="#collection" data-cursor="link">EXPLORE COLLECTION<span aria-hidden="true">→</span></a>
+        <section class="chapter" aria-labelledby="editorial-collection-heading">
+          <p class="section__eyebrow">SUNGLASSES <span class="section__eyebrow-tag">· POLARIZED COLLECTION</span></p>
+          <h2 class="section__title" id="editorial-collection-heading">UNE COLLECTION<br />PENSÉE POUR<br />CHAQUE REGARD</h2>
+        </section>
+
+        <section class="chapter" aria-labelledby="editorial-detail-heading">
+          <p class="section__eyebrow">OPTICAL <span class="section__eyebrow-tag">· PRECISION &amp; STYLE</span></p>
+          <h2 class="section__title" id="editorial-detail-heading">CHAQUE DÉTAIL<br />COMPTE</h2>
+        </section>
+
+        <section class="chapter" aria-labelledby="editorial-fit-heading">
+          <p class="section__eyebrow">SIGNATURE <span class="section__eyebrow-tag">· YOUR EVERYDAY FRAME</span></p>
+          <h2 class="section__title" id="editorial-fit-heading">UN AJUSTEMENT<br />PARFAIT</h2>
+        </section>
+
+        <section class="chapter" aria-labelledby="editorial-light-heading">
+          <p class="section__eyebrow">05 — The Light</p>
+          <h2 class="section__title" id="editorial-light-heading">LA LUMIÈRE<br />RÉVÈLE<br />LA PRÉCISION</h2>
+          <p class="section__lede">Lenses engineered for clarity in every light.</p>
+        </section>
+
+        <section class="chapter" aria-labelledby="editorial-signature-heading">
+          <p class="section__eyebrow">06 — Your Signature</p>
+          <h2 class="section__title" id="editorial-signature-heading">VOTRE<br />SIGNATURE</h2>
+          <p class="section__lede">Optimum Optic — le regard qui vous ressemble.</p>
+        </section>
       </div>
 
-      <div class="scroll-hint" data-scroll-hint aria-hidden="true">
-        <span>Scroll</span>
-        <span class="scroll-hint__line"></span>
+      <div class="scroll-stage__visual">
+        <canvas
+          class="scroll-stage__canvas"
+          data-hero-canvas
+          role="img"
+          aria-label="Lunettes Optimum Optic tournant sur elles-mêmes au fil du défilement, passant du verre optique au verre solaire"
+        ></canvas>
+
+        <div class="scroll-hint" data-scroll-hint aria-hidden="true">
+          <span>Scroll</span>
+          <span class="scroll-hint__line"></span>
+        </div>
       </div>
-    </section>
-
-    <section class="section" aria-labelledby="editorial-collection-heading">
-      <p class="section__eyebrow">SUNGLASSES <span class="section__eyebrow-tag">· POLARIZED COLLECTION</span></p>
-      <h2 class="section__title" id="editorial-collection-heading">UNE COLLECTION<br />PENSÉE POUR<br />CHAQUE REGARD</h2>
-    </section>
-
-    <section class="section section--soft" aria-labelledby="editorial-detail-heading">
-      <p class="section__eyebrow">OPTICAL <span class="section__eyebrow-tag">· PRECISION &amp; STYLE</span></p>
-      <h2 class="section__title" id="editorial-detail-heading">CHAQUE DÉTAIL<br />COMPTE</h2>
-    </section>
-
-    <section class="section" aria-labelledby="editorial-fit-heading">
-      <p class="section__eyebrow">SIGNATURE <span class="section__eyebrow-tag">· YOUR EVERYDAY FRAME</span></p>
-      <h2 class="section__title" id="editorial-fit-heading">UN AJUSTEMENT<br />PARFAIT</h2>
-    </section>
-
-    <section class="section section--soft" aria-labelledby="editorial-light-heading">
-      <p class="section__eyebrow">05 — The Light</p>
-      <h2 class="section__title" id="editorial-light-heading">LA LUMIÈRE<br />RÉVÈLE<br />LA PRÉCISION</h2>
-      <p class="section__lede">Lenses engineered for clarity in every light.</p>
-    </section>
-
-    <section class="section" aria-labelledby="editorial-signature-heading">
-      <p class="section__eyebrow">06 — Your Signature</p>
-      <h2 class="section__title" id="editorial-signature-heading">VOTRE<br />SIGNATURE</h2>
-      <p class="section__lede">Optimum Optic — le regard qui vous ressemble.</p>
     </section>
 
     <section id="store" class="section storefront" aria-labelledby="storefront-heading">

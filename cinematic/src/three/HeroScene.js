@@ -2,13 +2,12 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 /**
- * A self-contained, auto-playing WebGL hero built around a real supplied
- * 3D model (public/models/monture.glb) — not procedural geometry. The
- * model spins continuously and cycles its lens material between a clear
- * "Optique" look and a dark "Solaire" tint once per full turn, mirroring
- * the behavior already authored into the source file this was extracted
- * from (see the "Alterner à chaque tour" demo). Nothing here reads
- * scroll position; it runs on its own clock from the moment it starts.
+ * A WebGL scene built around a real supplied 3D model
+ * (public/models/monture.glb) — not procedural geometry. Rotation and
+ * lens tint are driven entirely by `setProgress()`, which main.js feeds
+ * from how far the visitor has scrolled through the 6-chapter stage (see
+ * src/utils/scrollStage.js) — there's no free-running clock once started;
+ * nothing moves unless scroll position changes.
  *
  * The two lens materials' color/opacity values below are the model's own
  * (read from its embedded glTF material defs — "Verre_Optique" and
@@ -20,17 +19,14 @@ const MODEL_URL = `${import.meta.env.BASE_URL}models/monture.glb`;
 const LENS_OPTIQUE = { color: new THREE.Color(0.93, 0.97, 1.0), opacity: 0.08 };
 const LENS_SOLAIRE = { color: new THREE.Color(0.13, 0.14, 0.16), opacity: 0.9 };
 
-// The model's own baked "Rotation" animation is a uniform 0->360°
-// turn over exactly this many seconds (read from its keyframe times) —
-// applied manually here (not via AnimationMixer) since it's just a
-// constant-speed spin, no need for the extra machinery.
-const TURN_SECONDS = 12;
-// How much of a turn before the face returns to center that the lens
-// should start swapping, and how fast the swap itself blends — both
-// values taken directly from the source demo's own logic so the timing
-// matches what it was tuned for.
-const FLIP_LEAD = 0.7;
-const MIX_SPEED = 0.62;
+// One full turn across the whole scroll stage (progress 0 -> 1) — the
+// model ends the journey facing front again, same pose it opened on.
+const TOTAL_TURNS = 1;
+// How fast the rendered rotation/tint catches up to the latest scroll
+// position, as an exponential-decay rate (see loop() below) — higher
+// tracks the scrollbar more tightly, lower trails further behind for a
+// softer, heavier feel. Framerate-independent either way.
+const FOLLOW_RATE = 4.5;
 
 function ease(t) {
   return t * t * (3 - 2 * t);
@@ -44,9 +40,8 @@ export class HeroScene {
     this._running = false;
     this._ready = false;
 
-    this.mode = 0; // 0 = Optique (clear), 1 = Solaire (tinted)
-    this.mix = 0;
-    this._turnsSeen = 0;
+    this._progress = 0; // smoothed, currently-rendered scroll progress
+    this._targetProgress = 0; // latest raw value from setProgress()
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -158,8 +153,17 @@ export class HeroScene {
     this.renderer.render(this.scene, this.camera);
   }
 
-  /** Starts the autonomous rotate + lens-swap loop. Never reads scroll
-   * position or any other page state — it runs purely on its own clock. */
+  /** Latest scroll progress through the 6-chapter stage: 0 at the top,
+   * 1 at the bottom. Cheap — just records a number; the render loop
+   * smooths it into motion on the next frame. Safe to call at any time,
+   * including before start(). */
+  setProgress(p) {
+    this._targetProgress = THREE.MathUtils.clamp(p, 0, 1);
+  }
+
+  /** Starts the render loop that follows scroll progress. Rotation and
+   * lens tint are a damped function of setProgress()'s latest value —
+   * nothing advances on its own; stop scrolling and it settles in place. */
   start() {
     if (this._running || !this._ready) return;
     this._running = true;
@@ -169,23 +173,17 @@ export class HeroScene {
     const loop = () => {
       if (!this._running) return;
       const elapsed = this.clock.getElapsedTime();
-      const dt = Math.min(0.05, elapsed - last || 0);
+      const dt = Math.min(0.1, elapsed - last || 0);
       last = elapsed;
 
-      const yaw = (elapsed / TURN_SECONDS) * Math.PI * 2;
-      this.pivot.rotation.y = yaw;
+      // Frame-rate independent exponential smoothing toward the latest
+      // scroll-derived target, so a fast flick settles in smoothly
+      // instead of the model snapping straight to the new angle.
+      const k = 1 - Math.exp(-FOLLOW_RATE * dt);
+      this._progress += (this._targetProgress - this._progress) * k;
 
-      // Flip the moment a full turn completes (matching the source
-      // model's own "swap when the face comes back around" timing).
-      const turns = Math.floor((yaw + FLIP_LEAD) / (Math.PI * 2));
-      if (turns !== this._turnsSeen) {
-        this._turnsSeen = turns;
-        this.mode = 1 - this.mode;
-      }
-
-      const delta = THREE.MathUtils.clamp(this.mode - this.mix, -dt * MIX_SPEED, dt * MIX_SPEED);
-      this.mix += delta;
-      this._applyLensMix(ease(this.mix));
+      this.pivot.rotation.y = this._progress * Math.PI * 2 * TOTAL_TURNS;
+      this._applyLensMix(ease(this._progress));
 
       this._renderFrame();
       this._raf = requestAnimationFrame(loop);
