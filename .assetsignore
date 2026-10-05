@@ -3,3 +3,4 @@ wrangler.jsonc
 .assetsignore
 tools
 worker
+_blog-src
