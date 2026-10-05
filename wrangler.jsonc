@@ -1,13 +1,14 @@
 {
   "name": "titsuit",
   "compatibility_date": "2026-09-01",
-  // Static site. The Worker only runs for the museum's guided-tour API,
-  // which keeps its bookings in the Tours Durable Object.
+  // Static site. The Worker runs only for /hiddenmuseum/: it checks the
+  // password (secret MUSEUM_PASSWORD) before serving anything there, and
+  // keeps guided-tour bookings in the Tours Durable Object.
   "main": "worker/index.js",
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": ["/hiddenmuseum/api/*"],
+    "run_worker_first": ["/hiddenmuseum", "/hiddenmuseum/*"],
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
   },

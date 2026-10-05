@@ -10,9 +10,13 @@ Site vitrine de TitSuit (Studio, AI, Digital, Events). Cette branche contient un
 
 Cloudflare Workers (projet `titsuit`) publie cette branche à chaque push : branche de production `titsuit-www`, aucune commande de build, commande de déploiement `npx wrangler deploy` (voir `wrangler.jsonc`).
 
-## `/hiddenmuseum`
+## `/hiddenmuseum` (espace privé)
 
-`hiddenmuseum/` contient une copie du site des Musées de Bank Al-Maghrib, servie publiquement (sans mot de passe) sur `www.titsuit.com/hiddenmuseum/`. La page porte une balise `noindex` pour rester hors des moteurs de recherche.
+`hiddenmuseum/` contient le site des Musées de Bank Al-Maghrib, servi sur `www.titsuit.com/hiddenmuseum/` et **protégé par mot de passe** côté serveur : le Worker `worker/index.js` (`run_worker_first` pour `/hiddenmuseum` dans `wrangler.jsonc`) n'envoie aucun fichier de ce dossier, ni l'API des visites guidées, sans session valide. Le reste de titsuit.com n'est pas concerné.
+
+- Le mot de passe **n'est pas dans le dépôt**. Il est lu dans le secret Cloudflare `MUSEUM_PASSWORD` (Workers → `titsuit` → Settings → Variables and Secrets → Add → type *Secret*). Sans ce secret, l'espace reste fermé pour tout le monde.
+- Après connexion, un cookie signé (HMAC-SHA-256, `HttpOnly`, `Secure`) est valable 12 heures. Changer le mot de passe invalide toutes les sessions.
+- La page de connexion suit la langue du navigateur (fr, ar, en, es). Déconnexion : `/hiddenmuseum/__logout`.
 
 ### Langues
 
