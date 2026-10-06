@@ -1,0 +1,43 @@
+name: TitSuit blog – article du jour
+
+# Publishes the next TitSuit blog article every morning (Casablanca time)
+# by running _blog-src/publish.py on the titsuit-www branch, which
+# Cloudflare deploys to www.titsuit.com. Safe to re-run: at most one
+# article per day, and nothing happens once all articles are out.
+on:
+  schedule:
+    - cron: '17 7 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: titsuit-blog
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: titsuit-www
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: python3 _blog-src/publish.py --publish-next
+
+      - name: Commit and push
+        run: |
+          git config user.name "TitSuit Blog"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A blog sitemap-blog.xml llms.txt _blog-src/published.json
+          if git diff --cached --quiet; then
+            echo "Nothing new to publish."
+            exit 0
+          fi
+          git commit -m "Blog: publish today's article"
+          git push origin HEAD:titsuit-www
