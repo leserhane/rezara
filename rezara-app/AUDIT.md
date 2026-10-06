@@ -73,7 +73,7 @@ I checked it with a scripted browser at phone (390px) and desktop (1280px) sizes
    - With the S1 fix, production users won't see a code on screen. Until you connect a provider (Twilio, WhatsApp Business API, Infobip…), an admin must issue codes (Admin → Businesses → Generate code).
    - You can set `OTP_TEST_MODE=true` to restore the old behaviour, but understand the risk (S1).
    - The admin phone itself also needs a code. Bootstrap it with the DB or temporarily with `OTP_TEST_MODE=true`.
-2. **Deploying:** this code is in `rezara-app/` inside the `leserhane/rezara` repo, next to the Optimum Optic site. Copy it back into your Replit project or move it to its own repo. Note the repo root is published by GitHub Pages, so these source files are publicly served there too.
+2. **Deploying:** the app runs on Replit (`https://rezara--succesmktgcom.replit.app`), and `www.titsuit.com/rezaraapp` redirects to it (Cloudflare Worker on the `titsuit-www` branch). It is not published on optimumoptic.com. This code lives only on the `claude/app-audit-ux-q8f711` branch: copy `rezara-app/` back into your Replit project and redeploy. To make payment links show the titsuit.com address, set `PUBLIC_BASE_URL=https://www.titsuit.com/rezaraapp` on Replit.
 
 ## 4. Recommended next steps (not done here)
 
