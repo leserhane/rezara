@@ -10,6 +10,10 @@ Site vitrine de TitSuit (Studio, AI, Digital, Events). Cette branche contient un
 
 Cloudflare Workers (projet `titsuit`) publie cette branche à chaque push : branche de production `titsuit-www`, aucune commande de build, commande de déploiement `npx wrangler deploy` (voir `wrangler.jsonc`).
 
+## `/rezaraapp` (redirection)
+
+`www.titsuit.com/rezaraapp/…` redirige (302, côté Worker) vers l'application Rezara hébergée sur Replit, `https://rezara--succesmktgcom.replit.app/…`, en conservant le chemin (les liens de paiement `/rezaraapp/r/<id>` fonctionnent). L'application a besoin de son API Node et de sa base de données, elle ne peut donc pas être servie depuis ce site statique. Adresse de destination : `REZARA_APP` dans `worker/index.js`.
+
 ## `/hiddenmuseum` (espace privé)
 
 `hiddenmuseum/` contient le site des Musées de Bank Al-Maghrib, servi sur `www.titsuit.com/hiddenmuseum/` et **protégé par mot de passe** côté serveur : le Worker `worker/index.js` (`run_worker_first` pour `/hiddenmuseum` dans `wrangler.jsonc`) n'envoie aucun fichier de ce dossier, ni l'API des visites guidées, sans session valide. Le reste de titsuit.com n'est pas concerné.

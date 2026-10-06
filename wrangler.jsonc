@@ -1,9 +1,10 @@
 {
   "name": "titsuit",
   "compatibility_date": "2026-09-01",
-  // Static site. The Worker runs only for /hiddenmuseum/: it checks the
+  // Static site. The Worker runs only for /hiddenmuseum/ — it checks the
   // password (secret MUSEUM_PASSWORD) before serving anything there, and
-  // keeps guided-tour bookings in the Tours Durable Object.
+  // keeps guided-tour bookings in the Tours Durable Object — and for
+  // /rezaraapp/, which it redirects to the Rezara app hosted on Replit.
   "main": "worker/index.js",
   // Keep variables set in the Cloudflare dashboard when this file is deployed,
   // so a MUSEUM_PASSWORD entered there survives every push.
@@ -11,7 +12,7 @@
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": ["/hiddenmuseum", "/hiddenmuseum/*"],
+    "run_worker_first": ["/hiddenmuseum", "/hiddenmuseum/*", "/rezaraapp", "/rezaraapp/*"],
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
   },

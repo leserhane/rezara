@@ -14,6 +14,9 @@ const LOGOUT = `${AREA}/__logout`;
 const COOKIE = 'hm_session';
 const SESSION_SECONDS = 12 * 60 * 60;
 
+const REZARA_PREFIX = '/rezaraapp';
+const REZARA_APP = 'https://rezara--succesmktgcom.replit.app';
+
 const API = '/hiddenmuseum/api/tours';
 const CAPACITY = 2; // guided tours that can run at the same time (two guides)
 const GROUP_MIN = 3;
@@ -45,6 +48,15 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // /rezaraapp/<path> -> the Rezara booking app on Replit (it needs its own
+    // Node API and database, so it can't be served from here). Deep links such
+    // as /rezaraapp/r/<linkId> payment links keep their path. 302, not 301, so
+    // browsers don't cache it if the app moves.
+    if (path === REZARA_PREFIX || path.startsWith(REZARA_PREFIX + '/')) {
+      const rest = path.slice(REZARA_PREFIX.length) || '/';
+      return Response.redirect(`${REZARA_APP}${rest}${url.search}`, 302);
+    }
 
     if (path !== AREA && !path.startsWith(AREA + '/')) return env.ASSETS.fetch(request);
     if (path === AREA) return Response.redirect(`${url.origin}${AREA}/${url.search}`, 301);
