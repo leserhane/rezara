@@ -10,6 +10,7 @@
 - [Location de matériel DJ, son et lumière au Maroc : quel matériel pour quel événement](https://www.titsuit.com/blog/location-materiel-dj-son-lumiere-maroc/) : Quel matériel louer pour une soirée au Maroc ? Régie DJ, sonorisation, lumières, scène, écran LED : dimensionnement par nombre d'invités, prix publics relevés et questions à poser.
 - [Organiser une soirée à Casablanca : budget, lieu, DJ et rétroplanning](https://www.titsuit.com/blog/organiser-soiree-casablanca/) : Comment organiser une soirée à Casablanca : choisir le lieu, chiffrer le budget poste par poste, réserver le DJ et la technique, et suivre un rétroplanning sur huit semaines.
 - [Prix d'un DJ au Maroc en 2026 : mariage, anniversaire, soirée d'entreprise](https://www.titsuit.com/blog/prix-dj-maroc/) : Combien coûte un DJ au Maroc en 2026 ? De 5 000 à 25 000 MAD pour un DJ professionnel de mariage. Ce que le prix comprend, ce qui le fait varier et comment réserver sans mauvaise surprise.
+- [Chatbot WhatsApp pour entreprise au Maroc : prix, fonctionnement et limites](https://www.titsuit.com/blog/chatbot-whatsapp-entreprise-maroc/) : Combien coûte un chatbot WhatsApp au Maroc en 2026 ? De 2 000 à 25 000 DH de mise en place et de 200 à 6 000 DH par mois. Fonctionnement, tarifs de l'API, cas d'usage et erreurs à éviter.
 
 ## Contact
 
