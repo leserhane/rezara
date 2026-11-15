@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /paranajouastep/panier/
+Disallow: /paranajouastep/ar/panier/
 
 Sitemap: https://www.titsuit.com/sitemap.xml
 Sitemap: https://www.titsuit.com/sitemap-blog.xml
+Sitemap: https://www.titsuit.com/paranajouastep/sitemap.xml
