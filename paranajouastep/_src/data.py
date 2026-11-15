@@ -10,7 +10,7 @@ Every page (French + Arabic), the sitemap and the cart catalogue are regenerated
 # ---------------------------------------------------------------- store
 STORE = {
     'name': 'ParaNajouaStep',
-    'site_url': 'https://www.paranajouastep.ma',   # TODO real domain (no trailing slash)
+    'site_url': 'https://www.titsuit.com/paranajouastep',  # change if the shop moves to its own domain (no trailing slash)
     'phone_display': '+212 6 00 00 00 00',         # TODO
     'phone_tel': '+212600000000',                  # TODO
     'whatsapp': '212600000000',                    # TODO international format, digits only

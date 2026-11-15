@@ -4,4 +4,4 @@ Disallow: /panier/
 Disallow: /ar/panier/
 Disallow: /_src/
 
-Sitemap: https://www.paranajouastep.ma/sitemap.xml
+Sitemap: https://www.titsuit.com/paranajouastep/sitemap.xml
