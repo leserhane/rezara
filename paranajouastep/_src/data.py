@@ -11,9 +11,9 @@ Every page (French + Arabic), the sitemap and the cart catalogue are regenerated
 STORE = {
     'name': 'ParaNajouaStep',
     'site_url': 'https://www.titsuit.com/paranajouastep',  # change if the shop moves to its own domain (no trailing slash)
-    'phone_display': '+212 6 00 00 00 00',         # TODO
-    'phone_tel': '+212600000000',                  # TODO
-    'whatsapp': '212600000000',                    # TODO international format, digits only
+    'phone_display': '+212 6 45 20 34 93',
+    'phone_tel': '+212645203493',
+    'whatsapp': '212645203493',                    # orders from the cart are sent here
     'email': 'contact@paranajouastep.ma',          # TODO
     'street_fr': 'Avenue Mohammed V, Centre-ville',  # TODO exact address
     'street_ar': 'شارع محمد الخامس، وسط المدينة',      # TODO
