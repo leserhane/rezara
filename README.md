@@ -31,3 +31,7 @@ Le site du musée est disponible en français, arabe (de droite à gauche), angl
 - Agenda culturel : `hiddenmuseum/agenda-data.js` (expositions et temps forts, du plus récent au plus ancien ; le statut « En cours / Terminée » est calculé à partir des dates).
 - Visites guidées : au plus deux par créneau. Le Worker `worker/index.js` expose `/hiddenmuseum/api/tours` (GET `?date=AAAAMMJJ` pour les places prises, POST pour réserver) et garde les réservations dans le Durable Object `Tours`. Les créneaux sont définis à la fois dans `worker/index.js` et `hiddenmuseum/app.js`.
 
+
+## `/paranajouastep` (boutique ParaNajouaStep)
+
+`paranajouastep/` contient la boutique en ligne de la parapharmacie ParaNajouaStep (Kénitra), en français et en arabe (`/paranajouastep/ar/`), servie sur `www.titsuit.com/paranajouastep/`. Ce sont des pages statiques générées : ne pas les modifier ici. Les sources (`paranajouastep/_src/`, produits, prix, coordonnées) sont sur la branche `claude/wonderful-mayer-843l53` du dépôt ; après `python3 _src/build.py`, recopier le dossier ici sans `_src/`, `README.md`, `404.html` ni `robots.txt`. Son sitemap est déclaré dans `robots.txt`.
